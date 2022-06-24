@@ -38,11 +38,9 @@ RUN update-ca-certificates && \
 RUN mkdir -p R && \
     cd ./R && \
     R -e 'install.packages("ggplot2", dependencies = TRUE, repos="http://cran.r-project.org", lib="./")'
-
-RUN mkdir /var/log/gbsappui
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN git clone https://github.com/solgenomics/gbsappui.git
+RUN mkdir /var/log/gbsappui
 RUN cpanm Catalyst Catalyst::Restarter
 RUN chmod 777 /var/spool/ \
     && mkdir /var/spool/slurmstate \
@@ -59,6 +57,7 @@ RUN mkdir ./GBSapp/GBSapp/tools/ && \
     mv bcftools ./GBSapp/GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/GBSapp/tools/ && \
     mv ./GBSapp/GBSapp/examples/config.sh ./GBSapp/GBSapp/examples/proj/
+RUN git clone https://github.com/solgenomics/gbsappui.git
 RUN mv ./gbsappui/slurm.conf  /etc/slurm/
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
