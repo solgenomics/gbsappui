@@ -42,11 +42,6 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 RUN mkdir /var/log/gbsappui
 RUN cpanm Catalyst Catalyst::Restarter
-RUN chmod 777 /var/spool/ \
-    && mkdir /var/spool/slurmstate \
-    && chown slurm:slurm /var/spool/slurmstate/ \
-    && ln -s /var/lib/slurm-llnl /var/lib/slurm \
-    && mkdir -p /var/log/slurm
 #move all dependencies to tools
 RUN mkdir ./GBSapp/GBSapp/tools/ && \
     rm GATK* && \
@@ -58,6 +53,11 @@ RUN mkdir ./GBSapp/GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/GBSapp/tools/ && \
     mv ./GBSapp/GBSapp/examples/config.sh ./GBSapp/GBSapp/examples/proj/
 RUN git clone https://github.com/solgenomics/gbsappui.git
+RUN chmod 777 /var/spool/ \
+    && mkdir /var/spool/slurmstate \
+    && chown slurm:slurm /var/spool/slurmstate/ \
+    && ln -s /var/lib/slurm-llnl /var/lib/slurm \
+    && mkdir -p /var/log/slurm
 RUN mv ./gbsappui/slurm.conf  /etc/slurm/
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
