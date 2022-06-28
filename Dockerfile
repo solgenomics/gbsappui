@@ -9,7 +9,7 @@ EXPOSE 8080
 # install system dependencies
 #
 RUN apt-get update -y
-RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen
+RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx ping ip
 #clone GBSApp from github
 RUN mkdir GBSapp && \
     cd GBSapp && \
@@ -41,8 +41,9 @@ RUN mkdir -p R && \
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 RUN mkdir /var/log/gbsappui
-RUN cpanm Catalyst Catalyst::Restarter
+RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::Html::Mason
 #move all dependencies to tools
+RUN git clone https://github.com/solgenomics/gbsappui.git
 RUN mkdir ./GBSapp/GBSapp/tools/ && \
     rm GATK* && \
     mv picard.jar ./GBSapp/GBSapp/tools/ && \
@@ -52,7 +53,6 @@ RUN mkdir ./GBSapp/GBSapp/tools/ && \
     mv bcftools ./GBSapp/GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/GBSapp/tools/ && \
     mv ./GBSapp/GBSapp/examples/config.sh ./GBSapp/GBSapp/examples/proj/
-RUN git clone https://github.com/solgenomics/gbsappui.git
 RUN chmod 777 /var/spool/ \
     && mkdir /var/spool/slurmstate \
     && chown slurm:slurm /var/spool/slurmstate/ \
