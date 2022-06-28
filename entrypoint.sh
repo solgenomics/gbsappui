@@ -1,4 +1,6 @@
 #!/bin/bash
+devel/run_docker.sh
+mv ./gbsappui/slurm.conf  /etc/slurm/
 /etc/init.d/gbsappui start
 touch /var/log/gbsappui/error.log
 chmod 777 /var/log/gbpsappui/error.log

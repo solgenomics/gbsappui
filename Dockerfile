@@ -51,7 +51,5 @@ RUN chmod 777 /var/spool/ \
     && chown slurm:slurm /var/spool/slurmstate/ \
     && ln -s /var/lib/slurm-llnl /var/lib/slurm \
     && mkdir -p /var/log/slurm
-RUN devel/run_docker.sh
-RUN mv ./gbsappui/slurm.conf  /etc/slurm/
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
