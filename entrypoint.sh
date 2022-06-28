@@ -1,4 +1,5 @@
 #!/bin/bash
+/etc/init.d/gbsappui start
 touch /var/log/gbsappui/error.log
 chmod 777 /var/log/gbpsappui/error.log
 /gbsappui/script/gbsappui_server.pl --fork -r -p 8080 2> /var/log/gbsappui/error.log
