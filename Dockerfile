@@ -37,6 +37,11 @@ RUN chmod +x /entrypoint.sh
 RUN mkdir /var/log/gbsappui
 RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason
 #move all dependencies to tools
+RUN chmod 777 /var/spool/ \
+    && mkdir /var/spool/slurmstate \
+    && chown slurm:slurm /var/spool/slurmstate/ \
+    && ln -s /var/lib/slurm-llnl /var/lib/slurm \
+    && mkdir -p /var/log/slurm
 RUN mkdir ./GBSapp/tools/ && \
     rm GATK* && \
     mv picard.jar ./GBSapp/tools/ && \
@@ -46,12 +51,8 @@ RUN mkdir ./GBSapp/tools/ && \
     mv bcftools ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
-RUN chmod 777 /var/spool/ \
-    && mkdir /var/spool/slurmstate \
-    && chown slurm:slurm /var/spool/slurmstate/ \
-    && ln -s /var/lib/slurm-llnl /var/lib/slurm \
-    && mkdir -p /var/log/slurm
 RUN git clone https://github.com/solgenomics/gbsappui
-RUN bash mkdir devel && run_docker.sh
+RUN ln -s /home/production/cxgn/starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+RUN bash gbsappui/run_docker.sh
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
