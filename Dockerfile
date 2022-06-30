@@ -51,8 +51,11 @@ RUN mkdir ./GBSapp/tools/ && \
     mv bcftools ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
+RUN apt-get update
+RUN apt-get install -y starman emacs gedit cron rsyslog
 RUN git clone https://github.com/solgenomics/gbsappui
-RUN cp /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+RUN ln -s /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+RUN mkdir /etc/starmachine
 COPY gbsappui/starmachine.conf /etc/starmachine/
 RUN bash gbsappui/run_docker.sh
 # start services when running container...
