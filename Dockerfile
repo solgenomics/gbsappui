@@ -57,6 +57,7 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN ln -s /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
 RUN mkdir /etc/starmachine
 COPY gbsappui/starmachine.conf /etc/starmachine/
+ARG CACHEBUST=0
 RUN bash gbsappui/run_docker.sh
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
