@@ -52,7 +52,8 @@ RUN mkdir ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
 RUN git clone https://github.com/solgenomics/gbsappui
-RUN cp /home/production/cxgn/starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+RUN cp /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+COPY gbsappui/starmachine.conf /etc/starmachine/
 RUN bash gbsappui/run_docker.sh
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
