@@ -1,7 +1,7 @@
 package gbsappui;
 use Moose;
 use namespace::autoclean;
-
+use Catalyst::View::HTML::Mason;
 use Catalyst::Runtime 5.80;
 
 # Set flags and add plugins for the application.
@@ -41,6 +41,7 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
     encoding => 'UTF-8', # Setup request decoding and response encoding
+    default_view => 'Mason'
 );
 
 # Start the application

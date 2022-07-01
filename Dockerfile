@@ -5,17 +5,24 @@ EXPOSE 8080
 
 # create directory layout
 #
+#RUN ln -s /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
+#RUN mkdir /etc/starmachine
+RUN mkdir /var/log/gbsappui
 
 # install system dependencies
 #
-RUN apt-get update -y
-RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev
+RUN apt-get update
+RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev starman emacs gedit cron rsyslog net-tools
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
-#clone bcftools
-RUN git clone https://github.com/samtools/bcftools.git
-#clone samtools
-RUN git clone --recurse-submodules https://github.com/samtools/htslib.git
+#get bcftools
+RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2 && \
+tar -xvf bcftools-1.13.tar.bz2 &&  cd bcftools-1.13; make && \
+rm ../bcftools-1.13.tar.bz2 && \
+cd ..
+#get samtools
+RUN wget https://sourceforge.net/projects/samtools/files/latest/download && \
+tar -xvjf download* && rm download* && cd samtools* && make && cd ..
 #install picard
 RUN wget https://github.com/broadinstitute/picard/releases/download/2.25.6/picard.jar
 #install GATK
@@ -32,32 +39,28 @@ RUN update-ca-certificates && \
 RUN mkdir -p R && \
     cd ./R && \
     R -e 'install.packages("ggplot2", dependencies = TRUE, repos="http://cran.r-project.org", lib="./")'
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-RUN mkdir /var/log/gbsappui
 RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason
-#move all dependencies to tools
 RUN chmod 777 /var/spool/ \
     && mkdir /var/spool/slurmstate \
     && chown slurm:slurm /var/spool/slurmstate/ \
     && ln -s /var/lib/slurm-llnl /var/lib/slurm \
     && mkdir -p /var/log/slurm
+#move all dependencies to tools
 RUN mkdir ./GBSapp/tools/ && \
     rm GATK* && \
     mv picard.jar ./GBSapp/tools/ && \
     mv NextGenMap ./GBSapp/tools/ && \
     mv gatk-4.2.5.0 ./GBSapp/tools/ && \
     mv R ./GBSapp/tools/ && \
-    mv bcftools ./GBSapp/tools/ && \
+    mv bcftools* ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
+    mv samtools* ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
-RUN apt-get update
-RUN apt-get install -y starman emacs gedit cron rsyslog
-RUN git clone https://github.com/solgenomics/gbsappui
-RUN ln -s /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
-RUN mkdir /etc/starmachine
-COPY gbsappui/starmachine.conf /etc/starmachine/
 ARG CACHEBUST=0
-RUN bash gbsappui/run_docker.sh
+RUN git clone https://github.com/solgenomics/gbsappui
+#COPY ./gbsappui/starmachine.conf /etc/starmachine/
+#RUN bash gbsappui/run_docker.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
