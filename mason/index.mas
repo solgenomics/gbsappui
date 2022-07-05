@@ -1,1 +1,9 @@
-Hello World
+<div style="border:0px solid;text-align:center;">
+<img src="https://cassavabase.org/img/Breedbase_HighRes.png" width="200" />
+<h3>GbsAppUI </h3>
+Upload fastq file:
+<form action="/upload_fastq"  enctype="multipart/form-data" id="upload_form" name="upload_form" method="post">
+    <input type="file" id="fastq_file" name="fastq_file">
+    <input type="submit">
+</form>
+</div>
