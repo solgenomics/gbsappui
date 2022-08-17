@@ -4,17 +4,11 @@ FROM debian:bullseye
 EXPOSE 8080
 
 # create directory layout
-#
-#RUN ln -s /starmachine/bin/starmachine_init.d /etc/init.d/gbsappui
-#RUN mkdir /etc/starmachine
 RUN mkdir /var/log/gbsappui
 
 # install system dependencies
-#
 RUN apt-get update
-RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev starman emacs gedit cron rsyslog net-tools
-#clone GBSApp from github
-RUN git clone https://github.com/bodeolukolu/GBSapp.git
+RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano
 #get bcftools
 RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2 && \
 tar -xvf bcftools-1.13.tar.bz2 &&  cd bcftools-1.13; make && \
@@ -45,6 +39,10 @@ RUN chmod 777 /var/spool/ \
     && chown slurm:slurm /var/spool/slurmstate/ \
     && ln -s /var/lib/slurm-llnl /var/lib/slurm \
     && mkdir -p /var/log/slurm
+#clone GBSApp UI from github
+RUN git clone https://github.com/solgenomics/gbsappui
+#clone GBSApp from github
+RUN git clone https://github.com/bodeolukolu/GBSapp.git
 #move all dependencies to tools
 RUN mkdir ./GBSapp/tools/ && \
     rm GATK* && \
@@ -57,8 +55,6 @@ RUN mkdir ./GBSapp/tools/ && \
     mv samtools* ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
 ARG CACHEBUST=0
-RUN git clone https://github.com/solgenomics/gbsappui
-#COPY ./gbsappui/starmachine.conf /etc/starmachine/
 #RUN bash gbsappui/run_docker.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
