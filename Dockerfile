@@ -20,8 +20,8 @@ tar -xvjf download* && rm download* && cd samtools* && make && cd ..
 #install picard
 RUN wget https://github.com/broadinstitute/picard/releases/download/2.25.6/picard.jar
 #install GATK
-RUN wget -O GATK4.2.5.0.zip "https://github.com/broadinstitute/gatk/releases/download/4.2.5.0/gatk-4.2.5.0.zip" && \
-    unzip GATK4.2.5.0.zip
+RUN wget -O GATK4.2.6.1.zip "https://github.com/broadinstitute/gatk/releases/download/4.2.6.1/gatk-4.2.6.1.zip" && \
+    unzip GATK4.2.6.1.zip
 #install java
 RUN wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
     tar -xvf OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz; rm *tar.gz
