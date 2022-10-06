@@ -18,28 +18,16 @@
 
 <%# ----main page---- %>
 
+<%#Progress bar with same main output as slurm file %>
 <center>
-<span style="position:relative;left:-20;top:75">
-<img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
-</div>
-<br></br>
-<br></br>
-
-<%# ----upload fastq---- %>
-
-<div style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-40;font-size:23">
-<span style="position:relative;left:20">
-<b>Upload fastq file:</b>
-</span>
-<span style="position:relative;left:20">
-<form action="/select_ref"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
-    <input type="file" id="fastq_file" name="fastq_file">
-    <span style=""><input type="submit" value="Upload"></span>
-</span>
-</form>
-</div>
-<br></br>
+  <span style="position:relative;left:-20;top:75">
+    <img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
+    <br></br>
+    <br></br>
+    <b>Analysis in progress</b>
+  </span>
 </center>
+<%#Once done analyzing will say "Analysis complete!" with a "Download VCF Results" button to get the results%>
 
 <%# ----footer---- %>
 

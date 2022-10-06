@@ -1,9 +1,9 @@
 #General_parameters
 ###################################################
-threads=1
+threads=2
 walkaway=true
 cluster=true
-nodes=1
+nodes=2
 samples_alt_dir=false
 lib_type=RRS
 

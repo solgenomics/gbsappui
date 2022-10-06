@@ -8,7 +8,7 @@ RUN mkdir /var/log/gbsappui
 
 # install system dependencies
 RUN apt-get update
-RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano
+RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3
 #get bcftools
 RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2 && \
 tar -xvf bcftools-1.13.tar.bz2 &&  cd bcftools-1.13; make && \
@@ -48,13 +48,13 @@ RUN mkdir ./GBSapp/tools/ && \
     rm GATK* && \
     mv picard.jar ./GBSapp/tools/ && \
     mv NextGenMap ./GBSapp/tools/ && \
-    mv gatk-4.2.5.0 ./GBSapp/tools/ && \
+    mv gatk-4.2.6.1 ./GBSapp/tools/ && \
     mv R ./GBSapp/tools/ && \
     mv bcftools* ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
     mv samtools* ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
-ARG CACHEBUST=0
+#ARG CACHEBUST=0
 #RUN bash gbsappui/run_docker.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

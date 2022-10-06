@@ -1,4 +1,0 @@
-<%args>
-$size
-</%args>
-size=<% $size %>
