@@ -40,6 +40,7 @@ RUN chmod 777 /var/spool/ \
     && ln -s /var/lib/slurm-llnl /var/lib/slurm \
     && mkdir -p /var/log/slurm
 #clone GBSApp UI from github
+RUN echo "hello"
 RUN git clone https://github.com/solgenomics/gbsappui
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
@@ -56,6 +57,7 @@ RUN mkdir ./GBSapp/tools/ && \
     mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
 #ARG CACHEBUST=0
 #RUN bash gbsappui/run_docker.sh
+RUN echo "hello"
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 # start services when running container...
