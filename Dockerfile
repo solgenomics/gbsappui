@@ -44,21 +44,35 @@ RUN echo "hello"
 RUN git clone https://github.com/solgenomics/gbsappui
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
-#move all dependencies to tools
-RUN mkdir ./GBSapp/tools/ && \
-    rm GATK* && \
-    mv picard.jar ./GBSapp/tools/ && \
-    mv NextGenMap ./GBSapp/tools/ && \
-    mv gatk-4.2.6.1 ./GBSapp/tools/ && \
-    mv R ./GBSapp/tools/ && \
-    mv bcftools* ./GBSapp/tools/ && \
-    mv jdk8u322-b06 ./GBSapp/tools/ && \
-    mv samtools* ./GBSapp/tools/ && \
-    mv ./GBSapp/examples/config.sh ./GBSapp/examples/proj/
+#install Emboss
+RUN wget http://debian.rub.de/ubuntu/pool/universe/e/emboss/emboss_6.6.0.orig.tar.gz && \
+   gunzip emboss_6.6.0.orig.tar.gz && \
+   tar xvf emboss_6.6.0.orig.tar && \
+   ls && \
+   cd EMBOSS-6.6.0 && \
+   ls && \
+   ./configure --without-x && \
+   make && \
+   cd .. && \
+   rm emboss_6.6.0.orig.tar*
+#move all dependencies to GBSapp
+RUN rm GATK* && \
+    mv picard.jar ./GBSapp/ && \
+    mv NextGenMap ./GBSapp/ && \
+    mv gatk-4.2.6.1 ./GBSapp/ && \
+    mv R ./GBSapp/ && \
+    mv bcftools* ./GBSapp/ && \
+    mv jdk8u322-b06 ./GBSapp/ && \
+    mv samtools* ./GBSapp/
+RUN mv EMBOSS* GBSApp
 #ARG CACHEBUST=0
-#RUN bash gbsappui/run_docker.sh
-RUN echo "hello"
-COPY entrypoint.sh /entrypoint.sh
+RUN mkdir /project/
+RUN mkdir /project/refgenomes/
+RUN mkdir /project/samples/
+RUN mv ./gbsappui/config.sh /project/
+RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
+RUN cp ./GBSapp/examples/input_steps.txt /project/
+RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

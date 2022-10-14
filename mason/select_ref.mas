@@ -1,5 +1,5 @@
 <%args>
-$tempdir
+$projdir
 </%args>
 <%# ----header---- %>
 
@@ -44,7 +44,7 @@ $tempdir
 
 <%# ----Submit button---- %>
 <form action="/gbs_analysis">
-<input type="hidden" name="tempdir" value="<% $tempdir %>">
+<input type="hidden" name="projdir" value="<% $projdir %>">
 <div style="position:relative;bottom:20">
 <%#submit button that only un-grays once the above two things have been submitted%>
 <button type="submit" id="runbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:25; font-size:18" ><b>Run Analysis</b></button>

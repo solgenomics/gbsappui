@@ -1,5 +1,5 @@
 <%args>
-$tempdir
+$projdir
 </%args>
 <%# ----header---- %>
 
