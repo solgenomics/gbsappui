@@ -1,5 +1,5 @@
 <%args>
-$projdir
+<$projdir>
 </%args>
 <%# ----header---- %>
 
@@ -30,7 +30,7 @@ $projdir
     <b>Analysis in progress</b>
   </span>
 </center>
-<%#Once done analyzing will say "Analysis complete!" with a "Download VCF Results" button to get the results%>
+<%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
 
 <%# ----footer---- %>
 

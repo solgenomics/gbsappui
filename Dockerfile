@@ -39,12 +39,10 @@ RUN chmod 777 /var/spool/ \
     && chown slurm:slurm /var/spool/slurmstate/ \
     && ln -s /var/lib/slurm-llnl /var/lib/slurm \
     && mkdir -p /var/log/slurm
-#clone GBSApp UI from github
-RUN echo "hello"
-RUN git clone https://github.com/solgenomics/gbsappui
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
 #install Emboss
+#ARG CACHEBUST=0
 RUN wget http://debian.rub.de/ubuntu/pool/universe/e/emboss/emboss_6.6.0.orig.tar.gz && \
    gunzip emboss_6.6.0.orig.tar.gz && \
    tar xvf emboss_6.6.0.orig.tar && \
@@ -55,20 +53,22 @@ RUN wget http://debian.rub.de/ubuntu/pool/universe/e/emboss/emboss_6.6.0.orig.ta
    make && \
    cd .. && \
    rm emboss_6.6.0.orig.tar*
-#move all dependencies to GBSapp
+#move all dependencies to GBSapp/tools
+RUN mkdir GBSapp/tools
 RUN rm GATK* && \
-    mv picard.jar ./GBSapp/ && \
-    mv NextGenMap ./GBSapp/ && \
-    mv gatk-4.2.6.1 ./GBSapp/ && \
-    mv R ./GBSapp/ && \
-    mv bcftools* ./GBSapp/ && \
-    mv jdk8u322-b06 ./GBSapp/ && \
-    mv samtools* ./GBSapp/
-RUN mv EMBOSS* GBSApp
-#ARG CACHEBUST=0
+    mv picard.jar ./GBSapp/tools/ && \
+    mv NextGenMap ./GBSapp/tools/ && \
+    mv gatk-4.2.6.1 ./GBSapp/tools/ && \
+    mv R ./GBSapp/tools/ && \
+    mv bcftools* ./GBSapp/tools/ && \
+    mv jdk8u322-b06 ./GBSapp/tools/ && \
+    mv samtools* ./GBSapp/tools/ && \
+    mv EMBOSS* GBSApp/tools/
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
+#clone GBSApp UI from github
+RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
