@@ -46,9 +46,7 @@ RUN git clone https://github.com/bodeolukolu/GBSapp.git
 RUN wget http://debian.rub.de/ubuntu/pool/universe/e/emboss/emboss_6.6.0.orig.tar.gz && \
    gunzip emboss_6.6.0.orig.tar.gz && \
    tar xvf emboss_6.6.0.orig.tar && \
-   ls && \
    cd EMBOSS-6.6.0 && \
-   ls && \
    ./configure --without-x && \
    make && \
    cd .. && \
@@ -63,7 +61,7 @@ RUN rm GATK* && \
     mv bcftools* ./GBSapp/tools/ && \
     mv jdk8u322-b06 ./GBSapp/tools/ && \
     mv samtools* ./GBSapp/tools/ && \
-    mv EMBOSS* GBSApp/tools/
+    mv EMBOSS* ./GBSapp/tools/
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
