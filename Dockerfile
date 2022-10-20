@@ -66,6 +66,7 @@ RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
 #clone GBSApp UI from github
+ARG CACHEBUST=0
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
