@@ -6,5 +6,5 @@ cp /gbsappui/config.sh  /GBSapp/examples/proj/
 /etc/init.d/slurmd start
 touch /var/log/gbsappui/error.log
 sleep 5
-/gbsappui/script/gbsappui_server.pl -r -p 8080 -f 2> /var/log/gbsappui/error.log
+/gbsappui/script/gbsappui_server.pl -r -p 8080 2> /var/log/gbsappui/error.log
 tail -f /var/log/gbsappui/error.log
