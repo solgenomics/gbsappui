@@ -10,7 +10,7 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob)
 
 BEGIN {extends 'Catalyst::Controller'};
 
-#$projdir=~s/\;//g; #don't allow ; in project directory
+
 #eventually make path below select_ref
 sub upload_fastq:Path('/gbs_analysis') Args(0){
     my $self=shift;
@@ -21,7 +21,8 @@ sub upload_fastq:Path('/gbs_analysis') Args(0){
     #my @files = glob "$source/*";m
     #rcopy_glob("$source/*", $tempdir) or die $!;
     #print STDERR "$source was copied to $tempdir \n";
-    my $projdir = "/projdir/";
+    my $projdir = "/project";
+    $projdir=~s/\;//g; #don't allow ; in project directory
     $upload->copy_to("$projdir/samples/") or die $!;
     print STDERR "$upload was copied to $projdir/samples \n";
     #copy($upload,"$tempdir/samples/");

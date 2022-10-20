@@ -1,6 +1,3 @@
-<%args>
-<$projdir>
-</%args>
 <%# ----header---- %>
 
 <body style="margin:0;padding:0">
