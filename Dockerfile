@@ -66,9 +66,9 @@ RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
 RUN rm /etc/munge/munge.key
 
-RUN chmod 106 /var/spool/ \
+RUN chmod 777 /var/spool/ \
   && mkdir /var/spool/slurmstate \
-  && chown 106 /var/spool/slurmstate/ \
+  && chmod 777 /var/spool/slurmstate/ \
   && /usr/sbin/mungekey \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm

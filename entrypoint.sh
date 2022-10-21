@@ -4,6 +4,7 @@ cp /gbsappui/slurm.conf  /etc/slurm/
 sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
 cp /gbsappui/config.sh  /GBSapp/examples/proj/
 /etc/init.d/munge start
+sacctmgr add cluster e954439d9ba1
 /etc/init.d/slurmctld start
 /etc/init.d/slurmd start
 touch /var/log/gbsappui/error.log
