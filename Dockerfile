@@ -34,11 +34,6 @@ RUN mkdir -p R && \
     cd ./R && \
     R -e 'install.packages("ggplot2", dependencies = TRUE, repos="http://cran.r-project.org", lib="./")'
 RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason
-RUN chmod 777 /var/spool/ \
-    && mkdir /var/spool/slurmstate \
-    && chown slurm:slurm /var/spool/slurmstate/ \
-    && ln -s /var/lib/slurm-llnl /var/lib/slurm \
-    && mkdir -p /var/log/slurm
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
 #install Emboss
@@ -71,6 +66,19 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
+
+RUN apt-get update \
+  && apt-get install -y libmunge-dev libmunge2 slurm-wlm
+
+RUN rm /etc/munge/munge.key
+  
+RUN chmod 777 /var/spool/ \
+  && mkdir /var/spool/slurmstate \
+  && chown slurm:slurm /var/spool/slurmstate/ \
+  && ln -s /var/lib/slurm-llnl /var/lib/slurm \
+  && /usr/sbin/mungekey \
+  && mkdir -p /var/log/slurm
+
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 # start services when running container...

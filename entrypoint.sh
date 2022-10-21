@@ -1,6 +1,8 @@
 #!/bin/bash
 cp /gbsappui/slurm.conf  /etc/slurm/
+sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
 cp /gbsappui/config.sh  /GBSapp/examples/proj/
+chown 106 /etc/munge/munge.key
 /etc/init.d/munge start
 /etc/init.d/slurmctld start
 /etc/init.d/slurmd start

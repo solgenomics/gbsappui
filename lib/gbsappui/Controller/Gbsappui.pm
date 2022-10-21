@@ -12,24 +12,25 @@ BEGIN {extends 'Catalyst::Controller'};
 
 
 #eventually make path below select_ref
-sub upload_fastq:Path('/gbs_analysis') Args(0){
+sub upload_fastq:Path('/submitted_analysis') Args(0){
     my $self=shift;
     my $c=shift;
     my $upload=$c->req->upload("fastq_file");
+    print STDERR "upload is $upload \n";
     #my $tempdir = File::Temp->newdir ();
     #print STDERR "the tempdir is called $tempdir \n";
     #my @files = glob "$source/*";m
     #rcopy_glob("$source/*", $tempdir) or die $!;
     #print STDERR "$source was copied to $tempdir \n";
-    my $projdir = "/project";
+    my $projdir = "/project/";
+    print STDERR "project directory is $projdir \n";
     $projdir=~s/\;//g; #don't allow ; in project directory
-    $upload->copy_to("$projdir/samples/") or die $!;
-    print STDERR "$upload was copied to $projdir/samples \n";
-    #copy($upload,"$tempdir/samples/");
+    $upload->copy_to($projdir."samples") or die $!;
+    print STDERR "$upload was copied to $projdir"."samples \n";
     print STDERR Dumper $upload;
     #$c->session->{projdir}=$projdir;
     #$c->session->{upload}=$upload;
-    $c->stash->{template}="analyze.mas";
+    $c->stash->{template}="submitted.mas";
     #old bits
     #my $size=$upload->size;
     #$c->stash->{size}=$size;
@@ -41,10 +42,10 @@ sub upload_fastq:Path('/gbs_analysis') Args(0){
 #     $c->stash->{template}="analyze.mas";
 # }
 
-sub gbs_analysis:Path('/gbs_analysis') Args(0){
+sub gbs_analysis:Path('/analyze') Args(0){
     my $self=shift;
     my $c=shift;
-    my $projdir = "/project";
+    my $projdir = "/project/";
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
 #    my $gbs_arg = "/gbsappui/gbs_input/";
