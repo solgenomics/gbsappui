@@ -25,6 +25,9 @@
 <br></br>
 <br></br>
 
+<%# ----check login---- %>
+
+
 <%# ----upload fastq---- %>
 
 <div style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-40;font-size:23">

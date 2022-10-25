@@ -10,6 +10,11 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob)
 
 BEGIN {extends 'Catalyst::Controller'};
 
+sub login:Path('/') Args(0){
+    my $self=shift;
+    my $c=shift; 
+    $c->stash->{template}="index.mas";
+}
 
 #eventually make path below select_ref
 sub upload_fastq:Path('/submitted_analysis') Args(0){
@@ -53,6 +58,8 @@ sub gbs_analysis:Path('/analyze') Args(0){
 #    print STDERR Dumper $refchoice;
     $c->stash->{template}="analyze.mas";
 }
+
+
 
 
 

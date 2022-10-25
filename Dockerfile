@@ -64,6 +64,7 @@ RUN apt-get update \
   && apt-get install -y libmunge-dev libmunge2 slurm-wlm
 RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
+RUN cp ./GBSapp/examples/proj/samples/M* /project/samples/
 RUN rm /etc/munge/munge.key
 
 RUN chmod 777 /var/spool/ \
