@@ -8,13 +8,34 @@
         <img src="https://breedbase.org/img/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
         <ul class="nav navbar-nav navbar-right">
           <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-          <button style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
+            <form action="http://localhost:8080/brapi/authorize" method="get">
+            <input type="hidden" name="redirect_uri" value="http://localhost:8090">
+            <button style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
+            </form>
           </span>
         </ul>
       </span>
     </div>
   </div>
 </nav>
+
+<%# function update_login_button() {
+#
+#   jQuery.ajax( {
+#     url: '/ajax/user/login_button_html',
+#     error: function(r) { alert('An error occurred'); },
+#     success: function(r) {
+#       if (r.error) { alert(r.error); }
+#       else {
+#         jQuery('#login_button_html_div').html(r.html);
+#
+#         if (<% $c->config->{require_login} %> == 1 && !r.logged_in) {
+#           jQuery('#site_login_dialog').modal({backdrop: 'static', keyboard: false});
+#         }
+#       }
+#     }
+#   });
+# }%>
 
 <%# ----main page---- %>
 
@@ -27,6 +48,7 @@
 
 <%# ----check login---- %>
 
+<%#  %>
 
 <%# ----upload fastq---- %>
 
