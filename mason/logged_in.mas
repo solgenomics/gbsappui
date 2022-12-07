@@ -1,5 +1,5 @@
 <%# --page actions-- %>
-<onload="/analyze">
+<onload="/logged_in">
 <%args>
 $username
 </%args>
@@ -25,18 +25,52 @@ $username
   </div>
 </nav>
 
+<%# function update_login_button() {
+#
+#   jQuery.ajax( {
+#     url: '/ajax/user/login_button_html',
+#     error: function(r) { alert('An error occurred'); },
+#     success: function(r) {
+#       if (r.error) { alert(r.error); }
+#       else {
+#         jQuery('#login_button_html_div').html(r.html);
+#
+#         if (<% $c->config->{require_login} %> == 1 && !r.logged_in) {
+#           jQuery('#site_login_dialog').modal({backdrop: 'static', keyboard: false});
+#         }
+#       })"
+#     }
+#   });
+# }%>
+
 <%# ----main page---- %>
 
-<%#Progress bar with same main output as slurm file %>
 <center>
-  <span style="position:relative;left:-20;top:75">
-    <img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
-    <br></br>
-    <br></br>
-    <b>Analysis in progress</b>
-  </span>
+<span style="position:relative;left:-20;top:75">
+<img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
+</div>
+<br></br>
+<br></br>
+
+<%# ----check login---- %>
+
+<%#  %>
+
+<%# ----upload fastq---- %>
+
+<div style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-40;font-size:23">
+<span style="position:relative;left:20">
+<b>Upload fastq file:</b>
+</span>
+<span style="position:relative;left:20">
+<form action="/submitted_analysis"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
+    <input type="file" id="fastq_file" name="fastq_file">
+    <span style=""><input type="submit" value="Upload"></span>
+</span>
+</form>
+</div>
+<br></br>
 </center>
-<%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
 
 <%# ----footer---- %>
 

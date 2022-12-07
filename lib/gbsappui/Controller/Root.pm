@@ -55,7 +55,7 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {}
-
+    my $username="success";
 =head1 AUTHOR
 
 root

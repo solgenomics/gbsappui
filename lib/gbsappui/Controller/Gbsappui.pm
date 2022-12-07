@@ -10,16 +10,33 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob)
 
 BEGIN {extends 'Catalyst::Controller'};
 
-sub login:Path('/') Args(0){
+# sub get_username:Path('/') Args(0){
+#     my $self=shift;
+#     my $c=shift;
+#     my $username="success";
+#     print STDERR "username is $username\n";
+#     $c->stash->{template}="index.mas";
+# }
+
+sub index:Path('/') Args(0){
     my $self=shift;
-    my $c=shift; 
+    my $c=shift;
     $c->stash->{template}="index.mas";
+}
+
+sub login:Path('/logged_in') Args(0){
+    my $self=shift;
+    my $c=shift;
+    my $username="success";
+    $c->stash->{username}=$username;
+    $c->stash->{template}="logged_in.mas";
 }
 
 #eventually make path below select_ref
 sub upload_fastq:Path('/submitted_analysis') Args(0){
     my $self=shift;
     my $c=shift;
+    my $username="success";
     my $upload=$c->req->upload("fastq_file");
     print STDERR "upload is $upload \n";
     #my $tempdir = File::Temp->newdir ();
@@ -35,6 +52,7 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     print STDERR Dumper $upload;
     #$c->session->{projdir}=$projdir;
     #$c->session->{upload}=$upload;
+    $c->stash->{username}=$username;
     $c->stash->{template}="submitted.mas";
     #old bits
     #my $size=$upload->size;
@@ -50,12 +68,14 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
 sub gbs_analysis:Path('/analyze') Args(0){
     my $self=shift;
     my $c=shift;
+    my $username="success";
     my $projdir = "/project/";
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
 #    my $gbs_arg = "/gbsappui/gbs_input/";
 #    system("bash", "/GBSapp/GBSapp","$gbs_arg");
 #    print STDERR Dumper $refchoice;
+    $c->stash->{username}=$username;
     $c->stash->{template}="analyze.mas";
 }
 

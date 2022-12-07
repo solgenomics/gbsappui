@@ -1,3 +1,7 @@
+<%# --page actions-- %>
+<onload="/">
+<%args>
+</%args>
 <%# ----header---- %>
 
 <body style="margin:0;padding:0">
@@ -9,7 +13,7 @@
         <ul class="nav navbar-nav navbar-right">
           <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
             <form action="http://localhost:8080/brapi/authorize" method="get">
-            <input type="hidden" name="redirect_uri" value="http://localhost:8090">
+            <input type="hidden" name="redirect_uri" value="http://localhost:8090/logged_in">
             <button style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
             </form>
           </span>
