@@ -14,7 +14,7 @@
           <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
             <form action="http://localhost:8080/brapi/authorize" method="get">
             <input type="hidden" name="redirect_uri" value="http://localhost:8090/logged_in">
-            <button style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
+            <button id="login_button" style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
             </form>
           </span>
         </ul>
@@ -24,21 +24,37 @@
 </nav>
 
 <script>
+
+
+
 function update_login_button() {
 
-   jQuery.ajax( {
-     url: '/user/logged_in',
-     error: function(r) { alert('An error occurred'); },
-    success: function(r) {
-      if (r.error) { alert(r.error); }
-      else {
-        var greeting = 'hi ' + r.first_name + ' ' + r.last_name ;
-        jQuery('#login_button_html_div').html(greeting);
-        }
-      }
+   jQuery('#login_button').click( function() {
+   	jQuery.ajax( {
+	    url : 'localhost:8080/brapi/authorize",
+            data: { redirect_uri : 'localhost:8090/' },
+            error: function(r) { alert('error'); },
+            success: function(r) { 
+               get_user_data();
+            }   
+        });	    
+   });
+
+   function get_user_data() { 
+     jQuery.ajax( {
+       url: '/user/logged_in',
+       error: function(r) { alert('An error occurred'); },
+       success: function(r) {
+         if (r.error) { alert(r.error); }
+           else {
+             var greeting = 'hi ' + r.first_name + ' ' + r.last_name ;
+             jQuery('#login_button_html_div').html(greeting);
+           }
+         }
+       });
     }
-  });
- }
+   
+  }
  </script>
 
 
