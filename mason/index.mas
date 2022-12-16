@@ -23,23 +23,24 @@
   </div>
 </nav>
 
-<%# function update_login_button() {
-#
-#   jQuery.ajax( {
-#     url: '/ajax/user/login_button_html',
-#     error: function(r) { alert('An error occurred'); },
-#     success: function(r) {
-#       if (r.error) { alert(r.error); }
-#       else {
-#         jQuery('#login_button_html_div').html(r.html);
-#
-#         if (<% $c->config->{require_login} %> == 1 && !r.logged_in) {
-#           jQuery('#site_login_dialog').modal({backdrop: 'static', keyboard: false});
-#         }
-#       }
-#     }
-#   });
-# }%>
+<script>
+function update_login_button() {
+
+   jQuery.ajax( {
+     url: '/user/logged_in',
+     error: function(r) { alert('An error occurred'); },
+    success: function(r) {
+      if (r.error) { alert(r.error); }
+      else {
+        var greeting = 'hi ' + r.first_name + ' ' + r.last_name ;
+        jQuery('#login_button_html_div').html(greeting);
+        }
+      }
+    }
+  });
+ }
+ </script>
+
 
 <%# ----main page---- %>
 

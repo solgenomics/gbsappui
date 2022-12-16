@@ -54,7 +54,23 @@ $username
 
 <%# ----check login---- %>
 
-<%#  %>
+<script>
+function update_login_button() {
+
+   jQuery.ajax( {
+     url: '/user/logged_in',
+     error: function(r) { alert('An error occurred'); },
+    success: function(r) {
+      if (r.error) { alert(r.error); }
+      else {
+        var greeting = 'hi ' + r.first_name + ' ' + r.last_name ;
+        jQuery('#login_button_html_div').html(greeting);
+        }
+      }
+    }
+  });
+ }
+ </script>
 
 <%# ----upload fastq---- %>
 
