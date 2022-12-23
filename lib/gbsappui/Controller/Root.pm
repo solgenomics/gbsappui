@@ -33,6 +33,8 @@ sub index :Path :Args(0) {
 
     # Hello World
     #$c->response->body( $c->welcome_message );
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
     $c->stash->{template}="index.mas";
 }
 
