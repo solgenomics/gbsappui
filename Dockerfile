@@ -80,10 +80,8 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN mkdir /gbsappui/root/static/js/
-WORKDIR /gbsappui/root/static/js/
-RUN apt-get install -y npm
-RUN npm install jquery
-WORKDIR /
+RUN cd /gbsappui/root/static/js/
+wget https://code.jquery.com/jquery-3.6.3.min.js
+
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
