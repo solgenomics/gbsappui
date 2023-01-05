@@ -76,12 +76,12 @@ RUN chmod 777 /var/spool/ \
 
 ARG CACHEBUST=0
 #clone GBSApp UI from github
+RUN echo "hello"
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN cd /gbsappui/root/static/js/
-wget https://code.jquery.com/jquery-3.6.3.min.js
+RUN wget https://code.jquery.com/jquery-3.6.3.min.js -P /gbsappui/root/static/js/
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
