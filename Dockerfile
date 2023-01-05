@@ -76,7 +76,6 @@ RUN chmod 777 /var/spool/ \
 
 ARG CACHEBUST=0
 #clone GBSApp UI from github
-RUN echo "hello"
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
