@@ -22,7 +22,8 @@ sub index:Path('/') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     $c->stash->{template}="index.mas";
 }
 
@@ -30,7 +31,8 @@ sub login:Path('/logged_in') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $username="success";
     $c->stash->{username}=$username;
     $c->stash->{template}="logged_in.mas";
@@ -41,7 +43,8 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $username="success";
     my $upload=$c->req->upload("fastq_file");
     print STDERR "upload is $upload \n";
@@ -75,7 +78,8 @@ sub gbs_analysis:Path('/analyze') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $username="success";
     my $projdir = "/project/";
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";

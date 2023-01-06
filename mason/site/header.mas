@@ -18,19 +18,16 @@
 
 <script>
 $(document).ready(function(){
+    jQuery.ajax( {
+        url : 'http://localhost:8080/user/logged_in'
+   }).done(function(r){
+       alert(JSON.stringify(r))
+   });
     jQuery('#login_button').on('click', function() {
-    	jQuery.ajax( {
-            url : 'http://localhost:8080/brapi/authorize',
-            data: { redirect_uri : 'localhost:8090/' },
-            error: function() { alert('error'); },
-            success: function() {
-               get_user_data();
-            }
-        });
+        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090';
     });
 
     function get_user_data() {
-        alert("this worked")
      }
 });
  </script>
