@@ -1,56 +1,20 @@
 <%# --page actions-- %>
 <onload="/analyze">
 <%args>
-$username
+$user_name
 </%args>
 
 <%# ----header---- %>
 
-<body style="margin:0;padding:0">
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <span style="max-height:50px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; top:0;padding:0">
-        <img src="https://breedbase.org/img/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
-        <ul class="nav navbar-nav navbar-right">
-          <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-            <form action="http://localhost:8080/brapi/authorize" method="get">
-            <input type="hidden" name="redirect_uri" value="http://localhost:8090/logged_in">
-            <button style="position:relative;top:-15px;right:-80px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:5px;width:110;height:35;font-family:Helvetica;font-size:11pt;"><%$username%></button>
-            </form>
-          </span>
-        </ul>
-      </span>
-    </div>
-  </div>
-</nav>
+<& /site/header.mas &>
 
 <%# ----main page---- %>
 
+<& /site/main.mas &>
+
 <%#Progress bar with same main output as slurm file %>
-<center>
-  <span style="position:relative;left:-20;top:75">
-    <img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
-    <br></br>
-    <br></br>
-    <b>Analysis in progress</b>
-  </span>
-</center>
 <%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
 
 <%# ----footer---- %>
 
-<div id="pagefooter" class="navbar navbar-default" >
-<br />
-  <div class="container-fluid">
-      <div class="row">
-          <div id="pagefooter">
-            <span style="min-height:200px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; left:0;bottom:0;padding:0">
-            <br />
-              <span style="font-face:arial;font-size:10pt;color:darkgreen;font-weight:light;position:relative;left:7;">BREE<b>DB</b>ASE</span> <span style="position:relative;left:7;"> is located at the <a href="https://btiscience.org">Boyce Thompson Institute.</a></span><br />
-              <a href="https://btiscience.org"><img src="https://cassavabase.org/static/img/bti_logo_2016.png" width="200" style="position:relative;left:7;"></a>
-          </div>
-        </div>
-    </div>
-  </div>
-</body>
+<& /site/footer.mas &>

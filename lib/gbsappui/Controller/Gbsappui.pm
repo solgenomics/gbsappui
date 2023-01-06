@@ -10,11 +10,11 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob)
 
 BEGIN {extends 'Catalyst::Controller'};
 
-# sub get_username:Path('/') Args(0){
+# sub get_user_name:Path('/') Args(0){
 #     my $self=shift;
 #     my $c=shift;
-#     my $username="success";
-#     print STDERR "username is $username\n";
+#     my $user_name="success";
+#     print STDERR "user_name is $user_name\n";
 #     $c->stash->{template}="index.mas";
 # }
 
@@ -33,8 +33,8 @@ sub login:Path('/logged_in') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $username="success";
-    $c->stash->{username}=$username;
+    my $user_name="success";
+    $c->stash->{user_name}=$user_name;
     $c->stash->{template}="logged_in.mas";
 }
 
@@ -45,7 +45,7 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $username="success";
+    my $user_name="success";
     my $upload=$c->req->upload("fastq_file");
     print STDERR "upload is $upload \n";
     #my $tempdir = File::Temp->newdir ();
@@ -61,7 +61,7 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     print STDERR Dumper $upload;
     #$c->session->{projdir}=$projdir;
     #$c->session->{upload}=$upload;
-    $c->stash->{username}=$username;
+    $c->stash->{user_name}=$user_name;
     $c->stash->{template}="submitted.mas";
     #old bits
     #my $size=$upload->size;
@@ -80,14 +80,14 @@ sub gbs_analysis:Path('/analyze') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $username="success";
+    my $user_name="success";
     my $projdir = "/project/";
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
 #    my $gbs_arg = "/gbsappui/gbs_input/";
 #    system("bash", "/GBSapp/GBSapp","$gbs_arg");
 #    print STDERR Dumper $refchoice;
-    $c->stash->{username}=$username;
+    $c->stash->{user_name}=$user_name;
     $c->stash->{template}="analyze.mas";
 }
 
