@@ -74,16 +74,14 @@ RUN chmod 777 /var/spool/ \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm
 
-#Don't use cache if the github repository has been updated. Need to use "--build-arg CACHEBUST=`git rev-parse ${GITHUB_REF}`" in "Docker build" command for this to work
+#Don't use cache if the github repository has been updated.
 ARG CACHEBUST=0
-#clone GBSApp UI from github
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-WORKDIR gbsappui/root/static/js/
-RUN adduser --disabled-password --gecos "" -u 1250 devel && chown -R devel /gbsappui/
-RUN apt-get update && apt-get install -y npm && cd /gbsappui/root/static/js/ && npm install jquery && npm install js-cookie
+WORKDIR /gbsappui/
+RUN cd /gbsappui/
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
