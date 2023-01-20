@@ -3,6 +3,7 @@ FROM debian:bullseye
 #
 EXPOSE 8080
 
+#To build with this Dockerfile run 'docker build . -t gbsappui_docker --build-arg CACHEBUST=`git rev-parse main` && ./devel/run_docker.sh'
 # create directory layout
 RUN mkdir /var/log/gbsappui
 
