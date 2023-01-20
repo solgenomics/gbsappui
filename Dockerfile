@@ -74,6 +74,8 @@ RUN chmod 777 /var/spool/ \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm
 
+#Don't use cache if the github repository has been updated. Need to use "--build-arg CACHEBUST=`git rev-parse ${GITHUB_REF}`" in "Docker build" command for this to work
+ARG CACHEBUST=0
 #clone GBSApp UI from github
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
