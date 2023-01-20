@@ -75,7 +75,7 @@ RUN chmod 777 /var/spool/ \
   && mkdir -p /var/log/slurm
 
 #Don't use cache if the github repository has been updated.
-ARG CACHEBUST=0
+ARG CACHEBUST
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
