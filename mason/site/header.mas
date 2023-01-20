@@ -1,4 +1,5 @@
-<head><script type='text/javascript' src="/static/js/jquery-3.6.3.min.js"></script></head>
+<head><script type='text/javascript' src="/usr/share/node_modules/jquery/src/jquery.js"></script></head>
+// <script src="/path/to/jquery.cookie.js"></script>
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
@@ -19,15 +20,16 @@
 <script>
 $(document).ready(function(){
     jQuery.ajax( {
-        url : 'http://localhost:8080/user/logged_in'
+        url : 'http://localhost:8080/user/logged_in',
+        dataType : 'json',
    }).done(function(r){
-       alert(JSON.stringify(r))
+       alert(JSON.stringify(r));
+       alert(document.cookie);
    });
     jQuery('#login_button').on('click', function() {
-        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090';
+        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/';
     });
-
-    function get_user_data() {
-     }
+//    function get_user_data() {
+//     }
 });
  </script>

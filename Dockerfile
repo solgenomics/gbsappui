@@ -74,13 +74,14 @@ RUN chmod 777 /var/spool/ \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm
 
-ARG CACHEBUST=0
 #clone GBSApp UI from github
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN wget https://code.jquery.com/jquery-3.6.3.min.js -P /gbsappui/root/static/js/
+WORKDIR gbsappui/root/static/js/
+RUN adduser --disabled-password --gecos "" -u 1250 devel && chown -R devel /gbsappui/
+RUN apt-get update && apt-get install -y npm && cd /gbsappui/root/static/js/ && npm install jquery && npm install js-cookie
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
