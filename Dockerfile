@@ -82,8 +82,5 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-WORKDIR /gbsappui/
-RUN cd /gbsappui/
-
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,5 +1,5 @@
-<head><script type='text/javascript' src="/usr/share/node_modules/jquery/src/jquery.js"></script></head>
-// <script src="/path/to/jquery.cookie.js"></script>
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/src/jquery.js"></script></head>
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
