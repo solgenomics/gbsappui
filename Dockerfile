@@ -1,7 +1,7 @@
 FROM debian:bullseye
-# open port 8080
+# open port 8090
 #
-EXPOSE 8080
+EXPOSE 8090
 
 #To build with this Dockerfile run 'docker build . -t gbsappui_docker --build-arg CACHEBUST=`git rev-parse main` && ./devel/run_docker.sh'
 # create directory layout
@@ -76,8 +76,8 @@ RUN chmod 777 /var/spool/ \
   && mkdir -p /var/log/slurm
 
 #Don't use cache if the github repository has been updated.
-ARG CACHEBUST
-RUN echo "$CACHEBUST"
+#ARG CACHEBUST
+#RUN echo "$CACHEBUST"
 RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
