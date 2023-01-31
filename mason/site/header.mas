@@ -1,4 +1,4 @@
-<head><script type='text/javascript' src="/static/js/node_modules/jquery/src/jquery.js"></script></head>
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -18,18 +18,17 @@
 </nav>
 
 <script>
-$(document).ready(function(){
+$( document ).ready(function() {
     jQuery.ajax( {
-        url : 'http://localhost:8080/user/logged_in',
-        dataType : 'json',
-   }).done(function(r){
-       alert(JSON.stringify(r));
-       alert(document.cookie);
-   });
-    jQuery('#login_button').on('click', function() {
-        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/';
+        url : 'http://localhost:8080/user/logged_in'
+    }).done(function(r){
+        var sgn_cookie = Cookies.get('sgn_session_id')
+        alert(JSON.stringify(r))
+        alert(sgn_cookie)
+//        alert(document.cookie);
     });
-//    function get_user_data() {
-//     }
+    jQuery('#login_button').on('click', function(){
+        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/'
+    })
 });
- </script>
+</script>
