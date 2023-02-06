@@ -8,7 +8,7 @@
         <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
         <ul class="nav navbar-nav navbar-right">
           <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-            <button id="login_button" style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
+            <button id="login_button" style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">$username</button>
             </form>
           </span>
         </ul>
@@ -18,17 +18,31 @@
 </nav>
 
 <script>
-$( document ).ready(function() {
-    jQuery.ajax( {
-        url : 'http://localhost:8080/user/logged_in'
+$( document ).ready(function(){
+    var username = [];
+    jQuery.ajax({
+        url : 'http://localhost:8080/user/logged_in',
     }).done(function(r){
         var sgn_cookie = Cookies.get('sgn_session_id')
-        alert(JSON.stringify(r))
-        alert(sgn_cookie)
-//        alert(document.cookie);
+        get_username(sgn_cookie)
     });
     jQuery('#login_button').on('click', function(){
         window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/'
     })
+    function get_username(cookie){
+        jQuery.ajax( {
+            url : 'http://localhost:8080/user/cookie_login/'+cookie,
+            success: function(response){
+                if(response.error){
+                    alert(response.error);
+                    jQuery('#working_modal').modal('hide');
+                    return false;
+                    }
+                const username = response.username;
+                alert(username);
+                return username;
+                }
+            })
+        }
 });
 </script>
