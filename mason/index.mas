@@ -1,9 +1,11 @@
 <%# --page actions-- %>
 <onload="/">
-<%args>
-</%args>
+<%# <%args>
+# $username
+# </%args>%>
 <%# ----header---- %>
 
+<%# & /site/header.mas, username=>$username &>%>
 <& /site/header.mas &>
 
 <%# ----main page---- %>

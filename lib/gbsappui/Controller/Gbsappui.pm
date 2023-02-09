@@ -13,19 +13,22 @@ BEGIN {extends 'Catalyst::Controller'};
 # sub get_user_name:Path('/') Args(0){
 #     my $self=shift;
 #     my $c=shift;
-#     my $user_name="success";
-#     print STDERR "user_name is $user_name\n";
+#     my $username="success";
+#     print STDERR "username is $username\n";
 #     $c->stash->{template}="index.mas";
 # }
 
-sub index:Path('/') Args(0){
-    my $self=shift;
-    my $c=shift;
-    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    $c->stash->{template}="index.mas";
-}
+# sub index:Path('/') Args(0){
+#     my $self=shift;
+#     my $c=shift;
+#     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+# 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+# 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+# #    my $username=$c->req->param('username');
+#     my $username="success";
+#     $c->stash->{username};
+#     $c->stash->{template}="index.mas";
+# }
 
 sub login:Path('/logged_in') Args(0){
     my $self=shift;
@@ -33,8 +36,6 @@ sub login:Path('/logged_in') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $user_name="success";
-    $c->stash->{user_name}=$user_name;
     $c->stash->{template}="logged_in.mas";
 }
 
@@ -45,7 +46,7 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $user_name="success";
+    my $username="success";
     my $upload=$c->req->upload("fastq_file");
     print STDERR "upload is $upload \n";
     #my $tempdir = File::Temp->newdir ();
@@ -61,7 +62,6 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     print STDERR Dumper $upload;
     #$c->session->{projdir}=$projdir;
     #$c->session->{upload}=$upload;
-    $c->stash->{user_name}=$user_name;
     $c->stash->{template}="submitted.mas";
     #old bits
     #my $size=$upload->size;
@@ -80,14 +80,14 @@ sub gbs_analysis:Path('/analyze') Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $user_name="success";
+    my $username="success";
     my $projdir = "/project/";
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
 #    my $gbs_arg = "/gbsappui/gbs_input/";
 #    system("bash", "/GBSapp/GBSapp","$gbs_arg");
 #    print STDERR Dumper $refchoice;
-    $c->stash->{user_name}=$user_name;
+    $c->stash->{username}=$username;
     $c->stash->{template}="analyze.mas";
 }
 

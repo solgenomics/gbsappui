@@ -35,6 +35,8 @@ sub index :Path :Args(0) {
     #$c->response->body( $c->welcome_message );
     # $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
     # $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+#    my $username = 'test';
+#    $c->stash->{username} = $username;
     $c->stash->{template}="index.mas";
 }
 
