@@ -8,7 +8,7 @@
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <span style="max-height:50px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; top:0;padding:0">
+      <span style="max-height:50px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute;top:0;padding:0">
         <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
         <ul class="nav navbar-nav navbar-right">
           <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
@@ -42,8 +42,15 @@ $( document ).ready(function(){
                     jQuery('#working_modal').modal('hide');
                     return false;
                     }
-                const username = response.username;
-                $("#login_button").html(username);
+                if(response.username){
+                    let username = response.username;
+                    $("#login_button").html(username);
+                    let buttonwidth = (username.length * 8) + 20;
+                    let buttonlocation = -192 + buttonwidth;
+                    console.log(`location is is ${buttonlocation}`);
+                    $("#login_button").css({"right": buttonlocation + "px", "width": buttonwidth});
+                    console.log($("#login_button"));
+                }
                 }
             })
         }

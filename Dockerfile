@@ -82,5 +82,6 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+RUN mkdir gbsappui/root/static/js && cd gbsappui/root/static/js && apt-get update && apt-get install -y npm && npm install jquery && npm install js-cookie
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
