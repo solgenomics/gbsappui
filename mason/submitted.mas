@@ -1,7 +1,6 @@
 <%# --page actions-- %>
-<onload="/submitted_analysis">
+<onload="/submitted">
 <%args>
-$user_name
 </%args>
 
 <%# ----header---- %>

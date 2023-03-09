@@ -1,7 +1,6 @@
 <%# --page actions-- %>
 <onload="/analyze">
 <%args>
-$user_name
 </%args>
 
 <%# ----header---- %>

@@ -14,7 +14,7 @@
 <b>Upload fastq file:</b>
 </span>
 <span style="position:relative;left:20">
-<form action="/submitted_analysis"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
+<form action="/select_ref"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
     <input type="file" id="fastq_file" name="fastq_file">
     <span style=""><input type="submit" value="Upload"></span>
 </span>

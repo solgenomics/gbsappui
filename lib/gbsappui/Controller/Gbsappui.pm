@@ -40,7 +40,7 @@ sub login:Path('/logged_in') Args(0){
 }
 
 #eventually make path below select_ref
-sub upload_fastq:Path('/submitted_analysis') Args(0){
+sub upload_fastq:Path('/logged_in') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -60,21 +60,21 @@ sub upload_fastq:Path('/submitted_analysis') Args(0){
     $upload->copy_to($projdir."samples") or die $!;
     print STDERR "$upload was copied to $projdir"."samples \n";
     print STDERR Dumper $upload;
-    #$c->session->{projdir}=$projdir;
-    #$c->session->{upload}=$upload;
-    $c->stash->{template}="submitted.mas";
+    $c->session->{projdir}=$projdir;
+    $c->session->{upload}=$upload;
+    $c->stash->{template}="logged_in.mas";
     #old bits
     #my $size=$upload->size;
     #$c->stash->{size}=$size;
 }
 
-# sub select_ref:Path('/gbs_analysis') Args(0){
-#     my $self=shift;
-#     my $c=shift;
-#     $c->stash->{template}="analyze.mas";
-# }
+sub select_ref:Path('/select_ref') Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->stash->{template}="select_ref.mas";
+}
 
-sub gbs_analysis:Path('/analyze') Args(0){
+sub submitted_analysis:Path('/submitted') Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -88,7 +88,7 @@ sub gbs_analysis:Path('/analyze') Args(0){
 #    system("bash", "/GBSapp/GBSapp","$gbs_arg");
 #    print STDERR Dumper $refchoice;
     $c->stash->{username}=$username;
-    $c->stash->{template}="analyze.mas";
+    $c->stash->{template}="submitted.mas";
 }
 
 

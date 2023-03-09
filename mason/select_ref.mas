@@ -1,49 +1,35 @@
 <%args>
 $projdir
+$upload
 </%args>
 <%# ----header---- %>
 
-<body style="margin:0;padding:0">
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <span style="max-height:50px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; top:0;padding:0">
-        <img src="https://breedbase.org/img/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
-        <ul class="nav navbar-nav navbar-right">
-          <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-          <button style="position:relative;top:-15px;right:-132px;margin: 7px 7px 0px 0px;color:white;background-color:#3177b4;border:none;border-radius:3px;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
-          </span>
-        </ul>
-      </span>
-    </div>
-  </div>
-</nav>
+<& /site/header.mas &>
 
 <%# ----main page---- %>
 
-<center>
-<span style="position:relative;left:-20;top:75">
-<img src="https://github.com/solgenomics/gbsappui/blob/main/root/static/images/gbsapp_cropped.PNG?raw=true" width="400" style=  />
-</div>
-<br></br>
-<br></br>
+<& /site/main.mas &>
 
 <%# ----refgenome dropdown menu---- %>
 
 <div style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-58;text-align:center;vertical-align:middle;line-height:3;font-size:23">
-<b><label for="ref-genome" style="align-items:center">Choose a Reference Genome:</label></b>
+<b><label for="ref-genome" style="align-items:center">Choose a reference genome:</label></b>
 <select name="refgenome" id="refgenome">
-<%# option values here drawing from breedbase somehow%>
-<option value="option1">option1</option>
-<option value="option2">option2</option>
-<option value="option3">option3</option>
+<option value="Solanum_lycopersicum">Solanum lycopersicum</option>
+<option value="Solanum_tuberosum">Solanum tuberosum</option>
+<option value="Capsicum_annuum">Capsicum annuum</option>
+<option value="Solanum_pennellii">Solanum pennellii</option>
+<option value="Solanum_lycopersicoides">Solanum lycopersicoides</option>
+<option value="Solanum_melongena">Solanum melongena</option>
+<option value="Solanum_pimpinellifolium">Solanum pimpinellifolium</option>
+<option value="Solanum_lycopersicum_cerasiforme">Solanum lycopersicum cerasiforme</option>
 </select>
 </span>
 </div>
 
 
 <%# ----Submit button---- %>
-<form action="/gbs_analysis">
+<form action="/analyze">
 <input type="hidden" name="projdir" value="<% $projdir %>">
 <div style="position:relative;bottom:20">
 <%#submit button that only un-grays once the above two things have been submitted%>
@@ -57,17 +43,4 @@ $projdir
 
 <%# ----footer---- %>
 
-<div id="pagefooter" class="navbar navbar-default" >
-<br />
-  <div class="container-fluid">
-      <div class="row">
-          <div id="pagefooter">
-            <span style="min-height:200px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; left:0;bottom:0;padding:0">
-            <br />
-              <span style="font-face:arial;font-size:10pt;color:darkgreen;font-weight:light;position:relative;left:7;">BREE<b>DB</b>ASE</span> <span style="position:relative;left:7;"> is located at the <a href="https://btiscience.org">Boyce Thompson Institute.</a></span><br />
-              <a href="https://btiscience.org"><img src="https://cassavabase.org/static/img/bti_logo_2016.png" width="200" style="position:relative;left:7;"></a>
-          </div>
-        </div>
-    </div>
-  </div>
-</body>
+<& /site/footer.mas &>
