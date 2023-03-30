@@ -1,5 +1,5 @@
 <%# --page actions-- %>
-<onload="/submitted">
+
 <%args>
 </%args>
 
@@ -8,8 +8,8 @@
 <& /site/header.mas &>
 
 <%# ----main page---- %>
-
 <& /site/main.mas &>
+
 <%#Progress bar with same main output as slurm file %>
 <%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
 

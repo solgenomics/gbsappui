@@ -20,39 +20,3 @@
     </div>
   </div>
 </nav>
-
-<script>
-$( document ).ready(function(){
-    var username = [];
-    jQuery.ajax({
-        url : 'http://localhost:8080/user/logged_in',
-    }).done(function(r){
-        var sgn_cookie = Cookies.get('sgn_session_id')
-        get_username(sgn_cookie)
-    });
-    jQuery('#login_button').on('click', function(){
-        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/'
-    })
-    function get_username(cookie){
-        jQuery.ajax( {
-            url : 'http://localhost:8080/user/cookie_login/'+cookie,
-            success: function(response){
-                if(response.error){
-                    alert(response.error);
-                    jQuery('#working_modal').modal('hide');
-                    return false;
-                    }
-                if(response.username){
-                    let username = response.username;
-                    $("#login_button").html(username);
-                    let buttonwidth = (username.length * 8) + 20;
-                    let buttonlocation = -192 + buttonwidth;
-                    console.log(`location is is ${buttonlocation}`);
-                    $("#login_button").css({"right": buttonlocation + "px", "width": buttonwidth});
-                    console.log($("#login_button"));
-                }
-                }
-            })
-        }
-});
-</script>
