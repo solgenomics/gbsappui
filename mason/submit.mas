@@ -1,0 +1,23 @@
+<%# --page actions-- %>
+
+<%args>
+</%args>
+
+<%# ----header---- %>
+
+<& /site/header.mas &>
+
+<%# ----main page---- %>
+<center>
+<& /site/main.mas &>
+
+<%# ----submit analysis button---- %>
+<div id="page_function">
+<form action="/analyze">
+<button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200">Submit Analysis</button>
+</form>
+</div>
+</center>
+<%# ----footer---- %>
+
+<& /site/footer.mas &>

@@ -9,13 +9,13 @@ RUN mkdir /var/log/gbsappui
 
 # install system dependencies
 RUN apt-get update
-RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3
+RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm
 #get bcftools
 RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2 && \
 tar -xvf bcftools-1.13.tar.bz2 &&  cd bcftools-1.13; make && \
 rm ../bcftools-1.13.tar.bz2 && \
 cd ..
-#get samtools
+#install samtools
 RUN wget https://sourceforge.net/projects/samtools/files/latest/download && \
 tar -xvjf download* && rm download* && cd samtools* && make && cd ..
 #install picard
@@ -34,7 +34,7 @@ RUN update-ca-certificates && \
 RUN mkdir -p R && \
     cd ./R && \
     R -e 'install.packages("ggplot2", dependencies = TRUE, repos="http://cran.r-project.org", lib="./")'
-RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason
+RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason JSON
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
 #install Emboss
@@ -61,8 +61,6 @@ RUN rm GATK* && \
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
-RUN apt-get update \
-  && apt-get install -y libmunge-dev libmunge2 slurm-wlm
 RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
 RUN cp ./GBSapp/examples/proj/samples/M* /project/samples/

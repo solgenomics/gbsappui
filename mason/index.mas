@@ -24,70 +24,30 @@ $projdir => '/project/'
 <br></br>
 </center>
 
+<center>
+<div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-30;text-align:center;vertical-align:middle;line-height:3;font-size:23">
+
 <%# ----refgenome dropdown menu---- %>
 
-<center>
-<div id="ref_selection" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-30;text-align:center;vertical-align:middle;line-height:3;font-size:23">
+
 <b><label for="ref-genome" style="align-items:center">Choose a reference genome:</label></b>
 <select name="refgenome" id="refgenome">
 <option value="Solanum_lycopersicum">Solanum lycopersicum</option>
 </select>
 </span>
-</div>
 
 
-<%# ----Submit button---- %>
+
+<%# ----Submit refgenome selection button---- %>
 
 <form action="/upload_fastq">
 <input type="hidden" name="projdir" value="<% $projdir %>">
-<div style="position:relative;bottom:20">
-<button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:5; font-size:18" ><b>Select</b></button>
+<button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:-15; font-size:18" ><b>Select</b></button>
 </center>
-</div>
 </form>
 </center>
 
-<script>
-var username;
-$( document ).ready(function(){
-    jQuery.ajax({
-        url : 'http://localhost:8080/user/logged_in',
-    }).done(function(r){
-        var sgn_cookie = Cookies.get('sgn_session_id')
-        get_username(sgn_cookie)
-    });
-    jQuery('#login_button').on('click', function(){
-        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090'
-    })
-    function get_username(cookie){
-        jQuery.ajax( {
-            url : 'http://localhost:8080/user/cookie_login/'+cookie,
-            success: function(response){
-                if(response.error){
-                    alert(response.error);
-                    jQuery('#working_modal').modal('hide');
-                    jQuery("#please_login").hide();
-                    jQuery("#ref_selection").hide();
-                    return false;
-                    }
-                if(response.username){
-                    let username = response.username;
-                    $("#login_button").html(username);
-                    let buttonwidth = (username.length * 8) + 20;
-                    let buttonlocation = -192 + buttonwidth;
-                    $("#login_button").css({"right": buttonlocation + "px", "width": buttonwidth});
-                    jQuery("#please_login").hide();
-                    jQuery("#ref_selection").show();
-                }
-                else {
-                    jQuery("#please_login").show();
-                    jQuery("#ref_selection").hide();
-                }
-            }
-        })
-    }
-});
-</script>
+</div>
 
 <%# ----footer---- %>
 

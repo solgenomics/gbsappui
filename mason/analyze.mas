@@ -8,12 +8,16 @@
 <& /site/header.mas &>
 
 <%# ----main page---- %>
-
+<center>
 <& /site/main.mas &>
-
+<div id="Analysis info" >
+<h2 style="position:relative;left:-10px;bottom:-10px">
+<b> Analysis in Progress </b>
+</h2>
+</div>
 <%#Progress bar with same main output as slurm file %>
 <%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
-
+</center>
 <%# ----footer---- %>
 
 <& /site/footer.mas &>

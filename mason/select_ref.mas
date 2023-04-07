@@ -29,7 +29,7 @@ $upload
 
 
 <%# ----Submit button---- %>
-<form action="/analyze">
+<form action="/submit">
 <input type="hidden" name="projdir" value="<% $projdir %>">
 <div style="position:relative;bottom:20">
 <%#submit button that only un-grays once the above two things have been submitted%>
