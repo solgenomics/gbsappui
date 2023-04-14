@@ -12,11 +12,12 @@ RUN apt-get update
 RUN apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm
 #get bcftools
 RUN wget https://github.com/samtools/bcftools/releases/download/1.13/bcftools-1.13.tar.bz2 && \
-tar -xvf bcftools-1.13.tar.bz2 &&  cd bcftools-1.13; make && \
+tar -xvf bcftools-1.13.tar.bz2 && cd bcftools-1.13 && \
+make && \
 rm ../bcftools-1.13.tar.bz2 && \
 cd ..
 #install samtools
-RUN wget https://sourceforge.net/projects/samtools/files/latest/download && \
+RUN wget https://sourceforge.net/projects/samtools/files/samtools/1.17/samtools-1.17.tar.bz2/download && \
 tar -xvjf download* && rm download* && cd samtools* && make && cd ..
 #install picard
 RUN wget https://github.com/broadinstitute/picard/releases/download/2.25.6/picard.jar
@@ -80,6 +81,8 @@ RUN git clone https://github.com/solgenomics/gbsappui
 RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-RUN mkdir gbsappui/root/static/js && cd gbsappui/root/static/js && apt-get update && apt-get install -y npm && npm install jquery && npm install js-cookie
+RUN cd gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
+RUN cd gbsappui/root/static/js/node_modules/jquery && npm install jquery
+RUN cd gbsappui/root/static/js/node_modules/js-cookie && npm install js-cookie
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
