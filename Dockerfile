@@ -82,7 +82,9 @@ RUN mv ./gbsappui/config.sh /project/
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 RUN cd gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
-RUN cd gbsappui/root/static/js/node_modules/jquery && npm install jquery
-RUN cd gbsappui/root/static/js/node_modules/js-cookie && npm install js-cookie
+RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd .. /js-cookie && npm install js-cookie && mkdir /gbsappui/root/static/js/node_modules/bootstrap && cd /gbsappui/root/static/js/node_modules/bootstrap && npm install bootstrap@3
+#RUN cd gbsappui/root/static/js/node_modules/ && npm install jquery js-cookie bootstrap@3
+#RUN cd gbsappui/root/static/js/node_modules/js-cookie && npm install js-cookie
+#RUN cd /gbsappui/root/static/js/node_modules/ && npm install bootstrap@3
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

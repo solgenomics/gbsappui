@@ -40,26 +40,6 @@ BEGIN {extends 'Catalyst::Controller'};
 #     $c->stash->{template}="login.mas";
 # }
 
-
-
-#maybe unnecessary
-sub select_ref:Path('/') Args(0){
-    my $self=shift;
-    my $c=shift;
-    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-    $c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    #my $refgenome="S_lycopersicum_chromosomes.4.00.fa";
-    my $projdir = "/project/";
-    print STDERR "select ref: project directory is $projdir \n";
-    $projdir=~s/\;//g; #don't allow ; in project directory
-    #$refgenome->copy_to($projdir."refgenomes") or die $!;
-    #print STDERR "$refgenome was copied to $projdir"."refgenomes \n";
-    #print STDERR Dumper $refgenome;
-    #$c->session->{refgenome}=$refgenome;
-    $c->stash->{template}="index.mas";
-}
-
 sub upload_fastq:Path('/upload_fastq') Args(0){
     my $self=shift;
     my $c=shift;

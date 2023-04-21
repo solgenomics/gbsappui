@@ -44,7 +44,7 @@ sub index :Path :Args(0) {
     my $refgenomes = decode_json($refgenomes_json);
     my $files  = $refgenomes->{$referer};
     print STDERR "HERE ARE THE FILES!";
-    print STDERR join ".", @$files;
+#    print STDERR join ".", @$files;
     #make dropdown for refgenome here
     #$c->stash->{refgenome_select}=$refgenome_select;
     $c->stash->{template}="index.mas";

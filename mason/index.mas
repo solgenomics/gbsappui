@@ -25,14 +25,13 @@ $projdir => '/project/'
 </center>
 
 <center>
-<div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:-30;text-align:center;vertical-align:middle;line-height:3;font-size:23">
+<div id="page_function" style="margin:10px;background-color:black;padding-top:10;border:10px double color:white;width:600;height:75;position:relative;top:-30;text-align:center;vertical-align:middle;line-height:3;font-size:23">
 
 <%# ----refgenome dropdown menu---- %>
 
-
-<b><label for="ref-genome" style="align-items:center">Choose a reference genome:</label></b>
-<select name="refgenome" id="refgenome">
-<option value="Solanum_lycopersicum">Solanum lycopersicum</option>
+<b><label for="ref-genome" style="align-items:center;color:white; font-size:20">Choose a reference genome:  </label></b>
+<select name="refgenome" id="refgenome" style="font-size:18">
+<option style="background-color:black" value="Solanum_lycopersicum">Solanum lycopersicum</option>
 </select>
 </span>
 

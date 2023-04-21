@@ -1,13 +1,9 @@
-<div id="pagefooter" class="navbar" >
+<div id="pagefooter" class="navbar navbar-default" style="margin-top:150px;margin-bottom:0px;min-height:100px;position:relative;bottom:0;left:7">
 <br />
   <div class="container-fluid">
       <div class="row">
-          <div id="pagefooter">
-            <span style="min-height:100px;background-color:#f6f6f6;border:1px solid lightgray;width:100%;position:absolute; left:0;bottom:0;padding:0">
-            <br />
-              <span style="font-face:arial;font-size:10pt;color:darkgreen;font-weight:light;position:relative;left:7;">BREE<b>DB</b>ASE</span> <span style="position:relative;left:7;"> is located at the <a href="https://btiscience.org">Boyce Thompson Institute.</a></span><br />
+              <span style="font-face:arial;font-size:10pt;color:darkgreen;font-weight:light;">BREE<b>DB</b>ASE</span> <span style="position:relative;left:7;"> is located at the <a href="https://btiscience.org">Boyce Thompson Institute.</a></span><br />
               <a href="https://btiscience.org"><img src="/static/images/bti_logo_2016.png" width="200" style="position:relative;left:7;"></a>
-          </div>
         </div>
     </div>
   </div>
