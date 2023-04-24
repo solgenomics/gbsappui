@@ -88,7 +88,7 @@ $( document ).ready(function(){
 
       if (answer === true) {
         jQuery.ajax( {
-          url: 'http://localhost:8080/ajax/user/logout',
+          url: 'http://localhost:8080/ajax/user/logout_externally',
           error: function(r) { alert('An error occurred'); },
           success: function(r) {
             if (r.error) { alert(r.error); }
