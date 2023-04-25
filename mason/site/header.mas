@@ -27,27 +27,28 @@
 </nav>
 
 <script>
-var username;
 $( document ).ready(function(){
-    document.getElementById('page_function').hidden = true
-    document.getElementById('logout_button').hidden = true
     document.getElementById('logout_button').onclick = function() {logout()};
-    let sgn_cookie = '';
-    let username = '';
     jQuery.ajax({
         url : 'http://localhost:8080/user/logged_in',
-    }).done(function(r){
-        sgn_cookie = Cookies.get('sgn_session_id')
-        if (!sgn_cookie) {
-            jQuery("#please_login").show();
-            jQuery("#page_function").hide();
-            jQuery("#logout_button").hide();
+        success: function(response) {
+            console.log(response);
+    //        if (response['user_id'] === 0){
+    //            jQuery("#please_login").show();
+    //            jQuery("#page_function").hide();
+    //            jQuery("#logout_button").hide();
+    //        } else {
+                let sgn_cookie = Cookies.get('sgn_session_id');
+                if (sgn_cookie) {
+                    get_username(sgn_cookie);
+                } else {
+                    jQuery("#please_login").show();
+                    jQuery("#page_function").hide();
+                    jQuery("#logout_button").hide();
+                }
+    //        };
         }
-        else {
-            get_username(sgn_cookie)
-        }
-        return sgn_cookie;
-    });
+    })
 
     jQuery('#login_button').on('click', function(){
         window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090'
@@ -66,7 +67,7 @@ $( document ).ready(function(){
                     return false;
                     }
                 if(response.username){
-                    username = response.username;
+                    let username = response.username;
                     $("#login_button").html(username);
                     let buttonwidth = (username.length * 8) + 20;
                     let buttonlocation = -112 + buttonwidth;
@@ -93,7 +94,7 @@ $( document ).ready(function(){
           success: function(r) {
             if (r.error) { alert(r.error); }
             else {
-
+                console.log(r);
             }
           }
         });
