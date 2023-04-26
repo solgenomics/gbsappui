@@ -38,7 +38,7 @@ $( document ).ready(function(){
     //            jQuery("#page_function").hide();
     //            jQuery("#logout_button").hide();
     //        } else {
-                let sgn_cookie = Cookies.get('sgn_session_id');
+                sgn_cookie = Cookies.get('sgn_session_id');
                 if (sgn_cookie) {
                     get_username(sgn_cookie);
                 } else {
