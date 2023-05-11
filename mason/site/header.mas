@@ -28,31 +28,25 @@
 
 <script>
 $( document ).ready(function(){
-    document.getElementById('logout_button').onclick = function() {logout()};
-    jQuery.ajax({
-        url : 'http://localhost:8080/user/logged_in',
-        success: function(response) {
-            console.log(response);
-    //        if (response['user_id'] === 0){
-    //            jQuery("#please_login").show();
-    //            jQuery("#page_function").hide();
-    //            jQuery("#logout_button").hide();
-    //        } else {
-                sgn_cookie = Cookies.get('sgn_session_id');
-                if (sgn_cookie) {
-                    get_username(sgn_cookie);
-                } else {
-                    jQuery("#please_login").show();
-                    jQuery("#page_function").hide();
-                    jQuery("#logout_button").hide();
-                }
-    //        };
-        }
-    })
-
-    jQuery('#login_button').on('click', function(){
-        window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090'
-    })
+  //setup login button
+  jQuery('#login_button').on('click', function(){
+      window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090'
+  })
+    //setup logout button
+  document.getElementById('logout_button').onclick = function() {logout()};
+  //get cookie from sgn
+  sgn_cookie = Cookies.get('sgn_session_id');
+  //check if there's a cookie (if someone is logged in)
+  if (sgn_cookie) {
+      get_username(sgn_cookie);
+      jQuery("#please_login").hide();
+      jQuery("#page_function").show();
+      jQuery("#logout_button").show();
+  } else {
+      jQuery("#please_login").show();
+      jQuery("#page_function").hide();
+      jQuery("#logout_button").hide();
+    }
 
     function get_username(cookie){
         jQuery.ajax( {
@@ -60,7 +54,6 @@ $( document ).ready(function(){
             success: function(response){
                 if(response.error){
                     alert(response.error);
-                    jQuery('#working_modal').modal('hide');
                     jQuery("#please_login").hide();
                     jQuery("#page_function").hide();
                     jQuery("#logout_button").hide();
@@ -84,20 +77,13 @@ $( document ).ready(function(){
             }
         })
     }
+
     function logout() {
       var answer = confirm("Are you sure you want to log out?");
 
       if (answer === true) {
-        jQuery.ajax( {
-          url: 'http://localhost:8080/ajax/user/logout_externally',
-          error: function(r) { alert('An error occurred'); },
-          success: function(r) {
-            if (r.error) { alert(r.error); }
-            else {
-                console.log(r);
-            }
-          }
-        });
+        Cookies.remove('sgn_session_id');
+        window.location.reload();
       }
      }
 

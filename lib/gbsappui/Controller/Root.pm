@@ -31,15 +31,13 @@ The root page (/)
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-
-    # Hello World
     #$c->response->body( $c->welcome_message );
     # $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
     # $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-#    my $username = 'test';
-#    $c->stash->{username} = $username;
     my $referer = $c->req->param("referer") || $c->req->referer || "cassavabase.org";
     my $refgenomes_json = $c->config->{refgenomes};
+    my $projdir = $c->config->{projdir};
+    my $upload = $c->config->{upload};
     print STDERR "Refgenome:".$refgenomes_json."\n";
     my $refgenomes = decode_json($refgenomes_json);
     my $files  = $refgenomes->{$referer};

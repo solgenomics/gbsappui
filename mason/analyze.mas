@@ -11,13 +11,31 @@
 <center>
 <& /site/main.mas &>
 <div id="Analysis info" >
-<h2 style="position:relative;left:-10px;bottom:-10px">
+<h2 style="position:relative;left:-10px;bottom:-10px;color: black">
 <b> Analysis in Progress </b>
 </h2>
 </div>
 <%#Progress bar with same main output as slurm file %>
 <%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
+<div id="page_function">
+<form action="/analyze">
+<button id="cancel_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200">Cancel Analysis</button>
+</form>
+</div>
 </center>
+
+<script>
+$( document ).ready(function(){
+    document.getElementById('cancel_button').onclick = function() {cancel()};
+
+    function cancel() {
+      var answer = confirm("Are you sure you want to cancel the running job?");
+      if (answer === true) {
+          console.log("hello");
+      }
+     }
+});
+</script>
 <%# ----footer---- %>
 
 <& /site/footer.mas &>

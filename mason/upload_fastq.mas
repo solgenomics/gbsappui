@@ -12,7 +12,7 @@ $projdir => '/project/'
 <%# ----upload fastq---- %>
 
 <center>
-<div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:10;font-size:23">
+<div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:175;position:relative;top:10;font-size:23">
 <span style="position:relative;left:20">
 <b>Upload fastq file:</b>
 </span>
