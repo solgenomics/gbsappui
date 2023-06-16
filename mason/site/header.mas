@@ -1,10 +1,11 @@
-<%# <%args>
-#  $username
-# </%args>%>
+<%args>
+</%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
 <link rel="stylesheet" href="/static/js/node_modules/bootstrap/dist/css/bootstrap.min.css">
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -32,10 +33,13 @@ $( document ).ready(function(){
   jQuery('#login_button').on('click', function(){
       window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090'
   })
-    //setup logout button
+
+  //setup logout button
   document.getElementById('logout_button').onclick = function() {logout()};
+
   //get cookie from sgn
   sgn_cookie = Cookies.get('sgn_session_id');
+
   //check if there's a cookie (if someone is logged in)
   if (sgn_cookie) {
       get_username(sgn_cookie);

@@ -1,0 +1,28 @@
+<%# --page actions-- %>
+
+<%args>
+</%args>
+
+<%# ----header---- %>
+
+<& /site/header.mas &>
+
+<%# ----main page---- %>
+<center>
+<& /site/main.mas &>
+<div id="Cancel" >
+<h2 style="position:relative;left:-10px;bottom:-10px;color: black">
+<b> Canceling Analysis now</b>
+</h2>
+</center>
+
+<script>
+// event.preventDefault();
+await new Promise(r => setTimeout(r, 2000));
+location.assign("http://localhost:8090");
+
+</script>
+
+<%# ----footer---- %>
+
+<& /site/footer.mas &>

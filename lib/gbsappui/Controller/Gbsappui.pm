@@ -9,7 +9,6 @@ use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob)
 use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
-
 use JSON;
 
 BEGIN {extends 'Catalyst::Controller'};
@@ -59,7 +58,15 @@ sub analyze:Path('/analyze') : Args(0){
     $c->stash->{template}="analyze.mas";
 }
 
-
+sub cancel:Path('/cancel') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    print STDERR "Canceling analysis \n";
+    my $jobnum="`squeue | tail -1 | `awk '{print $1}'``";
+    print STDERR "canceling JOB num $jobnum \n";
+    `scancel $jobnum`;
+    $c->stash->{template}="cancel.mas";
+}
 
 
 
