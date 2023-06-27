@@ -1,8 +1,8 @@
 <%# --page actions-- %>
 <onload="/upload_fastq">
 <%args>
-$projdir => '/project/'
-</%args>%>
+$projdir
+</%args>
 
 <%# ----header---- %>
 <& /site/header.mas &>

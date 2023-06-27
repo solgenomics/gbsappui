@@ -19,26 +19,24 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $data_dir = "/data/";
+    my $projdir = File::Temp->newdir (DIR => $data_dir);
+    $projdir=~s/\;//g; #don't allow ';' in project directory
+    my $template="/project/";
+    rcopy($template,$projdir) or die $!;
+    #need to add copying refgenome chosen to projdir
+    $c->stash->{projdir} = $projdir;
     $c->stash->{template}="upload_fastq.mas";
 }
 
 sub submit:Path('/submit') : Args(0){
     my $self=shift;
     my $c=shift;
+    my $projdir=$c->req->param("projdir");
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $upload=$c->req->upload("fastq_file");
-    # print STDERR "My fastq file is $upload \n";
-    #remove this and add to docker build
-    `rm /project/samples/*.gz`;
-    #add /data/ to the docker build
-    my $data_dir = "/data/";
-    my $projdir = File::Temp->newdir (DIR => $data_dir);
-    $projdir=~s/\;//g; #don't allow ';' in project directory
-    # print STDERR "project directory is $projdir \n";
-    my $template="/project/";
-    rcopy($template,$projdir) or die $!;
     $upload->copy_to($projdir."/samples");
     $c->stash->{projdir} = $projdir;
     $c->stash->{template} = "submit.mas";

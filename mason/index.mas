@@ -1,7 +1,6 @@
 <%# --page actions-- %>
 <onload="/">
 <%args>
-$refgenomes
 </%args>
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
 
@@ -63,10 +62,6 @@ $( document ).ready(function(){
         <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">
           <option style="background-color:black" value="cassava">CassavaBase</option>
           <option style="background-color:black" value="musa">MusaBase</option>
-          <option style="background-color:black" value="rice">RiceBase</option>
-          <option style="background-color:black" value="barley">Triticeae Toolbox: Barley</option>
-          <option style="background-color:black" value="oat">Triticeae Toolbox: Oat</option>
-          <option style="background-color:black" value="wheat">Triticeae Toolbox: Wheat</option>
           <option style="background-color:black" value="sgn">Sol Genomics Network</option>
           <option style="background-color:black" value="sp">SweetPotatoBase</option>
           <option style="background-color:black" value="yam">YamBase</option>
@@ -90,65 +85,47 @@ $( document ).ready(function(){
   <%# ----Choose refgenome dropdown---- %>
 
     <div id="refgenome_dropdown_all">
-      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:600; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>
+      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>
 
       <div id="refgenome_cassava">
         <select type="hidden" name="refgenome_dropdown_cassava" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$cass_v7">Cassava Version 7</option>
-          <option style="background-color:black" value="$cass_v8">Cassava Version 8</option>
+          <option style="background-color:black" value="$cass_v8">Manihot Esculenta (Cassava) Version 8</option>
         </select>
       </div>
 
       <div id="refgenome_musa">
         <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$banana">Banana Genome</option>
-        </select>
-      </div>
-
-      <div id="refgenome_rice">
-        <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$rice">Rice Genome</option>
-        </select>
-      </div>
-
-      <div id="refgenome_barley">
-        <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$barley">Barley Genome</option>
-        </select>
-      </div>
-
-      <div id="refgenome_oat">
-        <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$oat">Oat Genome</option>
-        </select>
-      </div>
-
-      <div id="refgenome_wheat">
-        <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$wheat">Wheat Genome</option>
+          <option style="background-color:black" value="$banana">Musa Acuminata Malaccensis (Banana) Version 2</option>
         </select>
       </div>
 
       <div id="refgenome_sgn">
         <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$tomato">Solanum Lycopersicum</option>
-          <option style="background-color:black" value="$potato">Solanum Tuberosum</option>
+          <option style="background-color:black" value="$tomato">Capsicum Annuum Dempsey (Bell Pepper)</option>
+          <option style="background-color:black" value="$tomato">Solanum Lycopersicum (Tomato) Version 4</option>
+          <option style="background-color:black" value="$tomato">Solanum Melongena (Eggplant) Version 4.1</option>
+          <option style="background-color:black" value="$potato">Solanum Tuberosum (Potato) Version 6.1</option>
         </select>
       </div>
 
       <div id="refgenome_sp">
         <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$sp">Sweet Potato Genome</option>
+          <option style="background-color:black" value="$sp">Ipomoea Batatas (Sweet Potato)</option>
+          <option style="background-color:black" value="$sp">Ipomoea Trifida (Threefork Morning Glory)</option>
+          <option style="background-color:black" value="$sp">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
         </select>
       </div>
 
       <div id="refgenome_yam">
         <select type="hidden" name="refgenome_dropdown_sol" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="$yam">Yam Genome</option>
+          <option style="background-color:black" value="$yam">Dioscorea Alata (Yam) Version 2.1</option>
         </select>
       </div>
 
+      <%# ----Upload reference genome---- %>
 
+      <div id="upload_ref">
+      </div>
 
       <%# ----Submit refgenome selection button---- %>
 

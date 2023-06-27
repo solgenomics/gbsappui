@@ -32,21 +32,6 @@ The root page (/)
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-    my $referer = $c->req->param("referer") || $c->req->referer || "cassavabase.org";
-    my $refgenomes_json = $c->config->{refgenomes_json};
-    #my $projdir = $c->config->{projdir};
-#    my $upload = $c->config->{upload};
-    print STDERR "Refgenomes json:".$refgenomes_json."\n";
-    my $refgenomes = decode_json($refgenomes_json);
-    #my $cassavabase = (@{$refgenomes{'cassavabase'}});
-    # my @refgenomes = @$refgenomes;
-    # print STDERR "cassavabase is ".Dumper $cassavabase."\n";
-    print STDERR "Decoded refgenomes:".Dumper $refgenomes;
-    # my $files  = $refgenomes->{$referer};
-    # print STDERR "HERE ARE THE FILES!";
-#    print STDERR join ".", @$files;
-    #make dropdown for refgenome here or in mason file
-    $c->stash->{refgenomes}=$refgenomes;
     $c->stash->{template}="index.mas";
 }
 
