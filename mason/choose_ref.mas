@@ -1,0 +1,109 @@
+<%# --page actions-- %>
+<onload="/choose_ref">
+<%args>
+</%args>
+
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+//variables
+var domain;
+var instance;
+var chosen_ref;
+
+//functions
+function refgenome_choose() {
+//works `refgenome_`+instance
+    chosen_ref = ref_dropdown.options[ref_dropdown.selectedIndex].value;
+//  `refgenome_${instance}`.options[`refgenome_${instance}`.selectedIndex].value;
+    console.log(`chosen ref is ${chosen_ref}`);
+    window.location.href = 'http://localhost:8090/upload_fastq/';
+}
+
+//displaying refgenomes of chosen instance
+$( document ).ready(function(){
+    domain = localStorage.getItem("gbs_domain");
+    instance = localStorage.getItem("gbs_instance");
+    jQuery(`#refgenome_${instance}`).show();
+    ref_dropdown = document.getElementById(`${instance}`);
+});
+
+</script>
+
+<%# ----header---- %>
+
+<& /site/header.mas &>
+
+<%# ----logo---- %>
+
+<& /site/main.mas &>
+
+<center>
+
+<%# ----main page---- %>
+
+<div id="page_function">
+<%# ----refgenome dropdown menu---- %>
+
+  <%# ----Choose refgenome dropdown---- %>
+
+    <div id="refgenome_dropdown_all">
+      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>
+
+      <div id="refgenome_cassava" hidden>
+        <select id="cassava" style="font-size:18;position:relative;top:-60;right:-140">
+          <option style="background-color:black" value="$cass_v8">Manihot Esculenta (Cassava) Version 8</option>
+        </select>
+      </div>
+
+      <div id="refgenome_musa" hidden>
+        <select id="musa" style="font-size:18;position:relative;top:-60;right:-140">
+          <option style="background-color:black" value="$banana">Musa Acuminata Malaccensis (Banana) Version 2</option>
+        </select>
+      </div>
+
+      <div id="refgenome_sgn" hidden>
+        <select id="sgn" style="font-size:18;position:relative;top:-60;right:-140">
+          <option style="background-color:black" value="$bell">Capsicum Annuum Dempsey (Bell Pepper)</option>
+          <option style="background-color:black" value="$tomato">Solanum Lycopersicum (Tomato) Version 4</option>
+          <option style="background-color:black" value="$eggplant">Solanum Melongena (Eggplant) Version 4.1</option>
+          <option style="background-color:black" value="$potato">Solanum Tuberosum (Potato) Version 6.1</option>
+        </select>
+      </div>
+
+      <div id="refgenome_sp" hidden>
+        <select id="sp" style="font-size:18;position:relative;top:-60;right:-140">
+          <option style="background-color:black" value="$sp">Ipomoea Batatas (Sweet Potato)</option>
+          <option style="background-color:black" value="$mg">Ipomoea Trifida (Threefork Morning Glory)</option>
+          <option style="background-color:black" value="$little">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
+        </select>
+      </div>
+
+      <div id="refgenome_yam" hidden>
+        <select id="yam" style="font-size:18;position:relative;top:-60;right:-140">
+          <option style="background-color:black" value="$yam">Dioscorea Alata (Yam) Version 2.1</option>
+        </select>
+      </div>
+
+      <%# ----Upload reference genome---- %>
+
+      <div id="upload_ref">
+      </div>
+
+      <%# ----Submit refgenome selection button---- %>
+
+      <%#<input type="hidden" name="projdir" value=$projdir %>
+      <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()" ><b>Select</b></button>
+    </div>
+
+</div>
+</center>
+
+
+
+<%# ----footer---- %>
+
+<& /site/footer.mas &>

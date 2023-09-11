@@ -3,6 +3,13 @@
 <%args>
 </%args>
 
+<script>
+// event.preventDefault();
+await new Promise(r => setTimeout(r, 2000));
+location.assign("http://localhost:8090");
+
+</script>
+
 <%# ----header---- %>
 
 <& /site/header.mas &>
@@ -15,13 +22,6 @@
 <b> Canceling Analysis now</b>
 </h2>
 </center>
-
-<script>
-// event.preventDefault();
-await new Promise(r => setTimeout(r, 2000));
-location.assign("http://localhost:8090");
-
-</script>
 
 <%# ----footer---- %>
 

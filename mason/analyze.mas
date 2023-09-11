@@ -1,7 +1,19 @@
 <%# --page actions-- %>
 
 <%args>
+$projdir
 </%args>
+
+<script>
+    function cancel() {
+       var answer = confirm("Are you sure you want to cancel the running job?");
+       if (answer === true) {
+         alert("canceling job now");
+            event.preventDefault();
+            location.assign("http://localhost:8090/cancel");
+       }
+     }
+</script>
 
 <%# ----header---- %>
 
@@ -23,17 +35,6 @@
 <%# </form> %>
 </div>
 </center>
-
-<script>
-    function cancel() {
-       var answer = confirm("Are you sure you want to cancel the running job?");
-       if (answer === true) {
-         alert("canceling job now");
-            event.preventDefault();
-            location.assign("http://localhost:8090/cancel");
-       }
-     }
-</script>
 
 <%# ----footer---- %>
 

@@ -1,7 +1,6 @@
 <%# --page actions-- %>
 <onload="/upload_fastq">
 <%args>
-$projdir
 </%args>
 
 <%# ----header---- %>
