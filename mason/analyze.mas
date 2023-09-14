@@ -5,14 +5,11 @@ $projdir
 </%args>
 
 <script>
-    function cancel() {
-       var answer = confirm("Are you sure you want to cancel the running job?");
-       if (answer === true) {
-         alert("canceling job now");
-            event.preventDefault();
-            location.assign("http://localhost:8090/cancel");
-       }
-     }
+// function cancel() {
+//     var answer = confirm("");
+//     if (answer === true) {
+//     }
+// }
 </script>
 
 <%# ----header---- %>
@@ -21,19 +18,20 @@ $projdir
 
 <%# ----main page---- %>
 <center>
-<& /site/main.mas &>
-<div id="Analysis info" >
-<h2 style="position:relative;left:-10px;bottom:-10px;color: black">
-<b> Analysis in Progress </b>
-</h2>
-</div>
-<%#Progress bar with same main output as slurm file %>
-<%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
-<div id="page_function">
-<%# <form action="/cancel"> %>
-<button id="cancel_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200" onclick="cancel()">Cancel Analysis</button>
-<%# </form> %>
-</div>
+    <& /site/main.mas &>
+    <div id="Analysis info" >
+        <h2 style="position:relative;left:-10px;bottom:-10px;color: black">
+            <b> Analysis in Progress </b>
+        </h2>
+    </div>
+        <%#Progress bar with same main output as slurm file %>
+        <%#Once done analyzing will email saying "Analysis complete!" with a VCF attached or a link to download the VCF. Perhaps status updates in a browser in the meantime? Or can opt into email updates?%>
+    <div id="page_function">
+        <form action="/cancel">
+            <button id="cancel_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')">Cancel Analysis</button>
+            <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
+        </form>
+    </div>
 </center>
 
 <%# ----footer---- %>

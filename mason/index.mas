@@ -21,13 +21,11 @@ function instance_login_check() {
   instance = inst_dropdown.options[inst_dropdown.selectedIndex].id;
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
-  //add more logic for each instance when fully integrated and not using localhost anymore e.g.  window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  //use below when not using localhost anymore
+  //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+
   //temporarily still just sending it to localhost as don't have permissions for any other places for my localhost
   window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
-  //check if logged into chosen instance for each
-    //if instance
-  // if yes then run refgenome_show for specified instance
-  // if no go to login site for instance and then show refgenome_show
 }
 
 $( document ).ready(function(){

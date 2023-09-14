@@ -1,12 +1,26 @@
 <%# --page actions-- %>
 
 <%args>
+$projdir
 </%args>
 
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
 <script>
-// event.preventDefault();
-await new Promise(r => setTimeout(r, 2000));
-location.assign("http://localhost:8090");
+//functions
+function redirect(){
+    window.location.href="http://localhost:8090";
+}
+
+$( document ).ready(function(){
+    // event.preventDefault();
+    //await new Promise(r => setTimeout(r, 2000));
+    //go back to main page
+    window.setTimeout(redirect, 1000);
+});
 
 </script>
 
@@ -19,7 +33,7 @@ location.assign("http://localhost:8090");
 <& /site/main.mas &>
 <div id="Cancel" >
 <h2 style="position:relative;left:-10px;bottom:-10px;color: black">
-<b> Canceling Analysis now</b>
+<b> Analysis Canceled</b>
 </h2>
 </center>
 

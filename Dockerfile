@@ -84,7 +84,6 @@ RUN rm GATK* && \
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
-RUN cp ./GBSapp/examples/proj/refgenomes/* /project/refgenomes/
 RUN cp ./GBSapp/examples/input_steps.txt /project/
 RUN cp ./GBSapp/examples/proj/samples/M* /project/samples/
 RUN rm /etc/munge/munge.key
