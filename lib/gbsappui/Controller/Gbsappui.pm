@@ -80,10 +80,13 @@ sub analyze:Path('/analyze') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
-    #when finished email
-    #or if error email about error
-    #when finished remove analysis folder
-    #`rm -rf $projdir`;
+    #detect when finished
+    #if finished (test -f ${projdir}/Analysis_Complete)
+        #email fastq file using Mail::Sendmail sendmail() and getting email using username or whatnot
+        #`rm -rf $projdir`;
+    #if stops running (could use squeue)
+        #email error
+        #`rm -rf $projdir`;
     $c->stash->{projdir} = $projdir;
     $c->stash->{template}="analyze.mas";
 }
@@ -98,7 +101,7 @@ sub cancel:Path('/cancel') : Args(0){
     print STDERR "Canceling Job Number $jobnum \n";
     `scancel $jobnum`;
     #remove analysis folder
-    #`rm -rf $projdir`;
+    `rm -rf $projdir`;
     $c->stash->{projdir} = $projdir;
     $c->stash->{template}="cancel.mas";
 }

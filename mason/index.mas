@@ -9,23 +9,24 @@
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <script>
+//in instance choice div below once gbsapp has site permissions replace cassavabase localhost url with:
+// <option style="background-color:black" value="https://cassava-test.sgn.cornell.edu" id="cassava">CassavaBase</option>
 var domain;
 var instance;
 var inst_dropdown;
 
 //functions
-
 //checking if logged into chosen instance
 function instance_login_check() {
   domain = inst_dropdown.options[inst_dropdown.selectedIndex].value;
   instance = inst_dropdown.options[inst_dropdown.selectedIndex].id;
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
-  //use below when not using localhost anymore
-  //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
 
   //temporarily still just sending it to localhost as don't have permissions for any other places for my localhost
-  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  //use below when not using localhost anymore
+  //  window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';;
 }
 
 $( document ).ready(function(){
@@ -55,11 +56,11 @@ $( document ).ready(function(){
 
       <div id="instance">
         <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="https://cassava-test.sgn.cornell.edu" id="cassava">CassavaBase</option>
-          <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
-          <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
-          <option style="background-color:black" value="https://sweetpotatobase.org" id="sp">SweetPotatoBase</option>
-          <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
+        <option style="background-color:black" value="http://cassavabase.org" id="cassava">CassavaBase</option>
+        <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
+        <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
+        <option style="background-color:black" value="http://localhost:8080" id="sp">SweetPotatoBase</option>
+        <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
         </select>
       </div>
 
