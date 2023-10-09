@@ -10,6 +10,7 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
+use Email::Sender::Simple;
 
 BEGIN {extends 'Catalyst::Controller'};
 
@@ -73,6 +74,9 @@ sub analyze:Path('/analyze') : Args(0){
     my $self=shift;
     my $c=shift;
     my $projdir=$c->req->param('projdir');
+#    my $beagle=$c->req->param('beagle');
+#    my $analysis_ref_path=$projdir."/refgenomes/*fasta*";
+#    print STDERR "current analysis refgenome location is $analysis_ref_path \n";
     $projdir=$projdir."/";
     print STDERR "projdir is $projdir \n";
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -80,14 +84,33 @@ sub analyze:Path('/analyze') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
-    #detect when finished
-    #if finished (test -f ${projdir}/Analysis_Complete)
-        #email fastq file using Mail::Sendmail sendmail() and getting email using username or whatnot
-        #`rm -rf $projdir`;
-    #if stops running (could use squeue)
-        #email error
-        #`rm -rf $projdir`;
+
+    #detect when analysis complete
+        #when ($projdir/Analysis_Complete){ #check when syntax...
+            #if Beagle option is checked run beagle afteranalysis is complete
+            #email vcf file using Mail::Sendmail sendmail() and getting email using username or whatnot
+            # if ($beagle==1) {
+                #$gbs_output=$projdir."*vcf*"; #probably need a more specific name here
+                #$beagle_output=$projdir."out.ref"
+                #`java -jar /beagle/beagle.*.jar ref=$analysis_ref_path gt=$gbs_output out=$beagle_output` or die "Couldn't run Beagle on completed gbs analysis: $!\n";
+                #when ($beagle_output) {
+                    #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
+                #}
+            # }
+            #`rm -rf $projdir`;
+        #}
+
+    #get jobnum for error detection
+        #my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`;
+
+    #detect error
+        #if (! ((`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`) = ($projdir)) {
+            #email error
+            #`rm -rf $projdir`;
+        #}
+
     $c->stash->{projdir} = $projdir;
+    #$c->stash->{jobnum} = $jobnum;
     $c->stash->{template}="analyze.mas";
 }
 
@@ -96,18 +119,18 @@ sub cancel:Path('/cancel') : Args(0){
     my $c=shift;
     my $projdir=$c->req->param('projdir');
     #get job number
+    #my $jobnum=$c->req->param('jobnum') #if analyze jobnum code is integrated
     my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`;
     #cancel job number
     print STDERR "Canceling Job Number $jobnum \n";
     `scancel $jobnum`;
+    #eventually prompt: discard analysis or would you like to return to it later?
+    #eventually option to rerun/start where left off
     #remove analysis folder
     `rm -rf $projdir`;
     $c->stash->{projdir} = $projdir;
     $c->stash->{template}="cancel.mas";
 }
-
-
-
 
 
 

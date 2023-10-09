@@ -1,6 +1,6 @@
 #General_parameters
 ###################################################
-threads=1
+threads=16
 walkaway=true
 cluster=true
 nodes=1
@@ -9,14 +9,16 @@ lib_type=RRS
 
 #Variantcalling
 ###################################################
-ploidy=4
+ploidy=2
 ref1=TF.fasta
-Get_Chromosome=TF_Chr01
 
 #SNP-filtering:
 ####################################################
-p1=M9
-p2=M19
+p1=Beauregard
+p2=Tanzania
+genotype_missingness=0.1,0.2,0.3
+sample_missingness=0.1,0.2,0.3
+minRD_2x=6
 
 #Advanced_parameters
 ###################################################

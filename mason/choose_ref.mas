@@ -67,7 +67,7 @@ $( document ).ready(function(){
 
       <div id="refgenome_cassava" hidden>
         <select id="cassava" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="manihot_esculenta_v8.0.fa.gz">Manihot Esculenta (Cassava) Version 8</option>
+          <option style="background-color:black" value="manihot_esculenta_v8.0.fasta.gz">Manihot Esculenta (Cassava) Version 8</option>
         </select>
       </div>
 
@@ -80,23 +80,23 @@ $( document ).ready(function(){
       <div id="refgenome_sgn" hidden>
         <select id="sgn" style="font-size:18;position:relative;top:-60;right:-140">
           <option style="background-color:black" value="c_annuum_dempsey.fasta.gz">Capsicum Annuum Dempsey (Bell Pepper)</option>
-          <option style="background-color:black" value="solanum_lycopersicum_v4.fa.gz">Solanum Lycopersicum (Tomato) Version 4</option>
-          <option style="background-color:black" value="solanum_melongena_v4.1.fa.gz">Solanum Melongena (Eggplant) Version 4.1</option>
-          <option style="background-color:black" value="solanum_tuberosum_.v6.1.fa.gz">Solanum Tuberosum (Potato) Version 6.1</option>
+          <option style="background-color:black" value="solanum_lycopersicum_v4.fasta.gz">Solanum Lycopersicum (Tomato) Version 4</option>
+          <option style="background-color:black" value="solanum_melongena_v4.1.fasta.gz">Solanum Melongena (Eggplant) Version 4.1</option>
+          <option style="background-color:black" value="solanum_tuberosum_.v6.1.fasta.gz">Solanum Tuberosum (Potato) Version 6.1</option>
         </select>
       </div>
 
       <div id="refgenome_sp" hidden>
         <select id="sp" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="ipomoea_batatas.fna.gz">Ipomoea Batatas (Sweet Potato)</option>
-          <option style="background-color:black" value="ipomoea_trifida_v1.fna.gz">Ipomoea Trifida (Threefork Morning Glory)</option>
-          <option style="background-color:black" value="ipomoea_triloba_v1.fna.gz">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
+          <option style="background-color:black" value="ipomoea_batatas.fasta.gz">Ipomoea Batatas (Sweet Potato)</option>
+          <option style="background-color:black" value="TF.fasta">Ipomoea Trifida (Threefork Morning Glory)</option>
+          <option style="background-color:black" value="ipomoea_triloba_v1.fasta.gz">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
         </select>
       </div>
 
       <div id="refgenome_yam" hidden>
         <select id="yam" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="dioscorea_alata_v2.1.fa.gz">Dioscorea Alata (Yam) Version 2.1</option>
+          <option style="background-color:black" value="dioscorea_alata_v2.1.fasta.gz">Dioscorea Alata (Yam) Version 2.1</option>
         </select>
       </div>
 
