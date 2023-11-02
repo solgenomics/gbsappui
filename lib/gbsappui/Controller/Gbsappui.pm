@@ -10,7 +10,7 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
-use Email::Sender::Simple;
+use Email::Stuffer;
 
 BEGIN {extends 'Catalyst::Controller'};
 
@@ -21,6 +21,25 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path = "nopath";
+    #testing out email stuffer
+    # Prepare the message
+    my $body = "Dear friend
+
+    here is a test email.
+    test email.
+    enjoy.
+
+    me
+
+    ME";
+
+    # Create and send the email in one shot
+    (Email::Stuffer->from     ('amberlockrow@gmail.com'             )
+                  ->to       ('amberlockrow@gmail.com'     )
+    #
+                  ->text_body($body                     )
+    #              ->attach_file('attachment.gif' )
+                  ->send) or die $!;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template}="choose_ref.mas";
 }
@@ -84,9 +103,8 @@ sub analyze:Path('/analyze') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
-
     #detect when analysis complete
-        #when ($projdir/Analysis_Complete){ #check when syntax...
+        #when ($projdir/Analysis_Complete){ #check when syntax...also need to check whether it actually ran successfully or not; analysis complete happens if it's failed or not anyway
             #if Beagle option is checked run beagle afteranalysis is complete
             #email vcf file using Mail::Sendmail sendmail() and getting email using username or whatnot
             # if ($beagle==1) {
