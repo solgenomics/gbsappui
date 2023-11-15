@@ -21,30 +21,41 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path = "nopath";
-    #testing out email stuffer
-    # Prepare the message
-    my $body = "Dear friend
-
-    here is a test email.
-    test email.
-    enjoy.
-
-    me
-
-    ME";
-
-    # Create and send the email in one shot
-    (Email::Stuffer->from     ('amberlockrow@gmail.com'             )
-                  ->to       ('amberlockrow@gmail.com'     )
+    # #testing out email stuffer
+    # # Prepare the message
+    # my $body = "Dear friend
     #
-                  ->text_body($body                     )
-    #              ->attach_file('attachment.gif' )
-                  ->send) or die $!;
+    # here is a test email.
+    # test email.
+    # enjoy.
+    #
+    # me
+    #
+    # ME";
+    #
+    # # Create and send the email in one shot
+    # (Email::Stuffer->from     ('amberlockrow@gmail.com'             )
+    #               ->to       ('amberlockrow@gmail.com'     )
+    # #
+    #               ->text_body($body                     )
+    # #              ->attach_file('attachment.gif' )
+    #               ->send) or die $!;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template}="choose_ref.mas";
 }
 
 sub upload_fastq:Path('/upload_fastq') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $ref_path=$c->req->param('ref_path');
+    $c->stash->{ref_path} = $ref_path;
+    $c->stash->{template}="upload_fastq.mas";
+}
+
+sub biparental:Path('/biparental') : Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -72,18 +83,11 @@ sub submit:Path('/submit') : Args(0){
     print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
     rcopy($ref_path,$projdir."/refgenomes/") or die $!;
     my $upload=$c->req->upload("fastq_file");
-    # my $creq=$c->req;
     print STDERR "projdir is \n";
     print STDERR Dumper $projdir;
-    # print STDERR "c req is \n";
-    # print STDERR Dumper $creq;
-    # print STDERR "fastq is \n";
-    # print STDERR Dumper $upload;
-#    my $chosen_ref=$c->req->param('chosen_ref');
-#    print STDERR Dumper $chosen_ref;
     print STDERR "upload is $upload \n";
     $upload->copy_to($projdir."/samples/");
-#    $chosen_ref->copy_to($projdir."/refgenomes");
+    #if it's biparental copy it here
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template} = "submit.mas";

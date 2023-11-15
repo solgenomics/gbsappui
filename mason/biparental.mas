@@ -1,0 +1,37 @@
+<%# --page actions-- %>
+<%#onload="/upload_fastq"%>
+<%args>
+$ref_path
+</%args>
+
+<script>
+console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
+</script>
+
+<%# ----header---- %>
+<& /site/header.mas &>
+
+<%# ----main page---- %>
+<& /site/main.mas &>
+
+<%# ----upload fastq---- %>
+<center>
+    <div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:175;position:relative;top:10;font-size:23">
+        <span style="position:relative;left:20">
+            <b>Upload fastq files:</b>
+        </span>
+        <span style="position:relative;left:20">
+            <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
+                <input type="file" id="fastq_file" name="fastq_file" >
+                <span style="">
+                    <input type="submit" value="Upload" />
+                </span>
+                <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+            </form>
+        </span>
+    </div>
+    <br></br>
+</center>
+
+<%# ----footer---- %>
+<& /site/footer.mas &>

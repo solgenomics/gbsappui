@@ -16,19 +16,24 @@ console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
 
 <%# ----upload fastq---- %>
 <center>
-    <div id="page_function" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:175;position:relative;top:10;font-size:23">
-        <span style="position:relative;left:20">
-            <b>Upload fastq file:</b>
+    <div id="page_function">
+        <span style="position:relative;top:20;color:black;font-size:18">
+                <button action="/biparental" id="bi_check" name="bi_check" style="width:300; height:40" >                 <b>Biparental population</b>
         </span>
-        <span style="position:relative;left:20">
-            <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10">
-                <input type="file" id="fastq_file" name="fastq_file" >
-                <span style="">
-                    <input type="submit" value="Upload" />
-                </span>
-                <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
-            </form>
-        </span>
+        <div id="upload_box" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:175;position:relative;bottom:-20;right:140;font-size:23">
+            <span style="position:relative;left:20">
+                <b>Upload fastq file:</b>
+            </span>
+            <span style="position:relative;left:20">
+                <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative;top:10; left:75">
+                    <input type="file" id="fastq_file" name="fastq_file" >
+                    <span style="position:relative;top:10; right:85">
+                        <input type="submit" value="Upload" />
+                    </span>
+                    <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+                </form>
+            </span>
+        </div>
     </div>
     <br></br>
 </center>
