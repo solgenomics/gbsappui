@@ -63,7 +63,7 @@ sub biparental:Path('/biparental') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path=$c->req->param('ref_path');
     $c->stash->{ref_path} = $ref_path;
-    $c->stash->{template}="upload_fastq.mas";
+    $c->stash->{template}="biparental.mas";
 }
 
 sub submit:Path('/submit') : Args(0){
@@ -82,11 +82,25 @@ sub submit:Path('/submit') : Args(0){
     rcopy($template,$projdir) or die $!;
     print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
     rcopy($ref_path,$projdir."/refgenomes/") or die $!;
-    my $upload=$c->req->upload("fastq_file");
-    print STDERR "projdir is \n";
-    print STDERR Dumper $projdir;
-    print STDERR "upload is $upload \n";
-    $upload->copy_to($projdir."/samples/");
+
+    #fastq file 1
+    my $upload=$c->req->upload("fastq_1");
+    my $tempname=$upload->tempname();
+    my $orig_upload = $upload->filename();
+    print STDERR "orig name is $orig_upload \n";
+    fmove($tempname,$projdir."/samples/".$orig_upload);
+    `chmod 777 $projdir/samples/$orig_upload`;
+
+    #fastq file 2
+    if ($c->req->upload("fastq_2")) {
+        my $upload2=$c->req->upload("fastq_2");
+        my $tempname2=$upload2->tempname();
+        my $orig_upload2 = $upload2->filename();
+        print STDERR "orig name is $orig_upload2 \n";
+        fmove($tempname2,$projdir."/samples/".$orig_upload2);
+        `chmod 777 $projdir/samples/$orig_upload2`;
+    }
+
     #if it's biparental copy it here
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
