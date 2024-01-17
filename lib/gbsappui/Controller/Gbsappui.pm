@@ -10,7 +10,7 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
-use Email::Stuffer;
+#use Email::Stuffer;
 
 BEGIN {extends 'Catalyst::Controller'};
 
@@ -72,36 +72,32 @@ sub submit:Path('/submit') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+
+    #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
-    print STDERR "ref path is $ref_path \n";
     my $data_dir = "/data/";
-    my $projdir_object = File::Temp->newdir (DIR => $data_dir, CLEANUP => 0);
-    $projdir_object=~s/\;//g; #don't allow ';' in project directory
+    my $dirname_template = 'XXXX';
+    my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
+    $projdir_object=~s/\;//g; #don't allow ';' in project directoryuploads
+    $projdir_object=~s/_//g; #don't allow '_' in project directory
     my $projdir = $projdir_object->{DIRNAME};
+    $projdir=~s/\;//g; #don't allow ';' in project directory name
+    $projdir=~s/_//g; #don't allow '_' in project directory name
     my $template="/project/";
     rcopy($template,$projdir) or die $!;
     print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
     rcopy($ref_path,$projdir."/refgenomes/") or die $!;
 
-    #fastq file 1
-    my $upload=$c->req->upload("fastq_1");
-    my $tempname=$upload->tempname();
-    my $orig_upload = $upload->filename();
-    print STDERR "orig name is $orig_upload \n";
-    fmove($tempname,$projdir."/samples/".$orig_upload);
-    `chmod 777 $projdir/samples/$orig_upload`;
-
-    #fastq file 2
-    if ($c->req->upload("fastq_2")) {
-        my $upload2=$c->req->upload("fastq_2");
-        my $tempname2=$upload2->tempname();
-        my $orig_upload2 = $upload2->filename();
-        print STDERR "orig name is $orig_upload2 \n";
-        fmove($tempname2,$projdir."/samples/".$orig_upload2);
-        `chmod 777 $projdir/samples/$orig_upload2`;
+    #move uploaded files into project directory and name them appropriately
+    print STDERR " Uploading files to data folder \n";
+    for my $upload ($c->req->upload("fastq")) {
+        my $tempname=$upload->tempname();
+        my $orig_upload = $upload->filename();
+        print STDERR "orig name is $orig_upload \n";
+        fmove($tempname,$projdir."/samples/".$orig_upload);
+        `chmod 777 $projdir/samples/$orig_upload`;
     }
-
-    #if it's biparental copy it here
+    # $c->stash->{beagle} = $beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template} = "submit.mas";
@@ -122,17 +118,20 @@ sub analyze:Path('/analyze') : Args(0){
     `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
     #detect when analysis complete
-        #when ($projdir/Analysis_Complete){ #check when syntax...also need to check whether it actually ran successfully or not; analysis complete happens if it's failed or not anyway
-            #if Beagle option is checked run beagle afteranalysis is complete
-            #email vcf file using Mail::Sendmail sendmail() and getting email using username or whatnot
-            # if ($beagle==1) {
-                #$gbs_output=$projdir."*vcf*"; #probably need a more specific name here
-                #$beagle_output=$projdir."out.ref"
-                #`java -jar /beagle/beagle.*.jar ref=$analysis_ref_path gt=$gbs_output out=$beagle_output` or die "Couldn't run Beagle on completed gbs analysis: $!\n";
-                #when ($beagle_output) {
-                    #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
+        #when ($projdir/Analysis_Complete) {
+            #if ($projdir/snpcall/*x.vcf.gz) {
+                #if Beagle option is checked run beagle after analysis is complete
+                #email vcf file using Mail::Sendmail sendmail() and getting email using username or whatnot
+                # if ($beagle) {
+                    #$gbs_output=$projdir."*vcf*"; #probably need a more specific name here
+                    #$beagle_output=$projdir."out.ref"
+                    #`java -Xmx50g -jar /beagle/beagle.*.jar gt=$gbs_output out=$beagle_output` or die "Couldn't run Beagle on completed gbs analysis: $!\n";
+                    #when ($beagle_output) {
+                        #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
                 #}
             # }
+            #}
+        #}
             #`rm -rf $projdir`;
         #}
 

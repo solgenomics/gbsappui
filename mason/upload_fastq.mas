@@ -24,12 +24,13 @@ console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
                 </form>
         </span>
         <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; bottom:-10; font-size:23">
-            <b>Upload fastq file:</b>
+            <b>Select sample fastq files:</b>
             <span style="position:relative;left:20">
                 <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:10; left:75">
-                    <input type="file" id="fastq_1" name="fastq_1" >
+                    <input type="hidden" name="form_submit" value="yes">
+                    <input type="file" name="fastq" id="fastq" multiple="multiple">
                     <span style="position:relative; top:10; right:85; color:black; font-size:23">
-                        <input type="submit" value="Upload" />
+                    <input type="submit" value="Upload" />
                     </span>
                     <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
                 </form>
@@ -39,5 +40,16 @@ console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
     <br></br>
 </center>
 
+<script>
+
+// $( document ).ready(function(){
+//     var first_name = $('#fastq')[0].files[0].name;
+//     console.log(first_name);
+//     for (let f = 0; len = $('#fastq').files.length; f < len; f++) {
+//
+//     }
+//   })
+
+</script>
 <%# ----footer---- %>
 <& /site/footer.mas &>

@@ -110,11 +110,11 @@ RUN rm GATK* && \
     mv bedtools* ./GBSapp/tools/
 
 #setup java paths
-    RUN export J2SDKDIR=/GBSapp/tools/jdk8u322-b06
-    RUN export J2REDIR=/GBSapp/tools/jdk8u322-b06
-    RUN export PATH=$PATH:/GBSapp/tools/jdk8u322-b06/bin:/GBSapp/tools/jdk8u322-b06/db/bin
-    RUN export JAVA_HOME=/GBSapp/tools/jdk8u322-b06
-    RUN export DERBY_HOME=/GBSapp/tools/jdk8u322-b06
+RUN export J2SDKDIR=/GBSapp/tools/jdk8u322-b06
+RUN export J2REDIR=/GBSapp/tools/jdk8u322-b06
+RUN export PATH=$PATH:/GBSapp/tools/jdk8u322-b06/bin:/GBSapp/tools/jdk8u322-b06/db/bin
+RUN export JAVA_HOME=/GBSapp/tools/jdk8u322-b06
+RUN export DERBY_HOME=/GBSapp/tools/jdk8u322-b06
 
 #Setup analysis folders and template for analysis folders
 RUN mkdir /data/
@@ -153,7 +153,7 @@ RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd 
 #install Beagle
 RUN mkdir /beagle && \
     cd /beagle && \
-    RUN wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
+    wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
