@@ -8,10 +8,6 @@
 <%# & /site/header.mas, username=>$username &>%>
 <& /site/header.mas &>
 
-<%# ----main page---- %>
-
-<& /site/main.mas &>
-
 <%# ----upload fastq---- %>
 
 <center>

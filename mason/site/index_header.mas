@@ -4,8 +4,11 @@
   <div class="container-fluid">
     <div class="navbar-header">
     <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
-    <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
-        <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
+        <a href="https://github.com/bodeolukolu/GBSapp">
+            <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
+        </a>
+        <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
+            <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
         </a>
         <ul class="nav navbar-nav navbar-right">
         </ul>

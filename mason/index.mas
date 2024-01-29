@@ -1,6 +1,7 @@
 <%# --page actions-- %>
 <onload="/">
 <%args>
+$websites_json
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,12 +18,27 @@ var inst_dropdown;
 
 //functions
 //checking if logged into chosen instance
+function get_websites_dropdown() {
+    var websites = JSON.parse('<% $websites_json %>');
+    var html = '<select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">';
+    for (const key in websites) {
+        if (websites.hasOwnProperty(key)) {
+            console.log(key+':'+websites[key]);
+            html+='<option style="background-color:black" value="';
+            html+=websites[key];
+            html+='" id="'+key+'">'+key+'</option>';
+        }
+    }
+    html += '</select>';
+    return html;
+}
+
 function instance_login_check() {
   domain = inst_dropdown.options[inst_dropdown.selectedIndex].value;
   instance = inst_dropdown.options[inst_dropdown.selectedIndex].id;
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
-  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
+  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
 
   //temporarily still just sending it to localhost as don't have permissions for any other places for my localhost
   //use below when not using localhost anymore
@@ -31,6 +47,8 @@ function instance_login_check() {
 
 $( document ).ready(function(){
   //showing instance dropdown
+  var html=get_websites_dropdown();
+  jQuery("#instance").html(html);
   jQuery("#instance_dropdown_all").show();
   inst_dropdown = document.getElementById("instance_dropdown");
 });
@@ -41,20 +59,18 @@ $( document ).ready(function(){
 
 <& /site/index_header.mas &>
 
-<%# ----logo---- %>
-
-<& /site/main.mas &>
-
 <center>
 
 <%# ----main page---- %>
 <%# ----Breedbase instance dropdown menu---- %>
 
   <%# ----Choose instance dropdown---- %>
-    <div id="instance_dropdown_all">
+
+<div id="instance_dropdown_all" style="position:relative; top:100">
       <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:605; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; font-size:20;">Choose a BreeDBase Instance:</label></b>
 
       <div id="instance">
+        <!--
         <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">
         <option style="background-color:black" value="http://cassavabase.org" id="cassava">CassavaBase</option>
         <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
@@ -62,8 +78,8 @@ $( document ).ready(function(){
         <option style="background-color:black" value="http://localhost:8080" id="sp">SweetPotatoBase</option>
         <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
         </select>
+        -->
       </div>
-
       <%# ----Submit instance selection button---- %>
 
     <%#<input type="hidden" name="projdir" value=$projdir %>
@@ -71,10 +87,6 @@ $( document ).ready(function(){
     ><b>Select</b></button>
 
       <%# ----Contact Information: replace with info about how to contact if you want a different breeDBase instance added---- %>
-      <div id="pagefooter" class="navbar navbar-default" style="margin-bottom:0px;height:150;position:absolute;bottom:0;left:7;width:100%;">
-                    <span style="font-face:arial;font-size:10pt;color:darkgreen;font-weight:light;position:relative;left:9;">BREE<b>DB</b>ASE</span> <span style="position:relative;left:9;"> is located at the <a href="https://btiscience.org">Boyce Thompson Institute.</a></span><br />
-                    <a href="https://btiscience.org"><img src="/static/images/bti_logo_2016.png" width="200" style="position:relative;left:7;"></a>
-        </div>
     </div>
   </center>
 </center>

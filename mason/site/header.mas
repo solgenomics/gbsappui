@@ -9,22 +9,26 @@
 <link rel="stylesheet" href="/static/js/node_modules/bootstrap/dist/css/bootstrap.min.css">
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container-fluid">
-    <div class="navbar-header">
-    <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
-    <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
-        <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
-        </a>
-        <ul class="nav navbar-nav navbar-right">
-          <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-            <button id="login_button" style="position:relative;top:-0px;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login</button>
-            <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
-            </button>
-          </span>
-        </ul>
-      </span>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+                    <a href="https://github.com/bodeolukolu/GBSapp">
+                        <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
+                    </a>
+                <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
+                    <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
+                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
+                        </button>
+                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                        </button>
+                    </span>
+                </ul>
+            </span>
+        </div>
     </div>
-  </div>
 </nav>
 
 <%# ----please login dialog---- %>

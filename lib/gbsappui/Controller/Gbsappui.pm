@@ -20,6 +20,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
     # #testing out email stuffer
     # # Prepare the message
@@ -41,6 +42,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     # #              ->attach_file('attachment.gif' )
     #               ->send) or die $!;
     $c->stash->{ref_path} = $ref_path;
+    $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{template}="choose_ref.mas";
 }
 
@@ -55,17 +57,6 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
     $c->stash->{template}="upload_fastq.mas";
 }
 
-sub biparental:Path('/biparental') : Args(0){
-    my $self=shift;
-    my $c=shift;
-    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    my $ref_path=$c->req->param('ref_path');
-    $c->stash->{ref_path} = $ref_path;
-    $c->stash->{template}="biparental.mas";
-}
-
 sub submit:Path('/submit') : Args(0){
     my $self=shift;
     my $c=shift;
@@ -78,11 +69,17 @@ sub submit:Path('/submit') : Args(0){
     my $data_dir = "/data/";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
-    $projdir_object=~s/\;//g; #don't allow ';' in project directoryuploads
-    $projdir_object=~s/_//g; #don't allow '_' in project directory
     my $projdir = $projdir_object->{DIRNAME};
+    my $projdir_orig = $projdir;
+    print STDERR "Original proj dir is $projdir_orig \n";
     $projdir=~s/\;//g; #don't allow ';' in project directory name
     $projdir=~s/_//g; #don't allow '_' in project directory name
+    $projdir_object->{DIRNAME} = $projdir;
+    print STDERR "New proj dir is $projdir \n";
+    if ($projdir_orig ne $projdir) {
+        print STDERR "Removing old directory name with excess characters \n";
+        `rm -rf $projdir_orig` or die "Didn't run: $!\n";
+    }
     my $template="/project/";
     rcopy($template,$projdir) or die $!;
     print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
@@ -97,7 +94,18 @@ sub submit:Path('/submit') : Args(0){
         fmove($tempname,$projdir."/samples/".$orig_upload);
         `chmod 777 $projdir/samples/$orig_upload`;
     }
-    # $c->stash->{beagle} = $beagle;
+
+    print STDERR "full req is:\n";
+    print STDERR Dumper $c->req;
+    #if biparental: edit config file to include p1 (maternal parent) and p2 (paternal parent)
+    # my $biparental;
+    # if (my $biparental==1) {
+    #     console.log("biparental");
+    #     # edit config file
+    # }
+
+    my $beagle = 1;
+    $c->stash->{beagle} = $beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template} = "submit.mas";

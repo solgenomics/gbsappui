@@ -18,7 +18,6 @@ $projdir
 
 <%# ----main page---- %>
 <center>
-    <& /site/main.mas &>
     <div id="Analysis info" >
         <h2 style="position:relative;left:-10px;bottom:-10px;color: black">
             <b> Analysis in Progress </b>

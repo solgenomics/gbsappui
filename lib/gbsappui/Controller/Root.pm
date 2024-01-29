@@ -32,6 +32,8 @@ The root page (/)
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
+    my $websites_json = $c->config->{websites_json};
+    $c->stash->{websites_json}=$websites_json;
     $c->stash->{template}="index.mas";
 }
 
