@@ -14,13 +14,12 @@ $refgenomes_json
 //variables
 var domain;
 var instance;
-var chosen_ref;
-var ref_path;
 
 //functions
 // function uploadwait() {
 //     window.location.href = 'http://localhost:8090/upload_fastq/';
 // }
+
 function get_refgenomes(instance) {
     var refgenomes = JSON.parse('<% $refgenomes_json %>');
     var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>';
@@ -30,15 +29,15 @@ function get_refgenomes(instance) {
     for (const key in refgenomes[instance]) {
         html+='<option style="background-color:black" value="';
         html+=refgenomes[instance][key];
-        html+='+id="'+refgenomes[instance][key]+'">'+refgenomes[instance][key]+'</option>';
+        html+='"'+refgenomes[instance][key]+'">'+refgenomes[instance][key]+'</option>';
     }
     html += '</select>';
     return html;
 }
 
 function refgenome_choose() {
-    chosen_ref = ref_dropdown.options[ref_dropdown.selectedIndex].value;
-    ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
+    var chosen_ref = document.getElementById(`${instance}`).value;
+    var ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
     console.log(`choose_ref.mas ref path is ${ref_path}`);
     document.getElementById('ref_path').value = ref_path;
 }
@@ -47,7 +46,7 @@ function refgenome_choose() {
 $( document ).ready(function(){
     domain = localStorage.getItem("gbs_domain");
     instance = localStorage.getItem("gbs_instance");
-    alert("instance 1: "+instance);
+    console.log("index is "+instance);
     var html = get_refgenomes(instance);
     jQuery('#refgenome_dropdown_all').html(html);
 //    jQuery(`#refgenome_${instance}`).show();

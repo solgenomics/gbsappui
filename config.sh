@@ -11,3 +11,7 @@ lib_type=RRS
 ###################################################
 ploidy=2
 Get_Chromosome=TF_Chr01
+
+### SNP-filtering:
+####################################################
+filtered_vcf=true

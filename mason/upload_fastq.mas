@@ -22,6 +22,7 @@ $ref_path
                     <input type="file" name="fastq" id="fastq" multiple="multiple" required />
                     <span style="position:relative; top:10; right:85; color:black; font-size:23">
                         <input type="submit" value="Upload" id="upload_button" />
+                        <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
                     </span>
                     </div>
                     <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
@@ -33,7 +34,6 @@ $ref_path
                             <label id="paternal_input" for="p2">Paternal File Name:</label>
                             <input type="text" id="p2" name="p2"><br><br>
                             <input type="submit" id="biparental_submit" name="biparental_submit" value="Submit">
-                            <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
                         </div>
                     </div>
                 </form>
@@ -47,6 +47,8 @@ $ref_path
 var biparental;
 
 $( document ).ready(function(){
+    //remove this when you implement biparental analysis
+    jQuery("#biparental_button").hide();
     console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
     //biparental form logic
     jQuery("#biparental_info").hide();

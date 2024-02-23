@@ -68,7 +68,7 @@ RUN mkdir -p R && \
 
 #install R package: CMplot
 RUN R -e 'install.packages("CMplot", dependencies = TRUE, repos="http://cran.r-project.org", lib="./")'
-RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason JSON Email::Sender::Simple
+RUN cpanm Catalyst Catalyst::Restarter Catalyst::View::HTML::Mason JSON Email::Sender::Simple Email::Stuffer
 
 #install Emboss
 RUN wget http://debian.rub.de/ubuntu/pool/universe/e/emboss/emboss_6.6.0.orig.tar.gz && \
@@ -154,6 +154,9 @@ RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd 
 RUN mkdir /beagle && \
     cd /beagle && \
     wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
+
+#Edit exim4 config file for email sending allowance
+COPY exim4.conf.template /etc/exim4/exim4.conf
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

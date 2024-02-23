@@ -10,7 +10,8 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
-#use Email::Stuffer;
+use Email::Stuffer;
+
 
 BEGIN {extends 'Catalyst::Controller'};
 
@@ -22,8 +23,8 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
-    # #testing out email stuffer
-    # # Prepare the message
+    #testing out email stuffer
+    # Prepare the message
     # my $body = "Dear friend
     #
     # here is a test email.
@@ -35,12 +36,12 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     # ME";
     #
     # # Create and send the email in one shot
-    # (Email::Stuffer->from     ('amberlockrow@gmail.com'             )
-    #               ->to       ('amberlockrow@gmail.com'     )
-    # #
-    #               ->text_body($body                     )
-    # #              ->attach_file('attachment.gif' )
+    # (Email::Stuffer->from('amberlockrow@gmail.com')
+    #               ->to('amberlockrow@gmail.com')
+    #               ->text_body($body)
+    # #              ->attach_file('attachment.gif')
     #               ->send) or die $!;
+
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{template}="choose_ref.mas";
@@ -77,8 +78,8 @@ sub submit:Path('/submit') : Args(0){
     $projdir_object->{DIRNAME} = $projdir;
     print STDERR "New proj dir is $projdir \n";
     if ($projdir_orig ne $projdir) {
-        print STDERR "Removing old directory name with excess characters \n";
-        `rm -rf $projdir_orig` or die "Didn't run: $!\n";
+        print STDERR "double directories w/ different names: $projdir_orig and $projdir. Trying my best to remove $projdir_orig . Please check that only one is here. \n";
+        `rm -rf $projdir_orig`;
     }
     my $template="/project/";
     rcopy($template,$projdir) or die $!;
@@ -95,8 +96,6 @@ sub submit:Path('/submit') : Args(0){
         `chmod 777 $projdir/samples/$orig_upload`;
     }
 
-    print STDERR "full req is:\n";
-    print STDERR Dumper $c->req;
     #if biparental: edit config file to include p1 (maternal parent) and p2 (paternal parent)
     # my $biparental;
     # if (my $biparental==1) {
@@ -104,27 +103,62 @@ sub submit:Path('/submit') : Args(0){
     #     # edit config file
     # }
 
-    my $beagle = 1;
-    $c->stash->{beagle} = $beagle;
+    my $run_beagle = 0;
+    $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{template} = "submit.mas";
 }
 
-sub analyze:Path('/analyze') : Args(0){
-    my $self=shift;
-    my $c=shift;
-    my $projdir=$c->req->param('projdir');
-#    my $beagle=$c->req->param('beagle');
-#    my $analysis_ref_path=$projdir."/refgenomes/*fasta*";
-#    print STDERR "current analysis refgenome location is $analysis_ref_path \n";
-    $projdir=$projdir."/";
-    print STDERR "projdir is $projdir \n";
-    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    `bash /GBSapp/GBSapp $projdir` or die "Didn't run: $!\n";
-    print STDERR "Running GBSapp on $projdir \n";
+# sub running {
+#     #check for analysis completion
+#     my $projdir = shift;
+#     my $run_beagle = shift;
+#     my $cancel_var = 0;
+#     my $canceled = 0;
+#     #check for analysis completion
+#     until (-e "$projdir/Analysis_Complete" || $cancel_var == 1 ) {
+#         #get cancel_var somehow
+#         #if (something) {$cancel_var = 1};
+#         if ($cancel_var == 1 && $canceled == 0) {
+#             cancel($projdir);
+#             print STDERR "Canceling analysis \n";
+#             $canceled = 1;
+#             return $canceled;
+#         };
+#     };
+#     print STDERR "run beagle value is $run_beagle \n";
+#
+#     print STDERR "Initial Analysis Complete \n";
+#     for my $vcf_file (glob("${projdir}/snpcall/*.vcf.gz")) {
+#         if( -e $vcf_file ) {
+#             print STDERR "$vcf_file (gbs output) exists \n"; }
+#         else {
+#             print STDERR "vcf file (gbs output) doesn't exist \n";
+#         }
+#         if ($run_beagle==1){
+#             print STDERR "Beagle has been chosen \n";
+#             my $beagle_output=$vcf_file."_beagle_output";
+#             `java -Xmx50g -jar /beagle/beagle.*.jar gt=$vcf_file out=$beagle_output`;
+#             print STDERR "Running Beagle \n";
+#             my $cancel_var = 0;
+#             until (-e $beagle_output) {
+#                 if ($cancel_var == 1 && $canceled == 0) {
+#                     cancel($projdir);
+#                     print STDERR "Canceling beagle \n";
+#                     $canceled = 1;
+#                 }
+#             };
+#             #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
+#             print STDERR "Beagle analysis complete";
+#         } else {
+#             print STDERR "Beagle has not been chosen \n";
+#         }
+#     }
+#     return $canceled;
+#     return $cancel_var;
+# }
+
     #detect when analysis complete
         #when ($projdir/Analysis_Complete) {
             #if ($projdir/snpcall/*x.vcf.gz) {
@@ -152,12 +186,27 @@ sub analyze:Path('/analyze') : Args(0){
             #`rm -rf $projdir`;
         #}
 
+sub analyze:Path('/analyze') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    my $projdir=$c->req->param('projdir');
+    my $run_beagle=$c->req->param('run_beagle');
+    print STDERR "run beagle value is $run_beagle \n";
+    $projdir=$projdir."/";
+    print STDERR "projdir is $projdir \n";
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    `bash /gbsappui/devel/run_gbsappui.sh $projdir $run_beagle` or die "Didn't run: $!\n";
+    #not doing the following because of the sleep/waiting in run gbsappui
+    print STDERR "Running GBSapp on $projdir \n";
+    print STDERR "String is $projdir/snpcall/"."vcf.gz \n";
     $c->stash->{projdir} = $projdir;
-    #$c->stash->{jobnum} = $jobnum;
+    $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{template}="analyze.mas";
 }
 
-sub cancel:Path('/cancel') : Args(0){
+sub cancel:Path('/cancel') : Args(0) {
     my $self=shift;
     my $c=shift;
     my $projdir=$c->req->param('projdir');
@@ -170,13 +219,12 @@ sub cancel:Path('/cancel') : Args(0){
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
     #remove analysis folder
-    `rm -rf $projdir`;
+    #redirect to start when analysis complete
     $c->stash->{projdir} = $projdir;
     $c->stash->{template}="cancel.mas";
 }
 
-
-
+# cd .; ls slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk '{n=split($0,a,".");print a[1]}'
 
 
 

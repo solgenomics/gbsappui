@@ -1,9 +1,16 @@
 <%# --page actions-- %>
 
 <%args>
+$run_beagle => undef
 $projdir
 $ref_path
+$cancel_var => undef
 </%args>
+
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <%# ----header---- %>
 <& /site/header.mas &>
@@ -11,14 +18,34 @@ $ref_path
 <center>
 <%# ----submit analysis button---- %>
 <div id="page_function">
-<br/>
+    <br/>
     <form action="/analyze">
         <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200">Submit Analysis</button>
         <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+        <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
     </form>
+    <br/>
+    <br/>
+    <div id="beagle_div">
+        <input type="checkbox" id="beagle" name="beagle" value="beagle">
+        <label for="beagle"> Post-analysis imputation using Beagle </label>
+    </div>
 </div>
 </center>
 <%# ----footer---- %>
 
 <& /site/footer.mas &>
+
+<script>
+
+$( document ).ready(function(){
+    $('#analysis_button').click(function(){
+        if(document.getElementById('beagle').checked){
+            // alert("beagle time");
+            var run_beagle = 1;
+            document.getElementById('run_beagle').value = run_beagle;
+        }
+    });
+});
+</script>
