@@ -23,8 +23,8 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
-    #testing out email stuffer
-    # Prepare the message
+    # #testing out email stuffer
+    # # Prepare the message
     # my $body = "Dear friend
     #
     # here is a test email.
@@ -40,7 +40,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     #               ->to('amberlockrow@gmail.com')
     #               ->text_body($body)
     # #              ->attach_file('attachment.gif')
-    #               ->send) or die $!;
+    #               ->send) or die "$!";
 
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;

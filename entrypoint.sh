@@ -6,6 +6,7 @@ cp /gbsappui/config.sh  /GBSapp/examples/proj/
 /etc/init.d/munge start
 /etc/init.d/slurmctld start
 /etc/init.d/slurmd start
+/etc/init.d/postfix start
 touch /var/log/gbsappui/error.log
 #chmod 777 /var/log/gbsappui/error.log
 sleep 5

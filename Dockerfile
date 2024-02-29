@@ -137,6 +137,7 @@ RUN chmod 777 /var/spool/ \
 #RUN echo "$CACHEBUST"
 
 #clone gbsappui
+
 RUN git clone https://github.com/solgenomics/gbsappui
 
 #setup config file in analysis template directory
@@ -155,8 +156,10 @@ RUN mkdir /beagle && \
     cd /beagle && \
     wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
 
-#Edit exim4 config file for email sending allowance
-COPY exim4.conf.template /etc/exim4/exim4.conf
+#install postfix
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get install build-essential pkg-config apt-utils gnupg2 curl wget -y
+RUN apt-get install -y postfix mailutils
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
