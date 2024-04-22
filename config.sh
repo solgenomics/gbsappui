@@ -14,4 +14,5 @@ Get_Chromosome=TF_Chr01
 
 ### SNP-filtering:
 ####################################################
+maf=0.02
 filtered_vcf=true

@@ -93,6 +93,7 @@ make install && \
 cd ../..
 
 #clone GBSApp from github
+RUN echo "gbsapp update"
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
 
 #move all GBS dependencies to GBSapp/tools
@@ -121,6 +122,9 @@ RUN mkdir /data/
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
+RUN mkdir /project/gbs_slurm_log/
+RUN mkdir /project/gbsappui_slurm_log/
+
 RUN cp ./GBSapp/examples/input_steps.txt /project/
 
 #Setup system files and Edit permissions
@@ -137,7 +141,7 @@ RUN chmod 777 /var/spool/ \
 #RUN echo "$CACHEBUST"
 
 #clone gbsappui
-
+RUN echo "start here"
 RUN git clone https://github.com/solgenomics/gbsappui
 
 #setup config file in analysis template directory
@@ -156,10 +160,12 @@ RUN mkdir /beagle && \
     cd /beagle && \
     wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
 
-#install postfix
+#install postfix and remove exim4 default folder
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get install build-essential pkg-config apt-utils gnupg2 curl wget -y
 RUN apt-get install -y postfix mailutils
+RUN rm -rf /etc/exim4/ \
+    && rm -rf /var/log/exim4/
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

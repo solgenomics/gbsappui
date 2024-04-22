@@ -23,25 +23,13 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
-    # #testing out email stuffer
-    # # Prepare the message
-    # my $body = "Dear friend
-    #
-    # here is a test email.
-    # test email.
-    # enjoy.
-    #
-    # me
-    #
-    # ME";
-    #
-    # # Create and send the email in one shot
-    # (Email::Stuffer->from('amberlockrow@gmail.com')
-    #               ->to('amberlockrow@gmail.com')
-    #               ->text_body($body)
-    # #              ->attach_file('attachment.gif')
-    #               ->send) or die "$!";
-
+    # Create and send the email in one shot
+    (Email::Stuffer->from('awl67@cornell.edu')
+    #need to replace this with email name based on logged in account
+                  ->to('awl67@cornell.edu')
+                  ->text_body('hello')
+    #              ->attach_file('attachment.vcf')
+                  ->send) or die "$!";
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{template}="choose_ref.mas";
@@ -193,14 +181,33 @@ sub analyze:Path('/analyze') : Args(0){
     my $run_beagle=$c->req->param('run_beagle');
     print STDERR "run beagle value is $run_beagle \n";
     $projdir=$projdir."/";
+    my $ui_log=$projdir."gbsappui_slurm_log";
     print STDERR "projdir is $projdir \n";
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    `bash /gbsappui/devel/run_gbsappui.sh $projdir $run_beagle` or die "Didn't run: $!\n";
+    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle` or die "Didn't run: $!\n";
     #not doing the following because of the sleep/waiting in run gbsappui
+    #Need to figure out when to email
+    #maybe zip a results file here
+    # Prepare the message
+    # my $body = "Dear GBSApp user,
+    #
+    # Please find the vcf result file and associated information attached.
+    #
+    # All the best,
+    # GBSapp";
+    #
+    # # Create and send the email in one shot
+    # (Email::Stuffer->from('awl67@cornell.edu')
+    #need to replace this with email name based on logged in account
+    #               ->to('awl67@cornell.edu')
+    #               ->text_body($body)
+    # #              ->attach_file('attachment.vcf')
+    #               ->send) or die "$!";
     print STDERR "Running GBSapp on $projdir \n";
     print STDERR "String is $projdir/snpcall/"."vcf.gz \n";
+
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{template}="analyze.mas";
@@ -212,10 +219,28 @@ sub cancel:Path('/cancel') : Args(0) {
     my $projdir=$c->req->param('projdir');
     #get job number
     #my $jobnum=$c->req->param('jobnum') #if analyze jobnum code is integrated
-    my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`;
+
+    #cancellation
+    #cancel gbs job if slurm file(s) exists in projdir
+    if (glob("$projdir*slurm*")) {
+        my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
+        #cancel job number
+        print STDERR "Canceling Job Number(s) $jobnum \n";
+        `scancel $jobnum`;
+    }
+
+    #cancel full ui job
+    my $ui_log=$projdir."gbsappui_slurm_log";
+    my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
     #cancel job number
-    print STDERR "Canceling Job Number $jobnum \n";
+    print STDERR "Canceling Job Number(s) $jobnum \n";
     `scancel $jobnum`;
+
+    # until (-e "$projdir/Analysis_Complete") {
+    #     sleep;
+    # };
+    # print STDERR "Sleeping done \n";
+
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
     #remove analysis folder
@@ -225,10 +250,6 @@ sub cancel:Path('/cancel') : Args(0) {
 }
 
 # cd .; ls slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk '{n=split($0,a,".");print a[1]}'
-
-
-
-
 
 
 1;

@@ -9,8 +9,9 @@ gbs_output=$(ls ${projdir}snpcall/*x.vcf*)
 #beagle function
 beagle () {
     cd $projdir
-    echo "running beagle" >> ${projdir}beagle_log.out
-    echo "gbs output is ${gbs_output}" >> ${projdir}beagle_log.out
+    echo "running beagle"
+    echo "gbs output is ${gbs_output}"
+    echo "gbs output without brakcets is $gbs_output"
     if [ -d ${projdir}beagle ]; then
         echo "Already ran beagle"
     else
@@ -28,7 +29,7 @@ beagle () {
         do
             sleep 10
         done
-        echo "Beagle complete" >> ${projdir}beagle_log.out
+        echo "Beagle complete"
     fi
 }
 
