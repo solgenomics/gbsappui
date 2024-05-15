@@ -23,13 +23,13 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
-    # Create and send the email in one shot
-    (Email::Stuffer->from('awl67@cornell.edu')
-    #need to replace this with email name based on logged in account
-                  ->to('awl67@cornell.edu')
-                  ->text_body('hello')
-    #              ->attach_file('attachment.vcf')
-                  ->send) or die "$!";
+    # # Create and send the email in one shot
+    # (Email::Stuffer->from('awl67@cornell.edu')
+    # #need to replace this with email name based on logged in account
+    #               ->to('awl67@cornell.edu')
+    #               ->text_body('hello')
+    # #              ->attach_file('attachment.vcf')
+    #               ->send) or die "$!";
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{template}="choose_ref.mas";
@@ -98,82 +98,6 @@ sub submit:Path('/submit') : Args(0){
     $c->stash->{template} = "submit.mas";
 }
 
-# sub running {
-#     #check for analysis completion
-#     my $projdir = shift;
-#     my $run_beagle = shift;
-#     my $cancel_var = 0;
-#     my $canceled = 0;
-#     #check for analysis completion
-#     until (-e "$projdir/Analysis_Complete" || $cancel_var == 1 ) {
-#         #get cancel_var somehow
-#         #if (something) {$cancel_var = 1};
-#         if ($cancel_var == 1 && $canceled == 0) {
-#             cancel($projdir);
-#             print STDERR "Canceling analysis \n";
-#             $canceled = 1;
-#             return $canceled;
-#         };
-#     };
-#     print STDERR "run beagle value is $run_beagle \n";
-#
-#     print STDERR "Initial Analysis Complete \n";
-#     for my $vcf_file (glob("${projdir}/snpcall/*.vcf.gz")) {
-#         if( -e $vcf_file ) {
-#             print STDERR "$vcf_file (gbs output) exists \n"; }
-#         else {
-#             print STDERR "vcf file (gbs output) doesn't exist \n";
-#         }
-#         if ($run_beagle==1){
-#             print STDERR "Beagle has been chosen \n";
-#             my $beagle_output=$vcf_file."_beagle_output";
-#             `java -Xmx50g -jar /beagle/beagle.*.jar gt=$vcf_file out=$beagle_output`;
-#             print STDERR "Running Beagle \n";
-#             my $cancel_var = 0;
-#             until (-e $beagle_output) {
-#                 if ($cancel_var == 1 && $canceled == 0) {
-#                     cancel($projdir);
-#                     print STDERR "Canceling beagle \n";
-#                     $canceled = 1;
-#                 }
-#             };
-#             #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
-#             print STDERR "Beagle analysis complete";
-#         } else {
-#             print STDERR "Beagle has not been chosen \n";
-#         }
-#     }
-#     return $canceled;
-#     return $cancel_var;
-# }
-
-    #detect when analysis complete
-        #when ($projdir/Analysis_Complete) {
-            #if ($projdir/snpcall/*x.vcf.gz) {
-                #if Beagle option is checked run beagle after analysis is complete
-                #email vcf file using Mail::Sendmail sendmail() and getting email using username or whatnot
-                # if ($beagle) {
-                    #$gbs_output=$projdir."*vcf*"; #probably need a more specific name here
-                    #$beagle_output=$projdir."out.ref"
-                    #`java -Xmx50g -jar /beagle/beagle.*.jar gt=$gbs_output out=$beagle_output` or die "Couldn't run Beagle on completed gbs analysis: $!\n";
-                    #when ($beagle_output) {
-                        #email beagle output file using Mail::Sendmail sendmail() and getting email using username or whatnot
-                #}
-            # }
-            #}
-        #}
-            #`rm -rf $projdir`;
-        #}
-
-    #get jobnum for error detection
-        #my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`;
-
-    #detect error
-        #if (! ((`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk '{n=split(\$0,a,".");print a[1]}'`) = ($projdir)) {
-            #email error
-            #`rm -rf $projdir`;
-        #}
-
 sub analyze:Path('/analyze') : Args(0){
     my $self=shift;
     my $c=shift;
@@ -187,27 +111,7 @@ sub analyze:Path('/analyze') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle` or die "Didn't run: $!\n";
-    #not doing the following because of the sleep/waiting in run gbsappui
-    #Need to figure out when to email
-    #maybe zip a results file here
-    # Prepare the message
-    # my $body = "Dear GBSApp user,
-    #
-    # Please find the vcf result file and associated information attached.
-    #
-    # All the best,
-    # GBSapp";
-    #
-    # # Create and send the email in one shot
-    # (Email::Stuffer->from('awl67@cornell.edu')
-    #need to replace this with email name based on logged in account
-    #               ->to('awl67@cornell.edu')
-    #               ->text_body($body)
-    # #              ->attach_file('attachment.vcf')
-    #               ->send) or die "$!";
     print STDERR "Running GBSapp on $projdir \n";
-    print STDERR "String is $projdir/snpcall/"."vcf.gz \n";
-
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{template}="analyze.mas";
@@ -236,17 +140,19 @@ sub cancel:Path('/cancel') : Args(0) {
     print STDERR "Canceling Job Number(s) $jobnum \n";
     `scancel $jobnum`;
 
-    # until (-e "$projdir/Analysis_Complete") {
-    #     sleep;
-    # };
-    # print STDERR "Sleeping done \n";
-
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
-    #remove analysis folder
     #redirect to start when analysis complete
     $c->stash->{projdir} = $projdir;
     $c->stash->{template}="cancel.mas";
+}
+
+sub results:Path('/results') : Args(0) {
+    my $self=shift;
+    my $c=shift;
+    my $projdir=$c->req->param('projdir');
+    $c->stash->{projdir} = $projdir;
+    $c->stash->{template}="results.mas";
 }
 
 # cd .; ls slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk '{n=split($0,a,".");print a[1]}'

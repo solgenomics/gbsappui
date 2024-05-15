@@ -6,15 +6,39 @@ run_beagle=$2
 # run_filtering=$3
 
 #functions:
+error_email () {
+    #formatting email
+    body=$1
+    #zip logfile for sending
+    cp ${projdir}log.out ${projdir}log2.out
+    gzip ${projdir}log2.out
+    mv ${projdir}log2.out.gz ${projdir}log.out.gz
+
+    #send email
+    /gbsappui/devel/mail.sh "awl67@cornell.edu" "GBSapp Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
+}
+
+results_email () {
+    #zip file and move to results folder
+    nopath_projdir=$(echo $projdir | awk '{n=split($0,a,"/");print a[3]}')
+    cd ${projdir}
+    tar -zcvf /gbsappui/root/results/analysis_results.tar.gz *
+    chmod 777 /gbsappui/root/results/analysis_results.tar.gz
+    #email results link
+    #format email
+    body="The results for your GBSapp analysis can be found at the following link: http://localhost:8090/results/"
+    #send email
+    /gbsappui/devel/mail.sh "awl67@cornell.edu" "GBSapp Results" "$body" "" "";
+}
+
 #beagle function
-echo "Test mail from postfix" | mail -s "Test Postfix" awl67@cornell.edu
 beagle () {
     cd $projdir
     echo "Running beagle."
     echo "Project directory is $projdir ."
-    if [ -d ${projdir}beagle ]; then
-        echo "Already ran beagle"
-    else
+    # if [ -d ${projdir}beagle ]; then
+    #     echo "Already ran beagle"
+    # else
         mkdir ${projdir}beagle
         beagle_output=${projdir}beagle/beagle.out
         beagle_software=/beagle/beagle.*.jar
@@ -31,7 +55,7 @@ beagle () {
         done
         echo "Beagle complete." >> ${projdir}beagle_log.out
         mv ${projdir}beagle_log.out ${projdir}beagle/
-    fi
+    # fi;
 }
 
 #filter function
@@ -46,34 +70,68 @@ beagle () {
 #     fi
 # }
 
+#working I think
+chmod -R 770 ${projdir}
+cd ${projdir}
 bash /GBSapp/GBSapp $projdir
+sleep 10
+#get job numbers
+jobnum_gbsappui=$(ls ${projdir}gbsappui_slurm_log/slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
+jobnum_gbsapp=$(ls "${projdir}slurm"* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
+#move slurm log to gbs_slurm_log
+gbs_slurm_log=$(ls ${projdir}slurm*.out )
+##Wait until the slurm job is done
+until [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; do
+    sleep 60
+    #get the time the slurm job has been running
+    if [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; then
+        :
+    elif [ $(squeue -j $jobnum_gbsapp -h --noheader | awk '{n=split($0,a," ");print a[6]}' | awk '{n=split($0,a,":");print a[1]}' | awk '{n=split($0,a,":");print a[1]}' ) -gt 95 ]; then
+        scancel $jobnum_gbsappui
+        scancel $jobnum_gbsapp
+        last_log=$(tail -n 5 $gbs_slurm_log)
+        body="GBS Analysis timed out after 96 hours. Final log lines include:
 
-#check for analysis completion
-until [ -f ${projdir}Analysis_Complete ]
-do
-    sleep 10
+        $last_log
+
+        Full log files attached. Please email us to resolve this error at awl67@cornell.edu"
+        error_email "$body"
+    fi
 done
 
-#edit gbs result permissions
-chmod -R 770 ${projdir}
+#Check if analysis completed successfully and get information for email
+#get end of log file for error handling
+last_log=$(tail -n 5 $gbs_slurm_log)
+if [ -f ${projdir}Analysis_Complete ]; then
+    #edit gbs result permissions
+    chmod -R 770 ${projdir}
+    #check for vcf result files
+    if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
+        #Either run beagle imputation
+        if [ $run_beagle = 1 ]; then
+            gbs_output=$(ls ${projdir}snpcall/*x.vcf.gz )
+            beagle &>> ${projdir}beagle_log.out
+            #once beagle analysis is complete email results
+            results_email
+        #else email results with no beagle imputation
+        else
+            results_email
+        fi
+    #if no vcf file
+    else
+        body="GBS Analysis completed but failed to produce a results file. Final log lines include:
 
-#move gbs slurm files to output file once gbs is done running
-mv ${projdir}slurm*.out ${projdir}gbs_slurm_log/
+        $last_log
 
-#run beagle/filtering script
-#add the following if you add filtering part:
-# if [ $run_beagle = 1 ] || [ $run_filtering = 1 ]; then
-    # sbatch /gbsappui/devel/run_beagle_filtering.sh $projdir $run_beagle $run_filtering
-# fi
+        Full log files also attached. Please email us to resolve this error at awl67@cornell.edu"
+        error_email "$body"
+    fi
+#if no Analysis_Complete
+else
+    body="GBS Analysis did not complete successfully. Final log lines include:
 
-#run beagle
-if [ $run_beagle = 1 ]; then
-    #identify gbs output to use for beagle
-    gbs_output=$(ls ${projdir}snpcall/*x.vcf*)
-    beagle &>> ${projdir}beagle_log.out
+    $last_log
+
+    Full log files also attached. Please email us to resolve this error at awl67@cornell.edu"
+    error_email "$body"
 fi
-
-#run filtering
-# if [ $run_filtering = 1 ]; then
-#     filter &>> ${projdir}filter_log.out
-# fi

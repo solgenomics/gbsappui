@@ -1,0 +1,39 @@
+<%# --page actions-- %>
+
+<%args>
+$projdir
+</%args>
+
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+//functions
+//function functionname(){
+//    ;
+//}
+
+//$( document ).ready(function(){
+//    functionname();
+//});
+
+</script>
+
+<%# ----header---- %>
+
+<& /site/header.mas &>
+
+<%# ----main page---- %>
+test
+
+<center>
+    <div id="download" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:220;height:40">
+        <a href="/results/analysis_results.tar.gz" download="analysis_results.tar.gz" style="position:relative;top:6;">Download Results</a>
+    </div>
+</center>
+
+<%# ----footer---- %>
+
+<& /site/footer.mas &>
