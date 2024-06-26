@@ -1,6 +1,6 @@
 ###Generalparameters
 ###################################################
-threads=1
+threads=2
 walkaway=true
 cluster=true
 nodes=1

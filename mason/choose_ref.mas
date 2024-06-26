@@ -22,10 +22,10 @@ var instance;
 
 function get_refgenomes(instance) {
     var refgenomes = JSON.parse('<% $refgenomes_json %>');
-    var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>';
+    var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20; border:10px double white">Choose a reference genome: </label></b>';
     html+='<select id="';
     html+=instance;
-    html+='" style="font-size:18;position:relative;top:-60;right:-140">';
+    html+='" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in refgenomes[instance]) {
         html+='<option style="background-color:black" value="';
         html+=refgenomes[instance][key];
@@ -40,6 +40,7 @@ function refgenome_choose() {
     var ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
     console.log(`choose_ref.mas ref path is ${ref_path}`);
     document.getElementById('ref_path').value = ref_path;
+    setTimeout(() => {  console.log('Just a quick nap.'); }, 9000);
 }
 
 //displaying refgenomes of chosen instance
@@ -69,40 +70,41 @@ $( document ).ready(function(){
   </div>
   <!--
     <div id="refgenome_dropdown_all">
-      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; color:white; font-size:20;">Choose a reference genome: </label></b>
+      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20;">Choose a reference genome: </label></b>
 
       <div id="refgenome_cassava" hidden>
-        <select id="cassava" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="manihot_esculenta_v8.0.fasta.gz">Manihot Esculenta (Cassava) Version 8</option>
+        <select id="cassava" style="font-size:18;position:relative;top:-75;right:-140">
+          <option style="background-color:black" value="manihot_esculenta_v6.0.fasta">Manihot Esculenta (Cassava) Version 6</option>
+          <option style="background-color:black" value="manihot_esculenta_v8.0.fasta">Manihot Esculenta (Cassava) Version 8</option>
         </select>
       </div>
 
       <div id="refgenome_musa" hidden>
-        <select id="musa" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="musa_acuminata_malaccensis_v2.fasta.gz">Musa Acuminata Malaccensis (Banana) Version 2</option>
+        <select id="musa" style="font-size:18;position:relative;top:-75;right:-140">
+          <option style="background-color:black" value="musa_acuminata_malaccensis_v2.fasta">Musa Acuminata Malaccensis (Banana) Version 2</option>
         </select>
       </div>
 
       <div id="refgenome_sgn" hidden>
-        <select id="sgn" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="c_annuum_dempsey.fasta.gz">Capsicum Annuum Dempsey (Bell Pepper)</option>
-          <option style="background-color:black" value="solanum_lycopersicum_v4.fasta.gz">Solanum Lycopersicum (Tomato) Version 4</option>
-          <option style="background-color:black" value="solanum_melongena_v4.1.fasta.gz">Solanum Melongena (Eggplant) Version 4.1</option>
-          <option style="background-color:black" value="solanum_tuberosum_.v6.1.fasta.gz">Solanum Tuberosum (Potato) Version 6.1</option>
+        <select id="sgn" style="font-size:18;position:relative;top:-75;right:-140">
+          <option style="background-color:black" value="c_annuum_dempsey.fasta">Capsicum Annuum Dempsey (Bell Pepper)</option>
+          <option style="background-color:black" value="solanum_lycopersicum_v4.fasta">Solanum Lycopersicum (Tomato) Version 4</option>
+          <option style="background-color:black" value="solanum_melongena_v4.1.fasta">Solanum Melongena (Eggplant) Version 4.1</option>
+          <option style="background-color:black" value="solanum_tuberosum_.v6.1.fasta">Solanum Tuberosum (Potato) Version 6.1</option>
         </select>
       </div>
 
       <div id="refgenome_sp" hidden>
-        <select id="sp" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="ipomoea_batatas.fasta.gz">Ipomoea Batatas (Sweet Potato)</option>
+        <select id="sp" style="font-size:18;position:relative;top:-75;right:-140">
+          <option style="background-color:black" value="ipomoea_batatas.fasta">Ipomoea Batatas (Sweet Potato)</option>
           <option style="background-color:black" value="TF.fasta">Ipomoea Trifida (Threefork Morning Glory)</option>
-          <option style="background-color:black" value="ipomoea_triloba_v1.fasta.gz">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
+          <option style="background-color:black" value="ipomoea_triloba_v1.fasta">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
         </select>
       </div>
 
       <div id="refgenome_yam" hidden>
-        <select id="yam" style="font-size:18;position:relative;top:-60;right:-140">
-          <option style="background-color:black" value="dioscorea_alata_v2.1.fasta.gz">Dioscorea Alata (Yam) Version 2.1</option>
+        <select id="yam" style="font-size:18;position:relative;top:-75;right:-140">
+          <option style="background-color:black" value="dioscorea_alata_v2.1.fasta">Dioscorea Alata (Yam) Version 2.1</option>
         </select>
       </div>
 

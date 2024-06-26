@@ -5,6 +5,7 @@ $run_beagle => undef
 $projdir
 $ref_path
 $cancel_var => undef
+$email_address =>undef
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -19,17 +20,34 @@ $cancel_var => undef
 <%# ----submit analysis button---- %>
 <div id="page_function">
     <br/>
-    <form action="/analyze">
-        <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:23;width:200">Submit Analysis</button>
+    <form id="analysis_form" action="/analyze">
         <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
         <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
+        <input type="hidden" value="email_address" id="email_address" name="email_address" />
     </form>
+    <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="emailCheck()" >Submit Analysis</button>
     <br/>
     <br/>
     <div id="beagle_div">
         <input type="checkbox" id="beagle" name="beagle" value="beagle">
         <label for="beagle"> Post-analysis imputation using Beagle </label>
+    </div>
+    <br/>
+    <div id="email_info">
+        <b>
+        <span id="email_exists_statement" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">We currently have the following email on file:
+        </span>
+        <span id="system_email" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">
+        </span>
+        <br/>
+        <span id="email_exists_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> If you would like your results sent to an alternative email please enter it below:
+        </span>
+        <span id="no_email_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide an email where you would like to send the analysis results:
+        </span>
+        <input class="form-control" type="text" id="email_input" name="email_input" style="width:400;" value="" size="22" onclick="" onkeyup="formChanged()" onchange="formChanged()">
+        </input>
+        </b>
     </div>
 </div>
 </center>
@@ -44,8 +62,72 @@ $( document ).ready(function(){
         if(document.getElementById('beagle').checked){
             // alert("beagle time");
             var run_beagle = 1;
-            document.getElementById('run_beagle').value = run_beagle;
+            document.getElementById('run_beagle').value = 1;
         }
     });
 });
+//variables
+var email_input;
+var email_address;
+
+//get cookie from sgn
+sgn_cookie = Cookies.get('sgn_session_id');
+
+get_email_address(sgn_cookie);
+
+//functions
+function get_email_address(cookie){
+
+    jQuery.ajax( {
+//            change to below once gbsapp has site permissions
+//            url : domain+'/user/cookie_login/'+cookie,
+        url : 'http://localhost:8080/user/cookie_login/'+cookie,
+        success: function(response){
+            if(response.error){
+                alert(response.error);
+                return false;
+            }
+            if(response.email_address){
+                email_address = response.email_address;
+                $("#system_email").html(email_address);
+                jQuery("#email_exists_statement").show();
+                jQuery("#email_exists_ask").show();
+                jQuery("#no_email_ask").hide();
+            }
+            else {
+                jQuery("#email_exists_statement").hide();
+                jQuery("#email_exists_ask").hide();
+                jQuery("#no_email_ask").show();
+            }
+        }
+    })
+}
+
+function formChanged() {
+    email_input = document.getElementsByName("email_input")[0].value;
+    email_address = email_input;
+    document.getElementById('email_address').value = email_address;
+    console.log(email_address);
+    return email_address;
+}
+
+function validateEmail(email) {
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
+
+function emailCheck() {
+    console.log("email address is")
+    console.log(email_address)
+    //check that email is accurate
+    if(validateEmail(email_address)){
+        document.getElementById('analysis_form').submit();
+    }
+    else {
+        alert("Invalid email. Please check it and re-enter your email address.")
+    }
+}
+
+console.log(email_address)
+console.log(validateEmail(email_address))
 </script>

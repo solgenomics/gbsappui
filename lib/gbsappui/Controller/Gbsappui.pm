@@ -52,7 +52,10 @@ sub submit:Path('/submit') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-
+    #make email variable
+    print STDERR "Running submit.mas \n";
+    my $email_address = "noemail";
+    print STDERR "Email is $email_address \n";
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
     my $data_dir = "/data/";
@@ -92,6 +95,7 @@ sub submit:Path('/submit') : Args(0){
     # }
 
     my $run_beagle = 0;
+    $c->stash->{email_address} = $email_address;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
@@ -104,14 +108,20 @@ sub analyze:Path('/analyze') : Args(0){
     my $projdir=$c->req->param('projdir');
     my $run_beagle=$c->req->param('run_beagle');
     print STDERR "run beagle value is $run_beagle \n";
+    my $email_address=$c->req->param('email_address');
+    #remove extraneous spaces from email address
+    $email_address=~ s/\s//g;
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
     print STDERR "projdir is $projdir \n";
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle` or die "Didn't run: $!\n";
+    #comment out below while I work on formatting for analyze.mas
+    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address` or die "Didn't run: $!\n";
     print STDERR "Running GBSapp on $projdir \n";
+    print STDERR "email is $email_address \n";
+    $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{template}="analyze.mas";
@@ -121,6 +131,7 @@ sub cancel:Path('/cancel') : Args(0) {
     my $self=shift;
     my $c=shift;
     my $projdir=$c->req->param('projdir');
+    my $email_address=$c->req->param('email_address');
     #get job number
     #my $jobnum=$c->req->param('jobnum') #if analyze jobnum code is integrated
 
@@ -144,6 +155,7 @@ sub cancel:Path('/cancel') : Args(0) {
     #eventually option to rerun/start where left off
     #redirect to start when analysis complete
     $c->stash->{projdir} = $projdir;
+    $c->stash->{email_address} = $email_address;
     $c->stash->{template}="cancel.mas";
 }
 
@@ -151,7 +163,9 @@ sub results:Path('/results') : Args(0) {
     my $self=shift;
     my $c=shift;
     my $projdir=$c->req->param('projdir');
+    my $email_address=$c->req->param('email_address');
     $c->stash->{projdir} = $projdir;
+    $c->stash->{email_address} = $email_address;
     $c->stash->{template}="results.mas";
 }
 

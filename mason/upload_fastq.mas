@@ -1,5 +1,4 @@
 <%# --page actions-- %>
-<%#onload="/upload_fastq"%>
 <%args>
 $ref_path
 </%args>
@@ -15,12 +14,12 @@ $ref_path
 <%# ----upload fastq---- %>
 <center>
     <div id="page_function">
-        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:23">
+        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:20">
             <b>Select sample fastq files:</b>
             <span style="position:relative;left:20">
-                <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:10; left:75">
+                <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:15; left:75">
                     <input type="file" name="fastq" id="fastq" multiple="multiple" required />
-                    <span style="position:relative; top:10; right:85; color:black; font-size:23">
+                    <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
                         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
                     </span>
@@ -28,7 +27,7 @@ $ref_path
                     <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
                     </button>
                     <div id="biparental_info" name="biparental_info" value="biparental info" style="width:500; height:180; position:relative; top:100; color:black; font-size:18; border:10px double black">
-                        <div id="biparental_innards" style="position:relative; top:10">
+                        <div id="biparental_innards" style="position:relative; top:15">
                             <label for="p1">Maternal File Name:</label>
                             <input id="maternal_input" type="text" id="p1" name="p1"><br><br>
                             <label id="paternal_input" for="p2">Paternal File Name:</label>

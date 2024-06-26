@@ -3,7 +3,8 @@
 #parameters:
 projdir=$1
 run_beagle=$2
-# run_filtering=$3
+email_address=$3
+# run_filtering=$4
 
 #functions:
 error_email () {
@@ -15,7 +16,7 @@ error_email () {
     mv ${projdir}log2.out.gz ${projdir}log.out.gz
 
     #send email
-    /gbsappui/devel/mail.sh "awl67@cornell.edu" "GBSapp Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
+    /gbsappui/devel/mail.sh "$email_address" "GBSapp Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
 }
 
 results_email () {
@@ -28,7 +29,7 @@ results_email () {
     #format email
     body="The results for your GBSapp analysis can be found at the following link: http://localhost:8090/results/"
     #send email
-    /gbsappui/devel/mail.sh "awl67@cornell.edu" "GBSapp Results" "$body" "" "";
+    /gbsappui/devel/mail.sh "$email_address" "GBSapp Results" "$body" "" "";
 }
 
 #beagle function
@@ -94,7 +95,7 @@ until [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; do
 
         $last_log
 
-        Full log files attached. Please email us to resolve this error at awl67@cornell.edu"
+        Full log files attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
         error_email "$body"
     fi
 done
@@ -123,7 +124,7 @@ if [ -f ${projdir}Analysis_Complete ]; then
 
         $last_log
 
-        Full log files also attached. Please email us to resolve this error at awl67@cornell.edu"
+        Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
         error_email "$body"
     fi
 #if no Analysis_Complete
@@ -132,6 +133,6 @@ else
 
     $last_log
 
-    Full log files also attached. Please email us to resolve this error at awl67@cornell.edu"
+    Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
     error_email "$body"
 fi

@@ -20,7 +20,7 @@ var inst_dropdown;
 //checking if logged into chosen instance
 function get_websites_dropdown() {
     var websites = JSON.parse('<% $websites_json %>');
-    var html = '<select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">';
+    var html = '<select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in websites) {
         if (websites.hasOwnProperty(key)) {
             console.log(key+':'+websites[key]);
@@ -67,11 +67,11 @@ $( document ).ready(function(){
   <%# ----Choose instance dropdown---- %>
 
 <div id="instance_dropdown_all" style="position:relative; top:100">
-      <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:605; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:23; font-size:20;">Choose a BreeDBase Instance:</label></b>
+      <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:605; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; border:10px double white">Choose a BreeDBase Instance:</label></b>
 
       <div id="instance">
         <!--
-        <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-60;right:-140">
+        <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">
         <option style="background-color:black" value="http://cassavabase.org" id="cassava">CassavaBase</option>
         <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
         <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>

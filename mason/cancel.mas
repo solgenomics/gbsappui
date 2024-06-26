@@ -2,6 +2,7 @@
 
 <%args>
 $projdir
+$email_address
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -29,10 +30,11 @@ $( document ).ready(function(){
 <& /site/header.mas &>
 
 <center>
-<div id="Cancel" >
-<h2 style="position:relative;left:-10px;bottom:-10px;color: black">
-<b> Analysis Canceled</b>
-</h2>
+    <div id="Cancel" style="margin:10px; background-color:black; padding:10; padding-bottom:5;color:white; width:605; height:100; position:relative; top:30; text-align:left; line-height:3; font-size:20; border:10px double white">
+        <center>
+            <b> Analysis Canceled</b>
+        </center>
+    </div>
 </center>
 
 <%# ----footer---- %>

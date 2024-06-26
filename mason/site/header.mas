@@ -34,7 +34,7 @@
 <%# ----please login dialog---- %>
 
 <center>
-  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:23">
+  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:20">
     <span style="position:relative;left:20">
       <b>Please Log In</b>
     </span>
