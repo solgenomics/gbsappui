@@ -6,14 +6,6 @@ $projdir
 $email_address
 </%args>
 
-<script>
-// function cancel() {
-//     var answer = confirm("");
-//     if (answer === true) {
-//     }
-// }
-</script>
-
 <%# ----header---- %>
 
 <& /site/header.mas &>
@@ -24,11 +16,22 @@ $email_address
         Analysis in Progress. You will get an email with a link to the results when it's finished!
 
         <form action="/cancel">
-            <button id="cancel_button" style="position:relative;left:-10;top:10;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')"><b>Cancel Analysis</b></button>
+            <button id="cancel_button" style="position:relative;top:10;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')"><b>Cancel Analysis</b></button>
             <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
         </form>
     </div>
+    <button id="new_analysis" style="background-color:black; border:10px double white; color:white; width:250; height:60; position:relative; top:80; font-size:20" onclick="redirect()">
+        <b>Return to main page</b>
+    </button>
 </center>
+
+<script>
+
+function redirect(){
+    window.location.href="http://localhost:8090";
+}
+
+</script>
 
 <%# ----footer---- %>
 

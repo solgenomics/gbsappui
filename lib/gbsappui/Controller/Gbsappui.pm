@@ -23,13 +23,6 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $ref_path = "nopath";
-    # # Create and send the email in one shot
-    # (Email::Stuffer->from('awl67@cornell.edu')
-    # #need to replace this with email name based on logged in account
-    #               ->to('awl67@cornell.edu')
-    #               ->text_body('hello')
-    # #              ->attach_file('attachment.vcf')
-    #               ->send) or die "$!";
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{template}="choose_ref.mas";
@@ -52,12 +45,18 @@ sub submit:Path('/submit') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+
     #make email variable
-    print STDERR "Running submit.mas \n";
     my $email_address = "noemail";
     print STDERR "Email is $email_address \n";
+
+    #make beagle running variable
+    my $run_beagle = "nobeagle";
+    print STDERR "Run beagle value is $run_beagle \n";
+
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
+    print STDERR "Submit Ref path is $ref_path \n";
     my $data_dir = "/data/";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
@@ -69,7 +68,7 @@ sub submit:Path('/submit') : Args(0){
     $projdir_object->{DIRNAME} = $projdir;
     print STDERR "New proj dir is $projdir \n";
     if ($projdir_orig ne $projdir) {
-        print STDERR "double directories w/ different names: $projdir_orig and $projdir. Trying my best to remove $projdir_orig . Please check that only one is here. \n";
+        print STDERR "Original name was not acceptable ($projdir_orig). Changing it to $projdir. Removing $projdir_orig .\n";
         `rm -rf $projdir_orig`;
     }
     my $template="/project/";
@@ -94,7 +93,6 @@ sub submit:Path('/submit') : Args(0){
     #     # edit config file
     # }
 
-    my $run_beagle = 0;
     $c->stash->{email_address} = $email_address;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
@@ -105,21 +103,20 @@ sub submit:Path('/submit') : Args(0){
 sub analyze:Path('/analyze') : Args(0){
     my $self=shift;
     my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+    $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+    $c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $projdir=$c->req->param('projdir');
     my $run_beagle=$c->req->param('run_beagle');
-    print STDERR "run beagle value is $run_beagle \n";
     my $email_address=$c->req->param('email_address');
+
     #remove extraneous spaces from email address
     $email_address=~ s/\s//g;
+
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
-    print STDERR "projdir is $projdir \n";
-    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-    #comment out below while I work on formatting for analyze.mas
+    print STDERR "Project directory is $projdir \n";
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address` or die "Didn't run: $!\n";
-    print STDERR "Running GBSapp on $projdir \n";
     print STDERR "email is $email_address \n";
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
@@ -169,7 +166,7 @@ sub results:Path('/results') : Args(0) {
     $c->stash->{template}="results.mas";
 }
 
-# cd .; ls slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk '{n=split($0,a,".");print a[1]}'
+
 
 
 1;

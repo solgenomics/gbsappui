@@ -72,7 +72,7 @@ $( document ).ready(function(){
       <div id="instance">
         <!--
         <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">
-        <option style="background-color:black" value="http://cassavabase.org" id="cassava">CassavaBase</option>
+        <option style="background-color:black" value="http://localhost:8080" id="cassava">CassavaBase</option>
         <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
         <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
         <option style="background-color:black" value="http://localhost:8080" id="sp">SweetPotatoBase</option>

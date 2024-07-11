@@ -1,10 +1,9 @@
 <%# --page actions-- %>
 
 <%args>
-$run_beagle => undef
 $projdir
 $ref_path
-$cancel_var => undef
+$run_beagle => undef
 $email_address =>undef
 </%args>
 
@@ -26,11 +25,11 @@ $email_address =>undef
         <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
         <input type="hidden" value="email_address" id="email_address" name="email_address" />
     </form>
-    <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="emailCheck()" >Submit Analysis</button>
+    <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
     <br/>
     <br/>
     <div id="beagle_div">
-        <input type="checkbox" id="beagle" name="beagle" value="beagle">
+        <input type="checkbox" id="beagle" name="beagle" value="beagle" onclick="beagleCheck()">
         <label for="beagle"> Post-analysis imputation using Beagle </label>
     </div>
     <br/>
@@ -58,26 +57,19 @@ $email_address =>undef
 <script>
 
 $( document ).ready(function(){
-    $('#analysis_button').click(function(){
-        if(document.getElementById('beagle').checked){
-            // alert("beagle time");
-            var run_beagle = 1;
-            document.getElementById('run_beagle').value = 1;
-        }
-    });
+    //get cookie from sgn
+    sgn_cookie = Cookies.get('sgn_session_id');
+    get_email_address(sgn_cookie);
+
+    //set default beagle value to 0 (don't run beagle)
+    run_beagle = 0;
+    document.getElementById('run_beagle').value = run_beagle;
+    return run_beagle;
 });
-//variables
-var email_input;
-var email_address;
-
-//get cookie from sgn
-sgn_cookie = Cookies.get('sgn_session_id');
-
-get_email_address(sgn_cookie);
 
 //functions
 function get_email_address(cookie){
-
+//get email address based on sgn username
     jQuery.ajax( {
 //            change to below once gbsapp has site permissions
 //            url : domain+'/user/cookie_login/'+cookie,
@@ -104,30 +96,53 @@ function get_email_address(cookie){
 }
 
 function formChanged() {
+//update email variable when user writes in email form
     email_input = document.getElementsByName("email_input")[0].value;
     email_address = email_input;
     document.getElementById('email_address').value = email_address;
-    console.log(email_address);
     return email_address;
 }
 
+function beagleCheck() {
+//update beagle value if user clicks on beagle checkbox
+    if(document.getElementById('beagle').checked) {
+        console.log("beagle time");
+        run_beagle = 1;
+        document.getElementById('run_beagle').value = run_beagle;
+        console.log("run beagle value is...");
+        console.log(document.getElementById('run_beagle').value);
+        return run_beagle;
+    }
+    else {
+        console.log("not beagle time");
+        run_beagle = 0;
+        document.getElementById('run_beagle').value = run_beagle;
+        console.log("run beagle value is...");
+        console.log(document.getElementById('run_beagle').value);
+        return run_beagle;
+    }
+    return run_beagle;
+}
+
 function validateEmail(email) {
+//make sure email is in an email-like format
   var re = /\S+@\S+\.\S+/;
   return re.test(email);
 }
 
 function emailCheck() {
-    console.log("email address is")
-    console.log(email_address)
-    //check that email is accurate
+//give error if email format is not valid
     if(validateEmail(email_address)){
         document.getElementById('analysis_form').submit();
     }
     else {
-        alert("Invalid email. Please check it and re-enter your email address.")
+        alert("Invalid email. Please check it and re-enter your email address.");
     }
 }
 
-console.log(email_address)
-console.log(validateEmail(email_address))
+function analysisButton() {
+//check email when analysis button is clicked
+    emailCheck();
+}
+
 </script>
