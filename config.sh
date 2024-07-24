@@ -10,7 +10,7 @@ lib_type=RRS
 ###Variantcalling
 ###################################################
 ploidy=2
-Get_Chromosome=TF_Chr01
+Get_Chromosome=mev6_Chr01
 
 ### SNP-filtering:
 ####################################################

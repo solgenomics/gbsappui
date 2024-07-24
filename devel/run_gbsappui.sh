@@ -7,6 +7,13 @@ email_address=$3
 # run_filtering=$4
 
 #functions:
+initial_email () {
+    #formatting email
+    body=$1
+    #send email
+    /gbsappui/devel/mail.sh "$email_address" "GBSapp Analysis Begun" "$body" "" "";
+}
+
 error_email () {
     #formatting email
     body=$1
@@ -71,6 +78,9 @@ beagle () {
 #     fi
 # }
 
+#send initial email to test if the email is working
+initial_body="Your GBS analysis has begun! You will receive the results at this address when it completes. "
+initial_email "$initial_body"
 #working I think
 chmod -R 770 ${projdir}
 cd ${projdir}

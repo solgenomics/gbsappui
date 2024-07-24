@@ -22,9 +22,11 @@ sub choose_ref:Path('/choose_ref') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $refgenomes_json = $c->config->{refgenomes_json};
+    my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
+    $c->stash->{refgenomes_labels_json}=$refgenomes_labels_json;
     $c->stash->{template}="choose_ref.mas";
 }
 

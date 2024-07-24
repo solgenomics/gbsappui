@@ -3,6 +3,7 @@
 <%args>
 $ref_path => undef
 $refgenomes_json
+$refgenomes_labels_json
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -16,12 +17,10 @@ var domain;
 var instance;
 
 //functions
-// function uploadwait() {
-//     window.location.href = 'http://localhost:8090/upload_fastq/';
-// }
 
 function get_refgenomes(instance) {
     var refgenomes = JSON.parse('<% $refgenomes_json %>');
+    var labels = JSON.parse('<% $refgenomes_labels_json %>');
     var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20; border:10px double white">Choose a reference genome: </label></b>';
     html+='<select id="';
     html+=instance;
@@ -29,7 +28,7 @@ function get_refgenomes(instance) {
     for (const key in refgenomes[instance]) {
         html+='<option style="background-color:black" value="';
         html+=refgenomes[instance][key];
-        html+='"'+refgenomes[instance][key]+'">'+refgenomes[instance][key]+'</option>';
+        html+='"'+refgenomes[instance][key]+'">'+labels[instance][key]+'</option>';
     }
     html += '</select>';
     return html;
@@ -38,7 +37,6 @@ function get_refgenomes(instance) {
 function refgenome_choose() {
     var chosen_ref = document.getElementById(`${instance}`).value;
     var ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
-    console.log(`choose_ref.mas ref path is ${ref_path}`);
     document.getElementById('ref_path').value = ref_path;
     setTimeout(() => {  console.log('Just a quick nap.'); }, 9000);
 }
@@ -50,8 +48,6 @@ $( document ).ready(function(){
     console.log("index is "+instance);
     var html = get_refgenomes(instance);
     jQuery('#refgenome_dropdown_all').html(html);
-//    jQuery(`#refgenome_${instance}`).show();
-    // ref_dropdown = document.getElementById(`${instance}`);
 });
 
 </script>
@@ -68,47 +64,7 @@ $( document ).ready(function(){
   <%# ----Choose refgenome dropdown---- %>
   <div id="refgenome_dropdown_all">
   </div>
-  <!--
-    <div id="refgenome_dropdown_all">
-      <b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:75; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20;">Choose a reference genome: </label></b>
 
-      <div id="refgenome_cassava" hidden>
-        <select id="cassava" style="font-size:18;position:relative;top:-75;right:-140">
-          <option style="background-color:black" value="manihot_esculenta_v6.0.fasta">Manihot Esculenta (Cassava) Version 6</option>
-          <option style="background-color:black" value="manihot_esculenta_v8.0.fasta">Manihot Esculenta (Cassava) Version 8</option>
-        </select>
-      </div>
-
-      <div id="refgenome_musa" hidden>
-        <select id="musa" style="font-size:18;position:relative;top:-75;right:-140">
-          <option style="background-color:black" value="musa_acuminata_malaccensis_v2.fasta">Musa Acuminata Malaccensis (Banana) Version 2</option>
-        </select>
-      </div>
-
-      <div id="refgenome_sgn" hidden>
-        <select id="sgn" style="font-size:18;position:relative;top:-75;right:-140">
-          <option style="background-color:black" value="c_annuum_dempsey.fasta">Capsicum Annuum Dempsey (Bell Pepper)</option>
-          <option style="background-color:black" value="solanum_lycopersicum_v4.fasta">Solanum Lycopersicum (Tomato) Version 4</option>
-          <option style="background-color:black" value="solanum_melongena_v4.1.fasta">Solanum Melongena (Eggplant) Version 4.1</option>
-          <option style="background-color:black" value="solanum_tuberosum_.v6.1.fasta">Solanum Tuberosum (Potato) Version 6.1</option>
-        </select>
-      </div>
-
-      <div id="refgenome_sp" hidden>
-        <select id="sp" style="font-size:18;position:relative;top:-75;right:-140">
-          <option style="background-color:black" value="ipomoea_batatas.fasta">Ipomoea Batatas (Sweet Potato)</option>
-          <option style="background-color:black" value="TF.fasta">Ipomoea Trifida (Threefork Morning Glory)</option>
-          <option style="background-color:black" value="ipomoea_triloba_v1.fasta">Ipomoea Triloba (Alea Morning Glory/Littlebell)</option>
-        </select>
-      </div>
-
-      <div id="refgenome_yam" hidden>
-        <select id="yam" style="font-size:18;position:relative;top:-75;right:-140">
-          <option style="background-color:black" value="dioscorea_alata_v2.1.fasta">Dioscorea Alata (Yam) Version 2.1</option>
-        </select>
-      </div>
-
-      -->
       <%# ----Upload reference genome---- %>
 
       <div id="upload_ref">
@@ -116,7 +72,6 @@ $( document ).ready(function(){
 
       <%# ----Submit refgenome selection button---- %>
 
-      <%#<input type="hidden" name="projdir" value=$projdir %>
       <form action="/upload_fastq">
           <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
           <input type="hidden" id="ref_path" name="ref_path" />
