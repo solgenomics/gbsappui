@@ -3,6 +3,7 @@
 <%args>
 $projdir
 $email_address
+$gbsappui_domain_name
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -13,7 +14,7 @@ $email_address
 <script>
 //functions
 function redirect(){
-    window.location.href="http://localhost:8090";
+    window.location.href=gbsappui_domain_name;
 }
 
 $( document ).ready(function(){

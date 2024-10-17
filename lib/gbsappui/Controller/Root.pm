@@ -33,7 +33,9 @@ The root page (/)
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
     my $websites_json = $c->config->{websites_json};
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     $c->stash->{websites_json}=$websites_json;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template}="index.mas";
 }
 

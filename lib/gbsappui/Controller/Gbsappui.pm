@@ -24,9 +24,11 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $refgenomes_json = $c->config->{refgenomes_json};
     my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{refgenomes_labels_json}=$refgenomes_labels_json;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template}="choose_ref.mas";
 }
 
@@ -37,7 +39,9 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path=$c->req->param('ref_path');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     $c->stash->{ref_path} = $ref_path;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template}="upload_fastq.mas";
 }
 
@@ -47,6 +51,7 @@ sub submit:Path('/submit') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
 
     #make email variable
     my $email_address = "noemail";
@@ -99,6 +104,7 @@ sub submit:Path('/submit') : Args(0){
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template} = "submit.mas";
 }
 
@@ -108,6 +114,7 @@ sub analyze:Path('/analyze') : Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
     $c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
     $c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $projdir=$c->req->param('projdir');
     my $run_beagle=$c->req->param('run_beagle');
     my $email_address=$c->req->param('email_address');
@@ -123,6 +130,7 @@ sub analyze:Path('/analyze') : Args(0){
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template}="analyze.mas";
 }
 
@@ -131,6 +139,7 @@ sub cancel:Path('/cancel') : Args(0) {
     my $c=shift;
     my $projdir=$c->req->param('projdir');
     my $email_address=$c->req->param('email_address');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     #get job number
     #my $jobnum=$c->req->param('jobnum') #if analyze jobnum code is integrated
 
@@ -155,6 +164,7 @@ sub cancel:Path('/cancel') : Args(0) {
     #redirect to start when analysis complete
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{template}="cancel.mas";
 }
 
@@ -163,9 +173,11 @@ sub results:Path('/results') : Args(0) {
     my $c=shift;
     my $projdir=$c->req->param('projdir');
     my $email_address=$c->req->param('email_address');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
     $c->stash->{template}="results.mas";
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
 }
 
 

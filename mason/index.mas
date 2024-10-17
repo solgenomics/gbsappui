@@ -2,6 +2,7 @@
 <onload="/">
 <%args>
 $websites_json
+$gbsappui_domain_name
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -15,6 +16,7 @@ $websites_json
 var domain;
 var instance;
 var inst_dropdown;
+var gbsappui_domain_name = '<% $gbsappui_domain_name %>';
 
 //functions
 //checking if logged into chosen instance
@@ -38,11 +40,10 @@ function instance_login_check() {
   instance = inst_dropdown.options[inst_dropdown.selectedIndex].id;
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
-  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
 
-  //temporarily still just sending it to localhost as don't have permissions for any other places for my localhost
-  //use below when not using localhost anymore
-  //  window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';;
+  //Localhost version
+  //  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
 }
 
 $( document ).ready(function(){
