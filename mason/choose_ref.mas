@@ -4,6 +4,7 @@
 $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
+$gbsappui_domain_name => ''
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>

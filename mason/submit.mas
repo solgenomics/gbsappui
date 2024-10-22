@@ -71,9 +71,8 @@ $( document ).ready(function(){
 function get_email_address(cookie){
 //get email address based on sgn username
     jQuery.ajax( {
-//            change to below once gbsapp has site permissions
-//            url : domain+'/user/cookie_login/'+cookie,
-        url : 'http://localhost:8080/user/cookie_login/'+cookie,
+        url : domain+'/user/cookie_login/'+cookie,
+//        url : 'http://localhost:8080/user/cookie_login/'+cookie,
         success: function(response){
             if(response.error){
                 alert(response.error);

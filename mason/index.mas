@@ -11,8 +11,6 @@ $gbsappui_domain_name
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <script>
-//in instance choice div below once gbsapp has site permissions replace cassavabase localhost url with:
-// <option style="background-color:black" value="https://cassava-test.sgn.cornell.edu" id="cassava">CassavaBase</option>
 var domain;
 var instance;
 var inst_dropdown;
@@ -71,12 +69,13 @@ $( document ).ready(function(){
       <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:605; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; border:10px double white">Choose a BreeDBase Instance:</label></b>
 
       <div id="instance">
+        //below is hard-coded version: not in use
         <!--
         <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">
-        <option style="background-color:black" value="http://localhost:8080" id="cassava">CassavaBase</option>
+        <option style="background-color:black" value="https://cassavabase.org" id="cassava">CassavaBase</option>
         <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
         <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
-        <option style="background-color:black" value="http://localhost:8080" id="sp">SweetPotatoBase</option>
+        <option style="background-color:black" value="https://sweetpotatobase.org" id="sp">SweetPotatoBase</option>
         <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
         </select>
         -->

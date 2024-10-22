@@ -125,7 +125,7 @@ sub analyze:Path('/analyze') : Args(0){
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
     print STDERR "Project directory is $projdir \n";
-    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address` or die "Didn't run: $!\n";
+    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name` or die "Didn't run: $!\n";
     print STDERR "email is $email_address \n";
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;

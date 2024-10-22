@@ -17,7 +17,7 @@ gbsappui_test.pl [options] uri
    --help    display this help and exits
 
  Examples:
-   gbsappui_test.pl http://localhost/some_action
+   gbsappui_test.pl https://gbsappui.breedbase.org/some_action
    gbsappui_test.pl /some_action
 
  See also:

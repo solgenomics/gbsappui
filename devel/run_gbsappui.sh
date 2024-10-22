@@ -4,7 +4,8 @@
 projdir=$1
 run_beagle=$2
 email_address=$3
-# run_filtering=$4
+gbsappui_domain_name=$4
+# run_filtering=$5
 
 #functions:
 initial_email () {
