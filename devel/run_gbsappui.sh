@@ -35,7 +35,7 @@ results_email () {
     chmod 777 /gbsappui/root/results/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your GBSapp analysis can be found at the following link: http://localhost:8090/results/"
+    body="The results for your GBSapp analysis can be found at the following link: ${gbsappui_domain_name}/results/"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "GBSapp Results" "$body" "" "";
 }
