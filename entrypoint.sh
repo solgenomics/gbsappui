@@ -1,5 +1,5 @@
 #!/bin/bash
-chown 106 /etc/munge/munge.key
+chown 102 /etc/munge/munge.key
 cp /gbsappui/slurm.conf  /etc/slurm/
 sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
 cp /gbsappui/config.sh  /GBSapp/examples/proj/

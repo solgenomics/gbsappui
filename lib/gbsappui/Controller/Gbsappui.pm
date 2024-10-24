@@ -10,7 +10,6 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
-use Email::Stuffer;
 
 
 BEGIN {extends 'Catalyst::Controller'};
