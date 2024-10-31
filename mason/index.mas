@@ -38,6 +38,7 @@ function instance_login_check() {
   instance = inst_dropdown.options[inst_dropdown.selectedIndex].id;
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
+  localStorage.setItem("gbsappui_domain_name",gbsappui_domain_name);
   window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
 
   //Localhost version

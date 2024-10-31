@@ -47,10 +47,13 @@ $gbsappui_domain_name => ''
 //variables
 var instance;
 var domain;
+var gbsappui_domain_name;
 
 $( document ).ready(function(){
     //get chosen breedbase instance domain
     domain = localStorage.getItem("gbs_domain");
+    //get gbsappui domain name
+    gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
     //setup login button
     jQuery('#login_button').on('click', function(){
       //localhost version:
