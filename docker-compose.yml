@@ -1,0 +1,31 @@
+
+services:
+  gbsappui:
+    image: breedbase/gbsappui:v0.03
+
+    container_name: gbsappui_web
+    ports:
+      - 8111:8090
+    volumes:
+      - type: bind
+        source: /export/prod/public_gbsappui/refgenomes 
+        target: /refgenomes
+      - type: bind
+        source: /export/prod2/gbsappui
+        target: /data
+      - type: bind
+        source: gbsappui_local.conf
+        target: /gbsappui/gbsappui_local.conf
+      - type: bind
+        source: gbsappui.conf
+        target: /gbsappui/gbsappui.conf
+      - type: bind
+        source: lib/
+        target: /gbsappui/lib
+
+
+
+
+
+
+
