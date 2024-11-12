@@ -16,6 +16,7 @@ $gbsappui_domain_name => ''
 //variables
 var domain;
 var instance;
+var gbsappui_domain_name;
 
 //functions
 
@@ -46,6 +47,7 @@ function refgenome_choose() {
 $( document ).ready(function(){
     domain = localStorage.getItem("gbs_domain");
     instance = localStorage.getItem("gbs_instance");
+    gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
     console.log("index is "+instance);
     var html = get_refgenomes(instance);
     jQuery('#refgenome_dropdown_all').html(html);
