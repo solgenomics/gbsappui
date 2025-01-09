@@ -28,6 +28,7 @@ RUN cpanm Module::Pluggable --force
 RUN cpanm Devel::InnerPackage Catalyst Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
 
 #clone gbsappui from github
+RUN echo "gbsappui change"
 RUN git clone https://github.com/solgenomics/gbsappui
 
 #install npm, jquery, and js-cookie
