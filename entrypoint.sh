@@ -5,7 +5,6 @@ cp /gbsappui/config.sh  /GBSapp/examples/proj/
 chown munge /etc/munge/munge.key
 chmod 400 /etc/munge/munge.key
 /etc/init.d/munge start
-/etc/init.d/munge restart
 /etc/init.d/slurmctld start
 /etc/init.d/slurmd start
 /etc/init.d/postfix start
