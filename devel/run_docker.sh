@@ -1,1 +1,1 @@
-docker run --name gbsappui_docker --mount type=bind,source=$HOME/breedbase_dockerfile/cxgn/gbsappui,destination=/gbsappui --mount type=bind,source=$HOME/Desktop/genomes/,destination=/refgenomes -p 8090:8090 gbsappui_docker
+docker run -d -it --name gbsappui_docker --privileged --cgroupns=host --tmpfs=/run --tmpfs=/tmp --volume=/sys/fs/cgroup:/sys/fs/cgroup:rw gbsappui_docker:latest --mount type=bind,source=$HOME/breedbase_dockerfile/cxgn/gbsappui,destination=/gbsappui --mount type=bind,source=$HOME/Desktop/genomes/,destination=/refgenomes -p 8090:8090 gbsappui_docker
