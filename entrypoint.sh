@@ -5,6 +5,13 @@ sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
 cp /gbsappui/config.sh  /GBSapp/examples/proj/
 chown munge /etc/munge/munge.key
 chmod 400 /etc/munge/munge.key
+RUN conda config --add channels conda-forge
+RUN conda config --add channels defaults
+RUN conda config --add channels r
+RUN conda config --add channels bioconda
+
+#Install ngm
+RUN conda install nextgenmap -y
 /etc/init.d/munge start
 /etc/init.d/slurmctld start
 /etc/init.d/slurmd start
