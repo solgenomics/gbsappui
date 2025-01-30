@@ -38,9 +38,24 @@ RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd 
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
 
-#Install GBSapp dependencies
+#Replace install script and internal parameters with updated versions for ngm changes
+RUN cp /gbsappui/GBSapp_internal_parameters.sh /GBSapp/scripts/
+RUN cp /gbsappui/install.sh /GBSapp/scripts/
+
+#Install GBSapp dependencies except ngm
 RUN cd /GBSapp/ \
     && ./GBSapp install
+
+#Install and configure miniconda for ngm installation
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN bash ~/Miniconda3-latest-Linux-x86_64.sh -b
+RUN conda config --add channels conda-forge
+RUN conda config --add channels defaults
+RUN conda config --add channels r
+RUN conda config --add channels bioconda
+
+#Install ngm
+RUN conda install nextgenmap -y
 
 ##install java
 RUN cd /GBSapp/tools/ && wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
