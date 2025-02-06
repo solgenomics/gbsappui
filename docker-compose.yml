@@ -1,7 +1,7 @@
 
 services:
   gbsappui:
-    image: breedbase/gbsappui:v0.03
+    image: breedbase/gbsappui:v0.04
 
     container_name: gbsappui_web
     ports:
