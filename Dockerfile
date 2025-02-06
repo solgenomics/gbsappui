@@ -46,9 +46,21 @@ RUN cp /gbsappui/install.sh /GBSapp/scripts/
 RUN cd /GBSapp/ \
     && ./GBSapp install
 
-#Install and configure miniconda for ngm installation
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash /Miniconda3-latest-Linux-x86_64.sh -b
+#Install and configure miniconda for ngm installation and install ngm
+ENV PATH="/root/miniconda3/bin:$PATH"
+ARG PATH="/root/miniconda3/bin:$PATH"
+
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && mkdir -p /root/.conda \
+    && bash /Miniconda3-latest-Linux-x86_64.sh -b -p /root/miniconda3 \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh
+
+RUN conda init \
+    && conda config --add channels conda-forge \
+    && conda config --add channels defaults \
+    && conda config --add channels r \
+    && conda config --add channels bioconda \
+    && conda install nextgenmap -y
 
 ##install java
 RUN cd /GBSapp/tools/ && wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
