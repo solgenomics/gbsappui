@@ -28,7 +28,6 @@ RUN cpanm Module::Pluggable --force
 RUN cpanm Devel::InnerPackage Catalyst Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
 
 #clone gbsappui from github
-RUN echo "gbsappui change"
 RUN git clone https://github.com/solgenomics/gbsappui
 
 #install npm, jquery, and js-cookie
@@ -85,8 +84,8 @@ RUN cp ./GBSapp/examples/input_steps.txt /project/
 #Setup system files and Edit permissions
 RUN rm /etc/munge/munge.key
 RUN chmod 777 /var/spool/ \
-  && mkdir /var/spool/slurmstate \
-  && chown slurm:slurm /var/spool/slurmstate/ \
+  && mkdir /var/spool/slurmd \
+  && chown slurm:slurm /var/spool/slurmd/ \
   && /usr/sbin/mungekey \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm
