@@ -39,10 +39,9 @@ function instance_login_check() {
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
   localStorage.setItem("gbsappui_domain_name",gbsappui_domain_name);
-  window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
-
+  //window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
   //Localhost version
-  //  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
 }
 
 $( document ).ready(function(){

@@ -57,8 +57,8 @@ $( document ).ready(function(){
     //setup login button
     jQuery('#login_button').on('click', function(){
       //localhost version:
-      //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090'
-      window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+      window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090'
+      //window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
   })
 
   //setup logout button
@@ -82,9 +82,9 @@ $( document ).ready(function(){
     function get_username(cookie){
 
         jQuery.ajax( {
-//            change to below once gbsapp has site permissions
-//            localhost version : 'http://localhost:8080/user/cookie_login/'+cookie,
-            url : domain+'/user/cookie_login/'+cookie,
+//            change to second below once you switch from localhost
+              url :'http://localhost:8080/user/cookie_login/'+cookie,
+//            url : domain+'/user/cookie_login/'+cookie,
             success: function(response){
                 if(response.error){
                     alert(response.error);
