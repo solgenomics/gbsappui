@@ -65,7 +65,8 @@ $( document ).ready(function(){
   document.getElementById('logout_button').onclick = function() {logout()};
 
   //get cookie from sgn
-  sgn_cookie = Cookies.get('sgn_session_id');
+url = window.location;
+sgn_cookie = new URLSearchParams(url.search).get('access_token');
 
   //check if there's a cookie (if someone is logged in)
   if (sgn_cookie) {
