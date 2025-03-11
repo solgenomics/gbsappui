@@ -1,6 +1,7 @@
 <%# --page actions-- %>
 <%args>
 $ref_path
+$sgn_cookie
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
