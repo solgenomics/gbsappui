@@ -1,5 +1,6 @@
 <%args>
 $gbsappui_domain_name => ''
+$sgn_cookie => ''
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -64,20 +65,30 @@ $( document ).ready(function(){
   //setup logout button
   document.getElementById('logout_button').onclick = function() {logout()};
 
-  //get cookie from sgn
-  sgn_cookie = Cookies.get('sgn_session_id');
-
   //check if there's a cookie (if someone is logged in)
   if (sgn_cookie) {
       get_username(sgn_cookie);
       jQuery("#please_login").hide();
       jQuery("#page_function").show();
       jQuery("#logout_button").show();
+      console.log(sgn_cookie);
   } else {
-      jQuery("#please_login").show();
-      jQuery("#page_function").hide();
-      jQuery("#logout_button").hide();
-    }
+      //get cookie from sgn
+      url = window.location;
+      sgn_cookie = new URLSearchParams(url.search).get('access_token');
+      if (sgn_cookie) {
+          get_username(sgn_cookie);
+          jQuery("#please_login").hide();
+          jQuery("#page_function").show();
+          jQuery("#logout_button").show();
+          console.log(sgn_cookie);
+      else {
+          jQuery("#please_login").show();
+          jQuery("#page_function").hide();
+          jQuery("#logout_button").hide();
+          console.log("no cookie")
+      }
+  }
 
     function get_username(cookie){
 
@@ -116,7 +127,7 @@ $( document ).ready(function(){
       var answer = confirm("Are you sure you want to log out?");
 
       if (answer === true) {
-        Cookies.remove('sgn_session_id');
+        sgn_cookie = null;
         window.location.reload();
       }
      }

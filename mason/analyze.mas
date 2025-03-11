@@ -5,6 +5,7 @@ $run_beagle
 $projdir
 $email_address
 $gbsappui_domain_name
+$sgn_cookie
 </%args>
 
 <%# ----header---- %>

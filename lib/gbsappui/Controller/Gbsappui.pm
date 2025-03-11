@@ -39,8 +39,10 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path=$c->req->param('ref_path');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $sgn_cookie=$c->req->param('sgn_cookie');
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_cookie}=$sgn_cookie;
     $c->stash->{template}="upload_fastq.mas";
 }
 
@@ -99,11 +101,14 @@ sub submit:Path('/submit') : Args(0){
     #     # edit config file
     # }
 
+    my $sgn_cookie=$c->req->param('sgn_cookie');
+
     $c->stash->{email_address} = $email_address;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_cookie}=$sgn_cookie;
     $c->stash->{template} = "submit.mas";
 }
 
@@ -126,10 +131,12 @@ sub analyze:Path('/analyze') : Args(0){
     print STDERR "Project directory is $projdir \n";
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name` or die "Didn't run: $!\n";
     print STDERR "email is $email_address \n";
+    my $sgn_cookie=$c->req->param('sgn_cookie');
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_cookie}=$sgn_cookie;
     $c->stash->{template}="analyze.mas";
 }
 
@@ -161,9 +168,11 @@ sub cancel:Path('/cancel') : Args(0) {
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
     #redirect to start when analysis complete
+    my $sgn_cookie=$c->req->param('sgn_cookie');
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_cookie}=$sgn_cookie;
     $c->stash->{template}="cancel.mas";
 }
 

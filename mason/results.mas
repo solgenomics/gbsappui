@@ -23,7 +23,7 @@ $projdir
 
 <%# ----header---- %>
 
-<& /site/header.mas &>
+<& /site/index_header.mas &>
 
 <%# ----main page---- %>
 test

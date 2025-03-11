@@ -5,6 +5,7 @@ $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
 $gbsappui_domain_name => ''
+$sgn_cookie => ''
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -49,6 +50,7 @@ $( document ).ready(function(){
     instance = localStorage.getItem("gbs_instance");
     gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
     console.log("index is "+instance);
+    console.log("sgn_cookie is"+sgn_cookie);
     var html = get_refgenomes(instance);
     jQuery('#refgenome_dropdown_all').html(html);
 });
