@@ -1,7 +1,7 @@
 
 services:
   gbsappui:
-    image: breedbase/gbsappui:v0.06
+    build: .
     privileged: true
     container_name: gbsappui_web
     ports:
