@@ -5,7 +5,6 @@ $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
 $gbsappui_domain_name => ''
-$sgn_cookie => ''
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -80,6 +79,7 @@ $( document ).ready(function(){
       <form action="/upload_fastq">
           <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
           <input type="hidden" id="ref_path" name="ref_path" />
+          <input type="hidden" id="sgn_cookie" name="sgn_cookie" />
       </form>
     </div>
 

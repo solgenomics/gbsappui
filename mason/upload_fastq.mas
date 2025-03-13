@@ -23,6 +23,7 @@ $sgn_cookie
                     <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
                         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+                        <input type="hidden" value="<% $sgn_cookie %>" id="sgn_cookie" name="sgn_cookie" />
                     </span>
                     </div>
                     <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
@@ -50,6 +51,7 @@ $( document ).ready(function(){
     //remove this when you implement biparental analysis
     jQuery("#biparental_button").hide();
     console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
+    console.log(`upload_fastq.mas sgn cookie is <% $sgn_cookie %>`);
     //biparental form logic
     jQuery("#biparental_info").hide();
     jQuery('#biparental_button').on('click', function(){

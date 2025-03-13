@@ -24,6 +24,8 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $sgn_cookie = "nocookie";
+    $c->stash->{sgn_cookie} = $sgn_cookie;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{refgenomes_labels_json}=$refgenomes_labels_json;

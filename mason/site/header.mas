@@ -1,6 +1,7 @@
 <%args>
 $gbsappui_domain_name => ''
-$sgn_cookie => ''
+$sgn_cookie => undef
+
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -49,6 +50,7 @@ $sgn_cookie => ''
 var instance;
 var domain;
 var gbsappui_domain_name;
+var sgn_cookie;
 
 $( document ).ready(function(){
     //get chosen breedbase instance domain
