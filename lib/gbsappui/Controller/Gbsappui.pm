@@ -104,7 +104,6 @@ sub submit:Path('/submit') : Args(0){
     # }
 
     my $sgn_cookie=$c->req->param('sgn_cookie');
-
     $c->stash->{email_address} = $email_address;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
@@ -170,11 +169,9 @@ sub cancel:Path('/cancel') : Args(0) {
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
     #redirect to start when analysis complete
-    my $sgn_cookie=$c->req->param('sgn_cookie');
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
-    $c->stash->{sgn_cookie}=$sgn_cookie;
     $c->stash->{template}="cancel.mas";
 }
 
