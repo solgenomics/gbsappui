@@ -92,7 +92,7 @@ function refgenome_choose() {
     var chosen_ref = document.getElementById(`${instance}`).value;
     var ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
     document.getElementById('ref_path').value = ref_path;
-    setTimeout(() => {  console.log('Just a quick nap.'); }, 9000);
+    setTimeout(() => {  console.log('9000 ms delay'); }, 9000);
 }
 
 //displaying refgenomes of chosen instance
@@ -113,7 +113,6 @@ $( document ).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_token);
     } else {
         //get cookie from sgn
         url = window.location;
@@ -123,17 +122,14 @@ $( document ).ready(function(){
             jQuery("#please_login").hide();
             jQuery("#page_function").show();
             jQuery("#logout_button").show();
-            console.log(sgn_token);
             document.getElementById('sgn_token').value = sgn_token;
         } else {
             jQuery("#please_login").show();
             jQuery("#page_function").hide();
             jQuery("#logout_button").hide();
-            console.log("no cookie")
         }
     }
     jQuery('#refgenome_dropdown_all').html(html);
-    console.log(sgn_token);
 });
 
 </script>

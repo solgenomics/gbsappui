@@ -94,12 +94,10 @@ $( document ).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_token);
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
-        console.log("no cookie")
     }
 });
 

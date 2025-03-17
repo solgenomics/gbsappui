@@ -110,19 +110,13 @@ function formChanged() {
 function beagleCheck() {
 //update beagle value if user clicks on beagle checkbox
     if(document.getElementById('beagle').checked) {
-        console.log("beagle time");
         run_beagle = 1;
         document.getElementById('run_beagle').value = run_beagle;
-        console.log("run beagle value is...");
-        console.log(document.getElementById('run_beagle').value);
         return run_beagle;
     }
     else {
-        console.log("not beagle time");
         run_beagle = 0;
         document.getElementById('run_beagle').value = run_beagle;
-        console.log("run beagle value is...");
-        console.log(document.getElementById('run_beagle').value);
         return run_beagle;
     }
     return run_beagle;
@@ -165,12 +159,10 @@ $( document ).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_token);
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
-        console.log("no cookie")
     }
     //get email from sgn token
     get_email_address(sgn_token);

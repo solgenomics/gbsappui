@@ -24,7 +24,6 @@ function get_websites_dropdown() {
     var html = '<select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in websites) {
         if (websites.hasOwnProperty(key)) {
-            console.log(key+':'+websites[key]);
             html+='<option style="background-color:black" value="';
             html+=websites[key];
             html+='" id="'+key+'">'+key+'</option>';
