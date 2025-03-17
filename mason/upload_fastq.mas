@@ -1,7 +1,7 @@
 <%# --page actions-- %>
 <%args>
 $ref_path
-$sgn_cookie
+$sgn_token
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -15,7 +15,7 @@ var biparental;
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_cookie = '<% $sgn_cookie %>';
+var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 
@@ -23,7 +23,6 @@ var username;
 
 function get_username(cookie){
     jQuery.ajax( {
-//        change to second below once you switch from localhost
           url :'http://localhost:8080/user/cookie_login/'+cookie,
 //        url : domain+'/user/cookie_login/'+cookie,
         success: function(response){
@@ -68,7 +67,7 @@ function logout() {
   var answer = confirm("Are you sure you want to log out?");
 
   if (answer === true) {
-    sgn_cookie = null;
+    sgn_token = null;
     window.location.href='http://localhost:8090/choose_ref/'
   }
 }
@@ -85,12 +84,12 @@ $( document ).ready(function(){
     document.getElementById('logout_button').onclick = function() {logout()};
 
     //check if there's a cookie (if someone is logged in)
-    if (sgn_cookie) {
-        get_username(sgn_cookie);
+    if (sgn_token) {
+        get_username(sgn_token);
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_cookie);
+        console.log(sgn_token);
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
@@ -101,7 +100,7 @@ $( document ).ready(function(){
     //remove this when you implement biparental analysis
     jQuery("#biparental_button").hide();
     console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
-    console.log(`upload_fastq.mas sgn cookie is <% $sgn_cookie %>`);
+    console.log(`upload_fastq.mas sgn cookie is <% $sgn_token %>`);
     //biparental form logic
     jQuery("#biparental_info").hide();
     jQuery('#biparental_button').on('click', function(){
@@ -181,7 +180,7 @@ $( document ).ready(function(){
                     <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
                         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
-                        <input type="hidden" value="<% $sgn_cookie %>" id="sgn_cookie" name="sgn_cookie" />
+                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
                     </span>
                     </div>
                     <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population

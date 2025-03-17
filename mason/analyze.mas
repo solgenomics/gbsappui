@@ -5,7 +5,7 @@ $run_beagle
 $projdir
 $email_address
 $gbsappui_domain_name
-$sgn_cookie
+$sgn_token
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,14 +17,13 @@ $sgn_cookie
 //variables
 var domain;
 var gbsappui_domain_name;
-var sgn_cookie = '<% $sgn_cookie %>';
+var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 
 //functions
 function get_username(cookie){
     jQuery.ajax( {
-//        change to second below once you switch from localhost
           url :'http://localhost:8080/user/cookie_login/'+cookie,
 //        url : domain+'/user/cookie_login/'+cookie,
         success: function(response){
@@ -69,7 +68,7 @@ function logout() {
   var answer = confirm("Are you sure you want to log out? You will no longer be able to cancel the submitted job.");
 
   if (answer === true) {
-    sgn_cookie = null;
+    sgn_token = null;
     window.location.href='http://localhost:8090/choose_ref/';
   }
 }
@@ -90,12 +89,12 @@ $( document ).ready(function(){
     document.getElementById('logout_button').onclick = function() {logout()};
 
     //check if there's a cookie (if someone is logged in)
-    if (sgn_cookie) {
-        get_username(sgn_cookie);
+    if (sgn_token) {
+        get_username(sgn_token);
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_cookie);
+        console.log(sgn_token);
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();

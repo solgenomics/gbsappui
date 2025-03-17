@@ -71,16 +71,8 @@ $( document ).ready(function(){
 
       <div id="instance">
         //below is hard-coded version: not in use
-        <!--
-        <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">
-        <option style="background-color:black" value="https://cassavabase.org" id="cassava">CassavaBase</option>
-        <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
-        <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
-        <option style="background-color:black" value="https://sweetpotatobase.org" id="sp">SweetPotatoBase</option>
-        <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
-        </select>
-        -->
       </div>
+
       <%# ----Submit instance selection button---- %>
 
     <%#<input type="hidden" name="projdir" value=$projdir %>

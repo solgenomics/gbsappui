@@ -4,7 +4,7 @@
 $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
-$sgn_cookie => undef
+$sgn_token => undef
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,14 +17,13 @@ $sgn_cookie => undef
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_cookie;
+var sgn_token;
 var user_id;
 var username;
 
 //functions
 function get_username(cookie){
     jQuery.ajax( {
-//        change to second below once you switch from localhost
           url :'http://localhost:8080/user/cookie_login/'+cookie,
 //        url : domain+'/user/cookie_login/'+cookie,
         success: function(response){
@@ -34,7 +33,7 @@ function get_username(cookie){
                 jQuery("#page_function").hide();
                 jQuery("#logout_button").hide();
                 return false;
-                }
+            }
             if(response.username){
                 username = response.username;
                 user_id = response.user_id;
@@ -67,9 +66,8 @@ function login() {
 
 function logout() {
   var answer = confirm("Are you sure you want to log out?");
-
   if (answer === true) {
-    sgn_cookie = null;
+    sgn_token = null;
     window.location.href='http://localhost:8090/choose_ref/'
   }
 }
@@ -78,7 +76,7 @@ function get_refgenomes(instance) {
     var refgenomes = JSON.parse('<% $refgenomes_json %>');
     var labels = JSON.parse('<% $refgenomes_labels_json %>');
     var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20; border:10px double white">Choose a reference genome: </label></b>';
-    html+='<select id="';
+    html+='<center> <select id="';
     html+=instance;
     html+='" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in refgenomes[instance]) {
@@ -86,7 +84,7 @@ function get_refgenomes(instance) {
         html+=refgenomes[instance][key];
         html+='"'+refgenomes[instance][key]+'">'+labels[instance][key]+'</option>';
     }
-    html += '</select>';
+    html += '</select> </center>';
     return html;
 }
 
@@ -110,23 +108,23 @@ $( document ).ready(function(){
     document.getElementById('logout_button').onclick = function() {logout()};
 
     //check if there's a cookie (if someone is logged in)
-    if (sgn_cookie) {
-        get_username(sgn_cookie);
+    if (sgn_token) {
+        get_username(sgn_token);
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_cookie);
+        console.log(sgn_token);
     } else {
         //get cookie from sgn
         url = window.location;
-        sgn_cookie = new URLSearchParams(url.search).get('access_token');
-        if (sgn_cookie) {
-            get_username(sgn_cookie);
+        sgn_token = new URLSearchParams(url.search).get('access_token');
+        if (sgn_token) {
+            get_username(sgn_token);
             jQuery("#please_login").hide();
             jQuery("#page_function").show();
             jQuery("#logout_button").show();
-            console.log(sgn_cookie);
-            document.getElementById('sgn_cookie').value = sgn_cookie;
+            console.log(sgn_token);
+            document.getElementById('sgn_token').value = sgn_token;
         } else {
             jQuery("#please_login").show();
             jQuery("#page_function").hide();
@@ -135,7 +133,7 @@ $( document ).ready(function(){
         }
     }
     jQuery('#refgenome_dropdown_all').html(html);
-    console.log(sgn_cookie);
+    console.log(sgn_token);
 });
 
 </script>
@@ -189,20 +187,19 @@ $( document ).ready(function(){
 <%# ----refgenome dropdown menu---- %>
 
   <%# ----Choose refgenome dropdown---- %>
-  <div id="refgenome_dropdown_all">
-  </div>
-
-      <%# ----Upload reference genome---- %>
-
-      <div id="upload_ref">
-      </div>
+  <center>
+    <div id="refgenome_dropdown_all" style="position:relative; bottom:20; padding-top:5;">
+    </div>
+  </center>
 
       <%# ----Submit refgenome selection button---- %>
 
       <form action="/upload_fastq">
-          <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
+          <center>
+            <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
+          </center>
           <input type="hidden" id="ref_path" name="ref_path" />
-          <input type="hidden" id="sgn_cookie" name="sgn_cookie" />
+          <input type="hidden" id="sgn_token" name="sgn_token" />
       </form>
     </div>
 

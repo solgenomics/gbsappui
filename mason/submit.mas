@@ -5,7 +5,7 @@ $projdir
 $ref_path
 $run_beagle => undef
 $email_address =>undef
-$sgn_cookie
+$sgn_token
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,14 +17,13 @@ $sgn_cookie
 //variables
 var domain;
 var gbsappui_domain_name;
-var sgn_cookie = '<% $sgn_cookie %>';
+var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 
 //functions
 function get_username(cookie){
     jQuery.ajax( {
-//        change to second below once you switch from localhost
           url :'http://localhost:8080/user/cookie_login/'+cookie,
 //        url : domain+'/user/cookie_login/'+cookie,
         success: function(response){
@@ -69,7 +68,7 @@ function logout() {
   var answer = confirm("Are you sure you want to log out?");
 
   if (answer === true) {
-    sgn_cookie = null;
+    sgn_token = null;
     window.location.href='http://localhost:8090/choose_ref/'
   }
 }
@@ -161,12 +160,12 @@ $( document ).ready(function(){
     document.getElementById('logout_button').onclick = function() {logout()};
 
     //check if there's a cookie (if someone is logged in)
-    if (sgn_cookie) {
-        get_username(sgn_cookie);
+    if (sgn_token) {
+        get_username(sgn_token);
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log(sgn_cookie);
+        console.log(sgn_token);
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
@@ -174,7 +173,7 @@ $( document ).ready(function(){
         console.log("no cookie")
     }
     //get email from sgn token
-    get_email_address(sgn_cookie);
+    get_email_address(sgn_token);
 
     //set default beagle value to 0 (don't run beagle)
     run_beagle = 0;
@@ -235,7 +234,7 @@ $( document ).ready(function(){
         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
         <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
         <input type="hidden" value="email_address" id="email_address" name="email_address" />
-        <input type="hidden" value="<% $sgn_cookie %>" id="sgn_cookie" name="sgn_cookie" />
+        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
     </form>
     <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
     <br/>
