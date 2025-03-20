@@ -19,6 +19,15 @@ services:
       - type: bind
         source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/lib/
         target: /gbsappui/lib
+      - type: bind
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/slurm.conf
+        target: /etc/slurm/slurm.conf
+      - type: bind
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/cgroup.conf
+        target: /etc/slurm/cgroup.conf
+      - type: bind
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/config.sh
+        target: /GBSapp/examples/proj/config.sh
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     tmpfs:
       - /run

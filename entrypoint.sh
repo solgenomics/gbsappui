@@ -1,8 +1,5 @@
 #!/bin/bash
-cp /gbsappui/slurm.conf  /etc/slurm/
-cp /gbsappui/cgroup.conf  /etc/slurm/
 sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
-cp /gbsappui/config.sh  /GBSapp/examples/proj/
 chown munge /etc/munge/munge.key
 chmod 400 /etc/munge/munge.key
 /etc/init.d/munge start
