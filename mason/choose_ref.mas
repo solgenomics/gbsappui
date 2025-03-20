@@ -4,7 +4,7 @@
 $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
-$gbsappui_domain_name => ''
+$sgn_token => undef
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,14 +17,67 @@ $gbsappui_domain_name => ''
 var domain;
 var instance;
 var gbsappui_domain_name;
+var sgn_token;
+var user_id;
+var username;
 
 //functions
+function get_username(cookie){
+    jQuery.ajax( {
+//          url :'http://localhost:8080/user/cookie_login/'+cookie,
+        url : domain+'/user/cookie_login/'+cookie,
+        success: function(response){
+            if(response.error){
+                alert(response.error);
+                jQuery("#please_login").hide();
+                jQuery("#page_function").hide();
+                jQuery("#logout_button").hide();
+                return false;
+            }
+            if(response.username){
+                username = response.username;
+                user_id = response.user_id;
+                $("#login_button").html(username);
+                let buttonwidth = (username.length * 8) + 20;
+                let buttonlocation = -112 + buttonwidth;
+                $("#login_button").css({"right": buttonlocation + "px", "width": buttonwidth});
+                jQuery("#please_login").hide();
+                jQuery("#page_function").show();
+                jQuery("#logout_button").show();
+            }
+            else {
+                jQuery("#please_login").show();
+                jQuery("#page_function").hide();
+                jQuery("#logout_button").hide();
+            }
+        }
+    })
+}
+
+function login() {
+  if (username) {
+    window.location.href=domain+'/solpeople/profile/'+user_id;
+  } else {
+    //localhost version:
+    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+  }
+}
+
+function logout() {
+  var answer = confirm("Are you sure you want to log out?");
+  if (answer === true) {
+    sgn_token = null;
+    //window.location.href='http://localhost:8090/choose_ref/';
+    window.location.href=gbsappui_domain_name+'/choose_ref/';
+  }
+}
 
 function get_refgenomes(instance) {
     var refgenomes = JSON.parse('<% $refgenomes_json %>');
     var labels = JSON.parse('<% $refgenomes_labels_json %>');
     var html = '<b><label for="refgenome_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:800; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; color:white; font-size:20; border:10px double white">Choose a reference genome: </label></b>';
-    html+='<select id="';
+    html+='<center> <select id="';
     html+=instance;
     html+='" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in refgenomes[instance]) {
@@ -32,7 +85,7 @@ function get_refgenomes(instance) {
         html+=refgenomes[instance][key];
         html+='"'+refgenomes[instance][key]+'">'+labels[instance][key]+'</option>';
     }
-    html += '</select>';
+    html += '</select> </center>';
     return html;
 }
 
@@ -40,7 +93,7 @@ function refgenome_choose() {
     var chosen_ref = document.getElementById(`${instance}`).value;
     var ref_path = "/refgenomes/"+instance+"/"+chosen_ref;
     document.getElementById('ref_path').value = ref_path;
-    setTimeout(() => {  console.log('Just a quick nap.'); }, 9000);
+    setTimeout(() => {  console.log('9000 ms delay'); }, 9000);
 }
 
 //displaying refgenomes of chosen instance
@@ -48,8 +101,35 @@ $( document ).ready(function(){
     domain = localStorage.getItem("gbs_domain");
     instance = localStorage.getItem("gbs_instance");
     gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
-    console.log("index is "+instance);
     var html = get_refgenomes(instance);
+    //setup login button
+    document.getElementById('login_button').onclick = function() {login()};
+
+    //setup logout button
+    document.getElementById('logout_button').onclick = function() {logout()};
+
+    //check if there's a cookie (if someone is logged in)
+    if (sgn_token) {
+        get_username(sgn_token);
+        jQuery("#please_login").hide();
+        jQuery("#page_function").show();
+        jQuery("#logout_button").show();
+    } else {
+        //get cookie from sgn
+        url = window.location;
+        sgn_token = new URLSearchParams(url.search).get('access_token');
+        if (sgn_token) {
+            get_username(sgn_token);
+            jQuery("#please_login").hide();
+            jQuery("#page_function").show();
+            jQuery("#logout_button").show();
+            document.getElementById('sgn_token').value = sgn_token;
+        } else {
+            jQuery("#please_login").show();
+            jQuery("#page_function").hide();
+            jQuery("#logout_button").hide();
+        }
+    }
     jQuery('#refgenome_dropdown_all').html(html);
 });
 
@@ -57,7 +137,46 @@ $( document ).ready(function(){
 
 <%# ----header---- %>
 
-<& /site/header.mas &>
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="/static/js/node_modules/bootstrap/dist/css/bootstrap.min.css">
+<body style="margin:0;padding:0">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+                    <a href="https://github.com/bodeolukolu/GBSapp">
+                        <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
+                    </a>
+                <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
+                    <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
+                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
+                        </button>
+                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                        </button>
+                    </span>
+                </ul>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<%# ----please login dialog---- %>
+
+<center>
+  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:20">
+    <span style="position:relative;left:0">
+      <b>Please <a onclick="login()">log in</a> or <a href="/">choose a different breedbase instance</a></b>
+    </span>
+  </div>
+  <br />
+</center>
 
 <center>
 
@@ -65,19 +184,19 @@ $( document ).ready(function(){
 <%# ----refgenome dropdown menu---- %>
 
   <%# ----Choose refgenome dropdown---- %>
-  <div id="refgenome_dropdown_all">
-  </div>
-
-      <%# ----Upload reference genome---- %>
-
-      <div id="upload_ref">
-      </div>
+  <center>
+    <div id="refgenome_dropdown_all" style="position:relative; bottom:20; padding-top:5;">
+    </div>
+  </center>
 
       <%# ----Submit refgenome selection button---- %>
 
       <form action="/upload_fastq">
-          <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
+          <center>
+            <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
+          </center>
           <input type="hidden" id="ref_path" name="ref_path" />
+          <input type="hidden" id="sgn_token" name="sgn_token" />
       </form>
     </div>
 

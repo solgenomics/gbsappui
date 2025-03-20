@@ -31,11 +31,12 @@ results_email () {
     #zip file and move to results folder
     nopath_projdir=$(echo $projdir | awk '{n=split($0,a,"/");print a[3]}')
     cd ${projdir}
-    tar -zcvf /gbsappui/root/results/analysis_results.tar.gz *
-    chmod 777 /gbsappui/root/results/analysis_results.tar.gz
+    mkdir /gbsappui/root/results/$nopath_projdir/
+    tar -zcvf /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz *
+    chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your GBSapp analysis can be found at the following link: ${gbsappui_domain_name}/results/"
+    body="The results for your GBSapp analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "GBSapp Results" "$body" "" "";
 }

@@ -11,26 +11,33 @@ $projdir
 
 <script>
 //functions
-//function functionname(){
-//    ;
-//}
+function build_link(nopath_projdir) {
+    var html = '<a style="position:relative;top:6;" href="';
+    html+=nopath_projdir;
+    html+='/analysis_results.tar.gz';
+    html+='" download="analysis_results.tar.gz">Download Results </a>';
+    return html;
+}
 
-//$( document ).ready(function(){
-//    functionname();
-//});
+$(document).ready(function(){
+    url = window.location;
+    nopath_projdir = new URLSearchParams(url.search).get('nopath_projdir');
+    console.log(nopath_projdir);
+    console.log(url);
+    var html = build_link(nopath_projdir);
+    jQuery('#download').html(html);
+}); 
 
 </script>
 
 <%# ----header---- %>
 
-<& /site/header.mas &>
+<& /site/index_header.mas &>
 
-<%# ----main page---- %>
-test
+<%# ----main page---- %>    
 
 <center>
-    <div id="download" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:220;height:40">
-        <a href="/results/analysis_results.tar.gz" download="analysis_results.tar.gz" style="position:relative;top:6;">Download Results</a>
+    <div id="download" style="position:relative;left:-10;bottom:-100;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:220;height:40">
     </div>
 </center>
 

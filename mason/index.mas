@@ -3,6 +3,7 @@
 <%args>
 $websites_json
 $gbsappui_domain_name
+
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -23,7 +24,6 @@ function get_websites_dropdown() {
     var html = '<select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">';
     for (const key in websites) {
         if (websites.hasOwnProperty(key)) {
-            console.log(key+':'+websites[key]);
             html+='<option style="background-color:black" value="';
             html+=websites[key];
             html+='" id="'+key+'">'+key+'</option>';
@@ -40,9 +40,8 @@ function instance_login_check() {
   localStorage.setItem("gbs_instance",instance);
   localStorage.setItem("gbsappui_domain_name",gbsappui_domain_name);
   window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
-
   //Localhost version
-  //  window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  //window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
 }
 
 $( document ).ready(function(){
@@ -71,16 +70,8 @@ $( document ).ready(function(){
 
       <div id="instance">
         //below is hard-coded version: not in use
-        <!--
-        <select name="instance_dropdown" id="instance_dropdown" style="font-size:18;position:relative;top:-75;right:-140">
-        <option style="background-color:black" value="https://cassavabase.org" id="cassava">CassavaBase</option>
-        <option style="background-color:black" value="https://musabase.org" id="musa">MusaBase</option>
-        <option style="background-color:black" value="https://solgenomics.net" id="sgn">Sol Genomics Network</option>
-        <option style="background-color:black" value="https://sweetpotatobase.org" id="sp">SweetPotatoBase</option>
-        <option style="background-color:black" value="https://yambase.org" id="yam">YamBase</option>
-        </select>
-        -->
       </div>
+
       <%# ----Submit instance selection button---- %>
 
     <%#<input type="hidden" name="projdir" value=$projdir %>

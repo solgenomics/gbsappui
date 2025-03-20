@@ -97,9 +97,15 @@ RUN chmod 777 /var/spool/ \
 #setup config file in analysis template directory
 RUN cp /gbsappui/config.sh /project/
 
+#checkout local branch
+RUN cd /gbsappui/ && git checkout local && cd /
+
 #edit entrypoint file
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+#make results file in root directory
+RUN mkdir /gbsappui/root/results/
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]

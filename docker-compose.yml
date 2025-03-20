@@ -1,31 +1,25 @@
 
 services:
   gbsappui:
-    image: breedbase/gbsappui:v0.04
-
+    build: .
+    privileged: true
     container_name: gbsappui_web
     ports:
-      - 8111:8090
+      - 8090:8090
     volumes:
       - type: bind
-        source: /export/prod/public_gbsappui/refgenomes 
+        source: /home/awl/Desktop/genomes
         target: /refgenomes
       - type: bind
-        source: /export/prod2/gbsappui
-        target: /data
-      - type: bind
-        source: gbsappui_local.conf
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/gbsappui_local.conf
         target: /gbsappui/gbsappui_local.conf
       - type: bind
-        source: gbsappui.conf
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/gbsappui.conf
         target: /gbsappui/gbsappui.conf
       - type: bind
-        source: lib/
+        source: /home/awl/breedbase_dockerfile/cxgn/gbsappui/lib/
         target: /gbsappui/lib
-
-
-
-
-
-
-
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run
+      - /tmp

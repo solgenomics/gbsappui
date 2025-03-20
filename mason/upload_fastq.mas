@@ -1,6 +1,7 @@
 <%# --page actions-- %>
 <%args>
 $ref_path
+$sgn_token
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -8,47 +9,95 @@ $ref_path
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
-<%# ----header---- %>
-<& /site/header.mas &>
-
-<%# ----upload fastq---- %>
-<center>
-    <div id="page_function">
-        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:20">
-            <b>Select sample fastq files:</b>
-            <span style="position:relative;left:20">
-                <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:15; left:75">
-                    <input type="file" name="fastq" id="fastq" multiple="multiple" required />
-                    <span style="position:relative; top:15; right:85; color:black; font-size:20">
-                        <input type="submit" value="Upload" id="upload_button" />
-                        <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
-                    </span>
-                    </div>
-                    <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
-                    </button>
-                    <div id="biparental_info" name="biparental_info" value="biparental info" style="width:500; height:180; position:relative; top:100; color:black; font-size:18; border:10px double black">
-                        <div id="biparental_innards" style="position:relative; top:15">
-                            <label for="p1">Maternal File Name:</label>
-                            <input id="maternal_input" type="text" id="p1" name="p1"><br><br>
-                            <label id="paternal_input" for="p2">Paternal File Name:</label>
-                            <input type="text" id="p2" name="p2"><br><br>
-                            <input type="submit" id="biparental_submit" name="biparental_submit" value="Submit">
-                        </div>
-                    </div>
-                </form>
-            </span>
-    </div>
-    <br></br>
-</center>
-
 <script>
 //variables
 var biparental;
+var domain;
+var instance;
+var gbsappui_domain_name;
+var sgn_token = '<% $sgn_token %>';
+var user_id;
+var username;
+
+//functions
+
+function get_username(cookie){
+    jQuery.ajax( {
+//          url :'http://localhost:8080/user/cookie_login/'+cookie,
+        url : domain+'/user/cookie_login/'+cookie,
+        success: function(response){
+            if(response.error){
+                alert(response.error);
+                jQuery("#please_login").hide();
+                jQuery("#page_function").hide();
+                jQuery("#logout_button").hide();
+                return false;
+                }
+            if(response.username){
+                username = response.username;
+                user_id = response.user_id;
+                $("#login_button").html(username);
+                let buttonwidth = (username.length * 8) + 20;
+                let buttonlocation = -112 + buttonwidth;
+                $("#login_button").css({"right": buttonlocation + "px", "width": buttonwidth});
+                jQuery("#please_login").hide();
+                jQuery("#page_function").show();
+                jQuery("#logout_button").show();
+            }
+            else {
+                jQuery("#please_login").show();
+                jQuery("#page_function").hide();
+                jQuery("#logout_button").hide();
+            }
+        }
+    })
+}
+
+function login() {
+  if (username) {
+    window.location.href=domain+'/solpeople/profile/'+user_id;
+  } else {
+    //localhost version:
+    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+  }
+}
+
+function logout() {
+  var answer = confirm("Are you sure you want to log out?");
+
+  if (answer === true) {
+    sgn_token = null;
+    //window.location.href='http://localhost:8090/choose_ref/';
+    window.location.href=gbsappui_domain_name+'/choose_ref/';
+  }
+}
 
 $( document ).ready(function(){
+    domain = localStorage.getItem("gbs_domain");
+    instance = localStorage.getItem("gbs_instance");
+    gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
+
+    //setup login button
+    document.getElementById('login_button').onclick = function() {login()};
+
+    //setup logout button
+    document.getElementById('logout_button').onclick = function() {logout()};
+
+    //check if there's a cookie (if someone is logged in)
+    if (sgn_token) {
+        get_username(sgn_token);
+        jQuery("#please_login").hide();
+        jQuery("#page_function").show();
+        jQuery("#logout_button").show();
+    } else {
+        jQuery("#please_login").show();
+        jQuery("#page_function").hide();
+        jQuery("#logout_button").hide();
+    }
+
     //remove this when you implement biparental analysis
     jQuery("#biparental_button").hide();
-    console.log(`upload_fastq.mas ref path is <% $ref_path %>`);
     //biparental form logic
     jQuery("#biparental_info").hide();
     jQuery('#biparental_button').on('click', function(){
@@ -74,6 +123,79 @@ $( document ).ready(function(){
 
 });
 </script>
+
+<%# ----header---- %>
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="/static/js/node_modules/bootstrap/dist/css/bootstrap.min.css">
+<body style="margin:0;padding:0">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+                    <a href="https://github.com/bodeolukolu/GBSapp">
+                        <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
+                    </a>
+                <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
+                    <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
+                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
+                        </button>
+                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                        </button>
+                    </span>
+                </ul>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<%# ----please login dialog---- %>
+
+<center>
+  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:20">
+    <span style="position:relative;left:0">
+      <b>Please <a onclick="login()">log in</a> or <a href="/">choose a different breedbase instance</a></b>
+    </span>
+  </div>
+  <br />
+</center>
+
+<%# ----upload fastq---- %>
+<center>
+    <div id="page_function">
+        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:20">
+            <b>Select sample fastq files:</b>
+            <span style="position:relative;left:20">
+                <form action="/submit"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:15; left:75">
+                    <input type="file" name="fastq" id="fastq" multiple="multiple" required />
+                    <span style="position:relative; top:15; right:85; color:black; font-size:20">
+                        <input type="submit" value="Upload" id="upload_button" />
+                        <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+                    </span>
+                    </div>
+                    <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
+                    </button>
+                    <div id="biparental_info" name="biparental_info" value="biparental info" style="width:500; height:180; position:relative; top:100; color:black; font-size:18; border:10px double black">
+                        <div id="biparental_innards" style="position:relative; top:15">
+                            <label for="p1">Maternal File Name:</label>
+                            <input id="maternal_input" type="text" id="p1" name="p1"><br><br>
+                            <label id="paternal_input" for="p2">Paternal File Name:</label>
+                            <input type="text" id="p2" name="p2"><br><br>
+                            <input type="submit" id="biparental_submit" name="biparental_submit" value="Submit">
+                        </div>
+                    </div>
+                </form>
+            </span>
+    </div>
+    <br></br>
+</center>
 
 <%# ----footer---- %>
 <& /site/footer.mas &>

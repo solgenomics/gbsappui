@@ -12,6 +12,9 @@ $gbsappui_domain_name
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 <script>
+//variables
+var gbsappui_domain_name = '<% $gbsappui_domain_name %>';
+
 //functions
 function redirect(){
     window.location.href=gbsappui_domain_name;
@@ -28,10 +31,10 @@ $( document ).ready(function(){
 
 <%# ----header---- %>
 
-<& /site/header.mas &>
+<& /site/index_header.mas &>
 
 <center>
-    <div id="Cancel" style="margin:10px; background-color:black; padding:10; padding-bottom:5;color:white; width:605; height:100; position:relative; top:30; text-align:left; line-height:3; font-size:20; border:10px double white">
+    <div id="Cancel" style="margin:10px; background-color:black; padding:10; padding-bottom:5;color:white; width:605; height:100; position:relative; top:100; text-align:left; line-height:3; font-size:20; border:10px double white">
         <center>
             <b> Analysis Canceled</b>
         </center>
