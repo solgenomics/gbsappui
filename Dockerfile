@@ -104,5 +104,8 @@ RUN cd /gbsappui/ && git checkout local && cd /
 RUN cp gbsappui/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+#make results file in root directory
+RUN mkdir /gbsappui/root/results/
+
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
