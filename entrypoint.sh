@@ -1,4 +1,5 @@
 #!/bin/bash
+cp /gbsappui/slurm.conf /etc/slurm/slurm.conf
 sed -i s/localhost/$HOSTNAME/g /etc/slurm/slurm.conf
 chown munge /etc/munge/munge.key
 chmod 400 /etc/munge/munge.key
