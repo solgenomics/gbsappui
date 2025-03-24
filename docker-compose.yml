@@ -1,10 +1,6 @@
 
 services:
   gbsappui:
-<<<<<<< HEAD
-    build: .
-=======
->>>>>>> 205ae4e (Unmount slurm.conf, temporarily edit refgenome list for cassavabase, and change docker-compose.yml to match vm10)
     image: breedbase/gbsappui:v0.06
     privileged: true
     container_name: gbsappui_web
