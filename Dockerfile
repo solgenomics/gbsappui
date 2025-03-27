@@ -9,7 +9,7 @@ EXPOSE 8090
 RUN mkdir /var/log/gbsappui
 
 # install system dependencies
-RUN apt-get update && apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm gawk
+RUN apt-get update && apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm gawk
 
 #setup postfix: install postfix, remove exim4 default folder, and edit main.cf to make mail log file
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
@@ -21,29 +21,15 @@ RUN rm -rf /etc/exim4/ \
 #install Beagle
 RUN mkdir /beagle && \
     cd /beagle && \
-    wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar
+    wget https://faculty.washington.edu/browning/beagle/beagle.22Jul22.46e.jar && \
+    cd /
 
 #install cpan modules
 RUN cpanm Module::Pluggable --force
 RUN cpanm Devel::InnerPackage Catalyst Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
 
-#clone gbsappui from github
-RUN git clone https://github.com/solgenomics/gbsappui
-
-#install npm, jquery, and js-cookie
-RUN cd /gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
-RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd ../js-cookie && npm install js-cookie && cd /gbsappui/root/static/js/node_modules/bootstrap && npm install bootstrap@3
-
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
-
-#Replace install script and internal parameters with updated versions for ngm changes
-RUN cp /gbsappui/GBSapp_internal_parameters.sh /GBSapp/scripts/
-RUN cp /gbsappui/install.sh /GBSapp/scripts/
-
-#Install GBSapp dependencies except ngm
-RUN cd /GBSapp/ \
-    && ./GBSapp install
 
 #Install and configure miniconda for ngm installation and install ngm
 ENV PATH="/root/miniconda3/bin:$PATH"
@@ -62,7 +48,7 @@ RUN conda init \
     && conda install nextgenmap -y
 
 ##install java
-RUN cd /GBSapp/tools/ && wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
+RUN mkdir /GBSapp/tools/ && cd /GBSapp/tools/ && wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
     tar -xvf OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz; rm *tar.gz
 
 #setup java paths
@@ -89,6 +75,22 @@ RUN chmod 777 /var/spool/ \
   && /usr/sbin/mungekey \
   && ln -s /var/lib/slurm-llnl /var/lib/slurm \
   && mkdir -p /var/log/slurm
+
+#clone gbsappui from github
+RUN cd / \
+  && git clone https://github.com/solgenomics/gbsappui
+
+#install npm, jquery, and js-cookie
+RUN cd /gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
+RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd ../js-cookie && npm install js-cookie && cd /gbsappui/root/static/js/node_modules/bootstrap && npm install bootstrap@3
+
+#Replace GBSapp install script and internal parameters with updated versions for ngm changes
+RUN cp /gbsappui/GBSapp_internal_parameters.sh /GBSapp/scripts/
+RUN cp /gbsappui/install.sh /GBSapp/scripts/
+
+#Install GBSapp dependencies except ngm
+RUN cd /GBSapp/ \
+    && ./GBSapp install
 
 #Don't use cache if the github repository has been updated.
 #ARG CACHEBUST
