@@ -8,7 +8,7 @@ services:
       - 8111:8090
     volumes:
       - type: bind
-        source: /home/production/gbsappui/refgenomes
+        source: /export/prod/public_gbsappui/refgenomes/
         target: /refgenomes
       - type: bind
         source: /export/prod2/gbsappui

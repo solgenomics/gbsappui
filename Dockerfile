@@ -9,7 +9,7 @@ EXPOSE 8090
 RUN mkdir /var/log/gbsappui
 
 # install system dependencies
-RUN apt-get update && apt-get install -y git r-base python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm gawk
+RUN apt-get update && apt-get install -y git r-base-core python3.10 wget libcurl4 apt-utils cpanminus perl-doc vim less htop ack libslurm-perl screen lynx iputils-ping gcc g++ libc6-dev make cmake zlib1g-dev ca-certificates slurmd slurmctld munge libbz2-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-gnutls-dev libssl-dev emacs gedit cron rsyslog net-tools bc ne environment-modules nano python-is-python3 libmunge-dev libmunge2 slurm-wlm gawk
 
 #setup postfix: install postfix, remove exim4 default folder, and edit main.cf to make mail log file
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
@@ -46,6 +46,10 @@ RUN conda init \
     && conda config --add channels r \
     && conda config --add channels bioconda \
     && conda install nextgenmap -y
+
+#Remove /root/miniconda3 from path after using miniconda
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ARG PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 ##install java
 RUN mkdir /GBSapp/tools/ && cd /GBSapp/tools/ && wget https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz && \
