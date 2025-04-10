@@ -222,21 +222,24 @@ $( document ).ready(function(){
 <center>
 <div id="page_function">
     <br/>
-    <form id="analysis_form" action="/analyze">
-        <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
-        <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
-        <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
-        <input type="hidden" value="email_address" id="email_address" name="email_address" />
-        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
-    </form>
-    <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
+    <div id="analysis_info" style="position:relative; top:100">
+        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:-40; text-align:center; font-size:13; border:10px double white">Results will be emailed in a zipped file.
+        <br/>
+        Analyses can only be run on diploid organisms.
+        <br/>
+        Both filtering and calling are conducted on all analyses but result files will include calling results with and without filtering.
+        <br/>
+        Filtering is conducted with a minor allele frequency threshold of .02.
+        <br/>
+        Imputation, if selected, is run using the July 22, 2022 release of beagle. </label>
+    </div>
+    <br/>
     <br/>
     <br/>
     <div id="beagle_div">
         <input type="checkbox" id="beagle" name="beagle" value="beagle" onclick="beagleCheck()">
         <label for="beagle"> Post-analysis imputation using Beagle </label>
     </div>
-    <br/>
     <div id="email_info">
         <b>
         <span id="email_exists_statement" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">We currently have the following email on file:
@@ -252,6 +255,14 @@ $( document ).ready(function(){
         </input>
         </b>
     </div>
+    <form id="analysis_form" action="/analyze">
+        <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
+        <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+        <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
+        <input type="hidden" value="email_address" id="email_address" name="email_address" />
+        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+    </form>
+    <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
 </div>
 </center>
 <%# ----footer---- %>

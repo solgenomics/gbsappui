@@ -24,8 +24,8 @@ var username;
 //functions
 function get_username(cookie){
     jQuery.ajax( {
-          url :'http://localhost:8080/user/cookie_login/'+cookie,
-//        url : domain+'/user/cookie_login/'+cookie,
+//          url :'http://localhost:8080/user/cookie_login/'+cookie,
+        url : domain+'/user/cookie_login/'+cookie,
         success: function(response){
             if(response.error){
                 alert(response.error);
