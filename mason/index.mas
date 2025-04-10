@@ -46,9 +46,9 @@ function instance_login_check() {
 
 $( document ).ready(function(){
   //showing instance dropdown
+  jQuery("#instance_dropdown_all").show();
   var html=get_websites_dropdown();
   jQuery("#instance").html(html);
-  jQuery("#instance_dropdown_all").show();
   inst_dropdown = document.getElementById("instance_dropdown");
 });
 
@@ -61,26 +61,30 @@ $( document ).ready(function(){
 <center>
 
 <%# ----main page---- %>
+<%# ----Introduction---- %>
+
+<div id="introduction" style="position:relative; top:100">
+    <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:0; text-align:center; font-size:13; border:10px double white">Welcome to BreedBase Call! This is an integation of <a href="https://github.com/bodeolukolu/GBSapp">GBSApp</a> and <a href="https://faculty.washington.edu/browning/beagle/beagle.html">Beagle</a> for BreedBase instances. With this tool you can call, filter, and/or impute genotyping data. This walkthrough will take you though each required step. </label></b>
+</div>
+
 <%# ----Breedbase instance dropdown menu---- %>
 
   <%# ----Choose instance dropdown---- %>
 
-<div id="instance_dropdown_all" style="position:relative; top:100">
+  <div id="instance_dropdown_all" style="position:relative; top:150">
       <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:20; color:white; width:605; height:100; position:relative; top:0; text-align:left; line-height:3; font-size:20; border:10px double white">Choose a BreeDBase Instance:</label></b>
-
       <div id="instance">
-        //below is hard-coded version: not in use
       </div>
+  </div>
 
-      <%# ----Submit instance selection button---- %>
+  <%# ----Submit instance selection button---- %>
 
-    <%#<input type="hidden" name="projdir" value=$projdir %>
-    <button type="submit" id="selectinstancebutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="instance_login_check()"
-    ><b>Select</b></button>
+      <%#<input type="hidden" name="projdir" value=$projdir %>
+      <button type="submit" id="selectinstancebutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:-120; font-size:18; padding-top:5;" onclick="instance_login_check()"
+      ><b>Select</b></button>
 
-      <%# ----Contact Information: replace with info about how to contact if you want a different breeDBase instance added---- %>
-    </div>
-  </center>
+<%# ----Contact Information: replace with info about how to contact if you want a different breeDBase instance added---- %>
+
 </center>
 
 <%# ----footer---- %>
