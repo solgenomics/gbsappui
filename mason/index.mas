@@ -39,9 +39,9 @@ function instance_login_check() {
   localStorage.setItem("gbs_domain",domain);
   localStorage.setItem("gbs_instance",instance);
   localStorage.setItem("gbsappui_domain_name",gbsappui_domain_name);
-  window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+  window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
   //Localhost version
-  //window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/';
+  //window.location.href='http://localhost:8080/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/';
 }
 
 $( document ).ready(function(){
@@ -64,7 +64,7 @@ $( document ).ready(function(){
 <%# ----Introduction---- %>
 
 <div id="introduction" style="position:relative; top:100">
-    <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:0; text-align:center; font-size:13; border:10px double white">Welcome to BreedBase Call! This is an integation of <a href="https://github.com/bodeolukolu/GBSapp">GBSApp</a> and <a href="https://faculty.washington.edu/browning/beagle/beagle.html">Beagle</a> for BreedBase instances. With this tool you can call, filter, and/or impute genotyping data. This walkthrough will take you though each required step. </label></b>
+    <b><label for="instance_choose" style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:0; text-align:center; font-size:13; border:10px double white">Welcome to BreedBase Call! This is an integation of <a href="https://github.com/bodeolukolu/GBSapp">GBSApp</a> and <a href="https://faculty.washington.edu/browning/beagle/beagle.html">Beagle</a> for BreedBase instances. With this tool you can call, filter, and/or impute genotyping data. </label></b>
 </div>
 
 <%# ----Breedbase instance dropdown menu---- %>

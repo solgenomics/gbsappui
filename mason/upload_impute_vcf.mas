@@ -1,10 +1,5 @@
 <%# --page actions-- %>
-
 <%args>
-$run_beagle
-$projdir
-$email_address
-$gbsappui_domain_name
 $sgn_token
 </%args>
 
@@ -16,12 +11,14 @@ $sgn_token
 <script>
 //variables
 var domain;
+var instance;
 var gbsappui_domain_name;
 var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 
 //functions
+
 function get_username(cookie){
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
@@ -65,17 +62,13 @@ function login() {
 }
 
 function logout() {
-  var answer = confirm("Are you sure you want to log out? You will no longer be able to cancel the submitted job.");
+  var answer = confirm("Are you sure you want to log out?");
 
   if (answer === true) {
     sgn_token = null;
     //window.location.href='http://localhost:8090/choose_pipeline/';
     window.location.href=gbsappui_domain_name+'/choose_pipeline/';
   }
-}
-
-function redirect(){
-    window.location.href=gbsappui_domain_name;
 }
 
 $( document ).ready(function(){
@@ -99,7 +92,7 @@ $( document ).ready(function(){
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
-    }
+    };
 });
 
 </script>
@@ -138,7 +131,7 @@ $( document ).ready(function(){
 <%# ----please login dialog---- %>
 
 <center>
-  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:20">
+  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:200;font-size:20">
     <span style="position:relative;left:0">
       <b>Please <a onclick="login()">log in</a> or <a href="/">choose a different breedbase instance</a></b>
     </span>
@@ -146,23 +139,24 @@ $( document ).ready(function(){
   <br />
 </center>
 
-<%# ----main page---- %>
+<%# ----upload vcf---- %>
 <center>
     <div id="page_function">
-        <div id="analysis_info" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:165; position:relative; top:50; font-size:20">
-            Analysis in Progress. You will get an email with a link to the results when it's finished!
-
-            <form action="/cancel">
-                <button id="cancel_button" style="position:relative;top:10;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')"><b>Cancel Analysis</b></button>
-                <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
-            </form>
-        </div>
-        <button id="new_analysis" style="background-color:black; border:10px double white; color:white; width:250; height:60; position:relative; top:80; font-size:20" onclick="redirect()">
-            <b>Return to main page</b>
-        </button>
+        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:20">
+            <b>Select vcf file to impute:</b>
+            <span style="position:relative;left:20">
+                <form action="/impute"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:15; left:75">
+                    <input type="file" name="vcf" id="vcf" required />
+                    <span style="position:relative; top:15; right:85; color:black; font-size:20">
+                        <input type="submit" value="Upload" id="upload_button" />
+                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+                    </span>
+                    </div>
+                </form>
+            </span>
     </div>
+    <br></br>
 </center>
 
 <%# ----footer---- %>
-
 <& /site/footer.mas &>

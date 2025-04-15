@@ -4,7 +4,7 @@
 $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
-$sgn_token => undef
+$sgn_token
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -17,7 +17,7 @@ $sgn_token => undef
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_token;
+var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 
@@ -59,8 +59,8 @@ function login() {
     window.location.href=domain+'/solpeople/profile/'+user_id;
   } else {
     //localhost version:
-    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
   }
 }
 
@@ -68,8 +68,8 @@ function logout() {
   var answer = confirm("Are you sure you want to log out?");
   if (answer === true) {
     sgn_token = null;
-    //window.location.href='http://localhost:8090/choose_ref/';
-    window.location.href=gbsappui_domain_name+'/choose_ref/';
+    //window.location.href='http://localhost:8090/choose_pipeline/';
+    window.location.href=gbsappui_domain_name+'/choose_pipeline/';
   }
 }
 
@@ -115,20 +115,9 @@ $( document ).ready(function(){
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
     } else {
-        //get cookie from sgn
-        url = window.location;
-        sgn_token = new URLSearchParams(url.search).get('access_token');
-        if (sgn_token) {
-            get_username(sgn_token);
-            jQuery("#please_login").hide();
-            jQuery("#page_function").show();
-            jQuery("#logout_button").show();
-            document.getElementById('sgn_token').value = sgn_token;
-        } else {
-            jQuery("#please_login").show();
-            jQuery("#page_function").hide();
-            jQuery("#logout_button").hide();
-        }
+        jQuery("#please_login").show();
+        jQuery("#page_function").hide();
+        jQuery("#logout_button").hide();
     }
     jQuery('#refgenome_dropdown_all').html(html);
 });
@@ -196,7 +185,7 @@ $( document ).ready(function(){
             <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
           </center>
           <input type="hidden" id="ref_path" name="ref_path" />
-          <input type="hidden" id="sgn_token" name="sgn_token" />
+          <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
       </form>
     </div>
 

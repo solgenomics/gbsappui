@@ -15,9 +15,9 @@ var biparental;
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
+var sgn_token = '<% $sgn_token %>';
 
 //functions
 
@@ -58,8 +58,8 @@ function login() {
     window.location.href=domain+'/solpeople/profile/'+user_id;
   } else {
     //localhost version:
-    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_ref/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_ref/';
+    //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
   }
 }
 
@@ -68,8 +68,8 @@ function logout() {
 
   if (answer === true) {
     sgn_token = null;
-    //window.location.href='http://localhost:8090/choose_ref/';
-    window.location.href=gbsappui_domain_name+'/choose_ref/';
+    //window.location.href='http://localhost:8090/choose_pipeline/';
+    window.location.href=gbsappui_domain_name+'/choose_pipeline/';
   }
 }
 

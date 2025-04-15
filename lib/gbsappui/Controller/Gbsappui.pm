@@ -6,6 +6,7 @@ use Catalyst::Request::Upload;
 use Data::Dumper;
 use File::Copy;
 use File::Copy::Recursive qw(fcopy rcopy dircopy fmove rmove dirmove rcopy_glob);
+use File::Path qw(make_path remove_tree);
 use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
@@ -13,6 +14,19 @@ use JSON;
 
 
 BEGIN {extends 'Catalyst::Controller'};
+
+sub choose_pipeline:Path('/choose_pipeline') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $sgn_token = "nocookie";
+    $c->stash->{sgn_token} = $sgn_token;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{template}="choose_pipeline.mas";
+}
 
 sub choose_ref:Path('/choose_ref') : Args(0){
     my $self=shift;
@@ -24,7 +38,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-    my $sgn_token = "nocookie";
+    my $sgn_token=$c->req->param('sgn_token_callfilter');
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
@@ -46,6 +60,74 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{template}="upload_fastq.mas";
+}
+
+sub upload_impute_vcf:Path('/upload_impute_vcf') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $sgn_token=$c->req->param('sgn_token_impute');
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{template}="upload_impute_vcf.mas";
+}
+
+sub impute:Path('/impute'): Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+
+    #make email variable
+    my $email_address = "noemail";
+    print STDERR "Email is $email_address \n";
+
+    #make beagle running variable
+    my $run_beagle = 1;
+
+    #setup data directory and project directory
+    my $data_dir = "/data/";
+    my $dirname_template = 'XXXX';
+    my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
+    my $projdir = $projdir_object->{DIRNAME};
+    my $projdir_orig = $projdir;
+    print STDERR "Original proj dir is $projdir_orig \n";
+    $projdir=~s/\;//g; #don't allow ';' in project directory name
+    $projdir=~s/_//g; #don't allow '_' in project directory name
+    $projdir_object->{DIRNAME} = $projdir;
+    print STDERR "New proj dir is $projdir \n";
+    if ($projdir_orig ne $projdir) {
+        print STDERR "Original name was not acceptable ($projdir_orig). Changing it to $projdir. Removing $projdir_orig .\n";
+        `rm -rf $projdir_orig`;
+    }
+
+    #make gbsappui_slurm_log folder
+    my $slurmlogdir="/gbsappui_slurm_log/";
+    print STDERR "Slurm dir is $slurmlogdir \n";
+    make_path($projdir.$slurmlogdir);
+
+    #move uploaded files into project directory and name them appropriately
+    print STDERR " Uploading files to data folder \n";
+    for my $upload ($c->req->upload("vcf")) {
+        my $tempname=$upload->tempname();
+        my $orig_upload = $upload->filename();
+        print STDERR "orig name is $orig_upload \n";
+        fmove($tempname,$projdir."/".$orig_upload);
+        `chmod 777 $projdir/$orig_upload`;
+    }
+
+    my $sgn_token=$c->req->param('sgn_token');
+    $c->stash->{email_address} = $email_address;
+    $c->stash->{run_beagle} = $run_beagle;
+    $c->stash->{projdir} = $projdir;
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{template} = "impute.mas";
 }
 
 sub submit:Path('/submit') : Args(0){
