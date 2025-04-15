@@ -5,14 +5,15 @@ projdir=$1
 run_beagle=$2
 email_address=$3
 gbsappui_domain_name=$4
-# run_filtering=$5
+run_gbsapp=$5
+# run_filtering=$6
 
 #functions:
 initial_email () {
     #formatting email
     body=$1
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "GBSapp Analysis Begun" "$body" "" "";
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Analysis Begun" "$body" "" "";
 }
 
 error_email () {
@@ -24,7 +25,7 @@ error_email () {
     mv ${projdir}log2.out.gz ${projdir}log.out.gz
 
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "GBSapp Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
 }
 
 results_email () {
@@ -36,9 +37,9 @@ results_email () {
     chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your GBSapp analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}"
+    body="The results for your BreedBase Call analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}"
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "GBSapp Results" "$body" "" "";
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results" "$body" "" "";
 }
 
 #beagle function
@@ -80,71 +81,94 @@ beagle () {
 #     fi
 # }
 
-#send initial email to test if the email is working
-initial_body="Your GBS analysis has begun! You will receive the results at this address when it completes. "
-initial_email "$initial_body"
-#working I think
-chmod -R 770 ${projdir}
-cd ${projdir}
-bash /GBSapp/GBSapp $projdir
-sleep 10
-#get job numbers
-jobnum_gbsappui=$(ls ${projdir}gbsappui_slurm_log/slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
-jobnum_gbsapp=$(ls "${projdir}slurm"* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
-#move slurm log to gbs_slurm_log
-gbs_slurm_log=$(ls ${projdir}slurm*.out )
-##Wait until the slurm job is done
-until [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; do
-    sleep 60
-    #get the time the slurm job has been running
-    if [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; then
-        :
-    elif [ $(squeue -j $jobnum_gbsapp -h --noheader | awk '{n=split($0,a," ");print a[6]}' | awk '{n=split($0,a,":");print a[1]}' | awk '{n=split($0,a,":");print a[1]}' ) -gt 95 ]; then
-        scancel $jobnum_gbsappui
-        scancel $jobnum_gbsapp
-        last_log=$(tail -n 5 $gbs_slurm_log)
-        body="GBS Analysis timed out after 96 hours. Final log lines include:
+gbsapp () {
+    bash /GBSapp/GBSapp $projdir
+    sleep 10
+    #get job numbers
+    jobnum_gbsappui=$(ls ${projdir}gbsappui_slurm_log/slurm* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
+    jobnum_gbsapp=$(ls "${projdir}slurm"* | awk '{n=split($0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split($0,a,".");print a[1]}' )
+    #move slurm log to gbs_slurm_log
+    gbs_slurm_log=$(ls ${projdir}slurm*.out )
+    ##Wait until the slurm job is done
+    until [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; do
+        sleep 60
+        #get the time the slurm job has been running
+        if [ $(squeue -j $jobnum_gbsapp -h --noheader | wc -l) -eq 0 ]; then
+            :
+        elif [ $(squeue -j $jobnum_gbsapp -h --noheader | awk '{n=split($0,a," ");print a[6]}' | awk '{n=split($0,a,":");print a[1]}' | awk '{n=split($0,a,":");print a[1]}' ) -gt 95 ]; then
+            scancel $jobnum_gbsappui
+            scancel $jobnum_gbsapp
+            last_log=$(tail -n 5 $gbs_slurm_log)
+            body="GBS Analysis timed out after 96 hours. Final log lines include:
 
-        $last_log
+            $last_log
 
-        Full log files attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
-        error_email "$body"
-    fi
-done
-
-#Check if analysis completed successfully and get information for email
-#get end of log file for error handling
-last_log=$(tail -n 5 $gbs_slurm_log)
-if [ -f ${projdir}Analysis_Complete ]; then
-    #edit gbs result permissions
-    chmod -R 770 ${projdir}
-    #check for vcf result files
-    if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
-        #Either run beagle imputation
-        if [ $run_beagle = 1 ]; then
-            gbs_output=$(ls ${projdir}snpcall/*x.vcf.gz )
-            beagle &>> ${projdir}beagle_log.out
-            #once beagle analysis is complete email results
-            results_email
-        #else email results with no beagle imputation
-        else
-            results_email
+            Full log files attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            error_email "$body"
         fi
-    #if no vcf file
+    done
+
+    #Check if analysis completed successfully and get information for email
+    #get end of log file for error handling
+    last_log=$(tail -n 5 $gbs_slurm_log)
+    if [ -f ${projdir}Analysis_Complete ]; then
+        #edit gbs result permissions
+        chmod -R 770 ${projdir}
+        #check for vcf result files
+        if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
+            #if imputation isn't selected
+            if [ $run_beagle = 0 ]; then
+                results_email
+            fi
+        #if no vcf file
+        else
+            body="GBS Analysis completed but failed to produce a results file. Final log lines include:
+
+            $last_log
+
+            Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            error_email "$body"
+        fi
+    #if no Analysis_Complete result
     else
-        body="GBS Analysis completed but failed to produce a results file. Final log lines include:
+        body="GBS Analysis did not complete successfully. Final log lines include:
 
         $last_log
 
         Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
         error_email "$body"
     fi
-#if no Analysis_Complete
-else
-    body="GBS Analysis did not complete successfully. Final log lines include:
+}
 
-    $last_log
+#send initial email to test if the email is working
+initial_body="Your BreedBase Call analysis has begun! You will receive the results at this address when it completes. "
+initial_email "$initial_body"
+chmod -R 770 ${projdir}
+cd ${projdir}
 
-    Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
-    error_email "$body"
+#Run gbsapp if selected
+if [ $run_gbsapp = 1 ]; then
+    gbsapp
+fi
+
+#Run beagle imputation if selected
+if [ $run_beagle = 1 ]; then
+    #If only doing imputation
+    if [ $run_gbsapp = 0 ]: then
+        if [ -f ${projdir}*vcf* ]; then
+            gbs_output=$(ls ${projdir}*vcf* )
+            beagle &>> ${projdir}beagle_log.out
+            #once beagle analysis is complete email results
+            results_email
+        else
+            body="Imputation did not complete successfully. The vcf file to impute could not be found. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            error_email "$body"
+    fi
+    #If doing imputation after gbsapp analysis
+    if [ $run_gbsapp = 1 ]; then
+        gbs_output=$(ls ${projdir}snpcall/*x.vcf.gz )
+        beagle &>> ${projdir}beagle_log.out
+        #once beagle analysis is complete email results
+        results_email
+    fi
 fi

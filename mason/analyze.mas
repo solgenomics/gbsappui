@@ -2,6 +2,7 @@
 
 <%args>
 $run_beagle
+$run_gbsapp
 $projdir
 $email_address
 $gbsappui_domain_name

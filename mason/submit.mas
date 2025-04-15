@@ -4,6 +4,7 @@
 $projdir
 $ref_path
 $run_beagle => undef
+$run_gbsapp => undef
 $email_address =>undef
 $sgn_token
 </%args>
@@ -20,6 +21,7 @@ var gbsappui_domain_name;
 var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
+var run_gbsapp = 1;
 
 //functions
 function get_username(cookie){
@@ -171,6 +173,7 @@ $( document ).ready(function(){
     //set default beagle value to 0 (don't run beagle)
     run_beagle = 0;
     document.getElementById('run_beagle').value = run_beagle;
+    document.getElementById('run_gbsapp').value = run_gbsapp;
     return run_beagle;
 });
 
@@ -259,6 +262,7 @@ $( document ).ready(function(){
         <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
         <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
+        <input type="hidden" value="run_gbsapp" id="run_gbsapp" name="run_gbsapp" />
         <input type="hidden" value="email_address" id="email_address" name="email_address" />
         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
     </form>

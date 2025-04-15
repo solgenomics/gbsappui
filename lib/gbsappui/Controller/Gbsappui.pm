@@ -87,7 +87,8 @@ sub impute:Path('/impute'): Args(0){
     my $email_address = "noemail";
     print STDERR "Email is $email_address \n";
 
-    #make beagle running variable
+    #make gbsapp and beagle running variables
+    my $run_gbsapp = 0;
     my $run_beagle = 1;
 
     #setup data directory and project directory
@@ -123,6 +124,7 @@ sub impute:Path('/impute'): Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
+    $c->stash->{run_gbsapp} = $run_gbsapp;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
@@ -142,7 +144,8 @@ sub submit:Path('/submit') : Args(0){
     my $email_address = "noemail";
     print STDERR "Email is $email_address \n";
 
-    #make beagle running variable
+    #make gbsapp and beagle running variable
+    my $run_gbsapp = 1;
     my $run_beagle = "nobeagle";
     print STDERR "Run beagle value is $run_beagle \n";
 
@@ -187,6 +190,7 @@ sub submit:Path('/submit') : Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
+    $c->stash->{run_gbsapp} = $run_gbsapp;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
@@ -204,7 +208,9 @@ sub analyze:Path('/analyze') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $projdir=$c->req->param('projdir');
     my $run_beagle=$c->req->param('run_beagle');
+    my $run_gbsapp=$c->req->param('run_gbsapp');
     my $email_address=$c->req->param('email_address');
+    my $run_gbsapp=$c->req->param('run_gbsapp');
 
     #remove extraneous spaces from email address
     $email_address=~ s/\s//g;
@@ -212,12 +218,13 @@ sub analyze:Path('/analyze') : Args(0){
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
     print STDERR "Project directory is $projdir \n";
-    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name` or die "Didn't run: $!\n";
+    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp` or die "Didn't run: $!\n";
     print STDERR "email is $email_address \n";
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
+    $c->stash->{run_gbsapp} = $run_gbsapp;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{template}="analyze.mas";

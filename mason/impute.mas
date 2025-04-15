@@ -19,6 +19,7 @@ var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
 var run_beagle = 1;
+var run_gbsapp = 0;
 
 //functions
 function get_username(cookie){
@@ -153,6 +154,7 @@ $( document ).ready(function(){
     get_email_address(sgn_token);
     //set run beagle value
     document.getElementById('run_beagle').value = run_beagle;
+    document.getElementById('run_gbsapp').value = run_gbsapp;
 });
 
 </script>
@@ -231,6 +233,7 @@ $( document ).ready(function(){
         <input type="hidden" value="email_address" id="email_address" name="email_address" />
         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
         <input type="hidden" value="run_beagle" id="run_beagle" name="run_beagle" />
+        <input type="hidden" value="run_gbsapp" id="run_gbsapp" name="run_gbsapp" />
     </form>
     <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
 </div>
