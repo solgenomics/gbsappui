@@ -14,6 +14,9 @@ services:
         source: /export/prod2/gbsappui
         target: /data
       - type: bind
+        source: /export/prod/public_gbsappui/scp_uploads/
+        target: /scp_uploads/
+      - type: bind
         source: /home/production/gbsappui/gbsappui_local.conf
         target: /gbsappui/gbsappui_local.conf
       - type: bind
