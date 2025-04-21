@@ -94,6 +94,10 @@ sub impute:Path('/impute'): Args(0){
     #setup data directory and project directory
     my $username = $c->req->param('username');
     my $data_dir = "/results/".$username."/";
+    #Make username directory if it doesn't exist already
+    if (! -d $data_dir) {
+        make_path($data_dir);
+    }
     print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
@@ -155,7 +159,12 @@ sub submit:Path('/submit') : Args(0){
     my $ref_path=$c->req->param('ref_path');
     print STDERR "Submit Ref path is $ref_path \n";
     my $username = $c->req->param('username');
+    print STDERR "username is $username \n";
     my $data_dir = "/results/".$username."/";
+    #Make username directory if it doesn't exist already
+    if (! -d $data_dir) {
+        make_path($data_dir);
+    }
     print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
