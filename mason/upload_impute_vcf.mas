@@ -33,6 +33,8 @@ function get_username(cookie){
                 }
             if(response.username){
                 username = response.username;
+                document.getElementById('username').value = username;
+                return username;
                 user_id = response.user_id;
                 $("#login_button").html(username);
                 let buttonwidth = (username.length * 8) + 20;
@@ -150,6 +152,7 @@ $( document ).ready(function(){
                     <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
                         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+                        <input type="hidden" value="username" id="username" name="username" />
                     </span>
                     </div>
                 </form>

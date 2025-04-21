@@ -92,7 +92,9 @@ sub impute:Path('/impute'): Args(0){
     my $run_beagle = 1;
 
     #setup data directory and project directory
-    my $data_dir = "/results/";
+    my $username = $c->req->param('username');
+    my $data_dir = "/results/".$username."/";
+    print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
     my $projdir = $projdir_object->{DIRNAME};
@@ -152,7 +154,9 @@ sub submit:Path('/submit') : Args(0){
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
     print STDERR "Submit Ref path is $ref_path \n";
-    my $data_dir = "/results/";
+    my $username = $c->req->param('username');
+    my $data_dir = "/results/".$username."/";
+    print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
     my $projdir = $projdir_object->{DIRNAME};
