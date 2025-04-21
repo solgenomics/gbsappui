@@ -12,7 +12,7 @@ services:
         target: /refgenomes
       - type: bind
         source: /export/prod2/gbsappui
-        target: /data
+        target: /results
       - type: bind
         source: /export/prod/public_gbsappui/scp_uploads/
         target: /scp_uploads/

@@ -63,7 +63,7 @@ RUN export JAVA_HOME=/GBSapp/tools/jdk8u322-b06
 RUN export DERBY_HOME=/GBSapp/tools/jdk8u322-b06
 
 #Setup analysis folders and template for analysis folders
-RUN mkdir /data/
+RUN mkdir /results/
 RUN mkdir /project/
 RUN mkdir /project/refgenomes/
 RUN mkdir /project/samples/
