@@ -154,7 +154,7 @@ fi
 #Run beagle imputation if selected
 if [ $run_beagle = 1 ]; then
     #If only doing imputation
-    if [ $run_gbsapp = 0 ]: then
+    if [ $run_gbsapp = 0 ]; then
         if [ -f ${projdir}*vcf* ]; then
             gbs_output=$(ls ${projdir}*vcf* )
             beagle &>> ${projdir}beagle_log.out
@@ -163,6 +163,7 @@ if [ $run_beagle = 1 ]; then
         else
             body="Imputation did not complete successfully. The vcf file to impute could not be found. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
             error_email "$body"
+        fi
     fi
     #If doing imputation after gbsapp analysis
     if [ $run_gbsapp = 1 ]; then

@@ -85,10 +85,8 @@ sub impute:Path('/impute'): Args(0){
 
     #make email variable
     my $email_address = "noemail";
-    print STDERR "Email is $email_address \n";
-
+ 
     #make gbsapp and beagle running variables
-    my $run_gbsapp = 0;
     my $run_beagle = 1;
 
     #setup data directory and project directory
@@ -98,7 +96,6 @@ sub impute:Path('/impute'): Args(0){
     if (! -d $data_dir) {
         make_path($data_dir);
     }
-    print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
     my $projdir = $projdir_object->{DIRNAME};
@@ -115,7 +112,6 @@ sub impute:Path('/impute'): Args(0){
 
     #make gbsappui_slurm_log folder
     my $slurmlogdir="/gbsappui_slurm_log/";
-    print STDERR "Slurm dir is $slurmlogdir \n";
     make_path($projdir.$slurmlogdir);
 
     #move uploaded files into project directory and name them appropriately
@@ -130,7 +126,6 @@ sub impute:Path('/impute'): Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
-    $c->stash->{run_gbsapp} = $run_gbsapp;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
@@ -148,18 +143,13 @@ sub submit:Path('/submit') : Args(0){
 
     #make email variable
     my $email_address = "noemail";
-    print STDERR "Email is $email_address \n";
 
     #make gbsapp and beagle running variable
-    my $run_gbsapp = 1;
     my $run_beagle = "nobeagle";
-    print STDERR "Run beagle value is $run_beagle \n";
-
+    
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
-    print STDERR "Submit Ref path is $ref_path \n";
     my $username = $c->req->param('username');
-    print STDERR "username is $username \n";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -203,7 +193,6 @@ sub submit:Path('/submit') : Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
-    $c->stash->{run_gbsapp} = $run_gbsapp;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
@@ -230,9 +219,7 @@ sub analyze:Path('/analyze') : Args(0){
 
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
-    print STDERR "Project directory is $projdir \n";
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp` or die "Didn't run: $!\n";
-    print STDERR "email is $email_address \n";
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
     $c->stash->{projdir} = $projdir;
