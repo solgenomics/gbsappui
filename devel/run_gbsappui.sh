@@ -6,7 +6,8 @@ run_beagle=$2
 email_address=$3
 gbsappui_domain_name=$4
 run_gbsapp=$5
-# run_filtering=$6
+analysis_name=$6
+# run_filtering=$7
 
 #functions:
 initial_email () {
@@ -37,7 +38,7 @@ results_email () {
     chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your BreedBase Call analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}"
+    body="The results for your BreedBase Call analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}?&analysis_name=${analysis_name}"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results" "$body" "" "";
 }

@@ -83,9 +83,10 @@ sub impute:Path('/impute'): Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
 
-    #make email variable
+    #make email and analysis variables
     my $email_address = "noemail";
- 
+    my $analysis_name = "noname";
+
     #make gbsapp and beagle running variables
     my $run_beagle = 1;
 
@@ -126,6 +127,7 @@ sub impute:Path('/impute'): Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
+    $c->stash->{analysis_name} = $analysis_name;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
@@ -143,10 +145,11 @@ sub submit:Path('/submit') : Args(0){
 
     #make email variable
     my $email_address = "noemail";
+    my $analysis_name = "noname";
 
     #make gbsapp and beagle running variable
     my $run_beagle = "nobeagle";
-    
+
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
     my $username = $c->req->param('username');
@@ -193,6 +196,7 @@ sub submit:Path('/submit') : Args(0){
 
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
+    $c->stash->{analysis_name} = $analysis_name;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
@@ -212,6 +216,7 @@ sub analyze:Path('/analyze') : Args(0){
     my $run_beagle=$c->req->param('run_beagle');
     my $run_gbsapp=$c->req->param('run_gbsapp');
     my $email_address=$c->req->param('email_address');
+    my $analysis_name=$c->req->param('analysis_name');
     my $run_gbsapp=$c->req->param('run_gbsapp');
 
     #remove extraneous spaces from email address
@@ -219,9 +224,10 @@ sub analyze:Path('/analyze') : Args(0){
 
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
-    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp` or die "Didn't run: $!\n";
+    `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp $analysis_name` or die "Didn't run: $!\n";
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
+    $c->stash->{analysis_name} = $analysis_name;
     $c->stash->{projdir} = $projdir;
     $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{run_gbsapp} = $run_gbsapp;
@@ -269,9 +275,11 @@ sub results:Path('/results') : Args(0) {
     my $c=shift;
     my $projdir=$c->req->param('projdir');
     my $email_address=$c->req->param('email_address');
+    my $analysis_name=$c->req->param('analysis_name');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
+    $c->stash->{analysis_name} = $analysis_name;
     $c->stash->{template}="results.mas";
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
 }

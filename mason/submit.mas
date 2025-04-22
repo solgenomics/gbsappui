@@ -6,6 +6,7 @@ $ref_path
 $run_beagle => undef
 $run_gbsapp => undef
 $email_address =>undef
+$analysis_name =>undef
 $sgn_token
 </%args>
 
@@ -102,7 +103,15 @@ function get_email_address(cookie){
     })
 }
 
-function formChanged() {
+function analysisChanged() {
+//update email variable when user writes in email form
+    analysis_input = document.getElementsByName("analysis_input")[0].value;
+    analysis_name = analysis_input;
+    document.getElementById('analysis_name').value = analysis_name;
+    return analysis_name;
+}
+
+function emailChanged() {
 //update email variable when user writes in email form
     email_input = document.getElementsByName("email_input")[0].value;
     email_address = email_input;
@@ -127,8 +136,27 @@ function beagleCheck() {
 
 function validateEmail(email) {
 //make sure email is in an email-like format
-  var re = /\S+@\S+\.\S+/;
-  return re.test(email);
+    var re = /\S+@\S+\.\S+/;
+    return re.test(email);
+}
+
+function validateAnalysis(name) {
+//make sure an analysis name is included
+    if [ ! -z "$str" -a "$str" != " " ]; then
+        return 1;
+    fi
+    var re = (.|\s)*\S(.|\s)*;
+    return re.test(name);
+}
+
+function analysisCheck() {
+//give error if email format is not valid
+    if(validateAnalysis(analysis_name)){
+        document.getElementById('analysis_form').submit();
+    }
+    else {
+        alert("Please include an analysis name.");
+    }
 }
 
 function emailCheck() {
@@ -144,6 +172,7 @@ function emailCheck() {
 function analysisButton() {
 //check email when analysis button is clicked
     emailCheck();
+    analysisCheck();
 }
 
 $( document ).ready(function(){
@@ -243,6 +272,15 @@ $( document ).ready(function(){
         <input type="checkbox" id="beagle" name="beagle" value="beagle" onclick="beagleCheck()">
         <label for="beagle"> Post-analysis imputation using Beagle </label>
     </div>
+    <div id="analysis_name">
+        <b>
+        <br/>
+        <span id="analysis_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide an email where you would like to send the analysis results:
+        </span>
+        <input class="form-control" type="text" id="analysis_input" name="analysis_input" style="width:400;" value="" size="22" onclick="" onkeyup="analysisChanged()" onchange="analysisChanged()">
+        </input>
+        </b>
+    </div>
     <div id="email_info">
         <b>
         <span id="email_exists_statement" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">We currently have the following email on file:
@@ -254,7 +292,7 @@ $( document ).ready(function(){
         </span>
         <span id="no_email_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide an email where you would like to send the analysis results:
         </span>
-        <input class="form-control" type="text" id="email_input" name="email_input" style="width:400;" value="" size="22" onclick="" onkeyup="formChanged()" onchange="formChanged()">
+        <input class="form-control" type="text" id="email_input" name="email_input" style="width:400;" value="" size="22" onclick="" onkeyup="emailChanged()" onchange="emailChanged()">
         </input>
         </b>
     </div>
