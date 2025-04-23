@@ -8,6 +8,7 @@ $run_gbsapp => undef
 $email_address =>undef
 $analysis_name =>undef
 $sgn_token
+$username
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>

@@ -2,6 +2,7 @@
 <%args>
 $ref_path
 $sgn_token
+$username => undef
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -96,6 +97,9 @@ $( document ).ready(function(){
         jQuery("#logout_button").hide();
     }
 
+    //set username value to transfer to other pages
+    document.getElementById('username').value = username;
+
     //remove this when you implement biparental analysis
     jQuery("#biparental_button").hide();
     //biparental form logic
@@ -177,6 +181,7 @@ $( document ).ready(function(){
                     <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
                         <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+                        <input type="hidden" value="<% $username %>" id="username" name="username" />
                         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
                         <input type="hidden" id="username" name="username" />
                     </span>

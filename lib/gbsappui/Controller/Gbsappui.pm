@@ -56,6 +56,8 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
     my $ref_path=$c->req->param('ref_path');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token');
+    my $username = "nousername";
+    $c->stash->{username} = $username;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
@@ -91,7 +93,7 @@ sub impute:Path('/impute'): Args(0){
     my $run_beagle = 1;
 
     #setup data directory and project directory
-    my $username = $c->req->param('username');
+    my $username = "nousername";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -202,6 +204,7 @@ sub submit:Path('/submit') : Args(0){
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{username} = $username;
     $c->stash->{template} = "submit.mas";
 }
 
