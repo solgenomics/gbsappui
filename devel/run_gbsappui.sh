@@ -33,7 +33,12 @@ results_email () {
     #zip file and move to results folder
     nopath_projdir=$(echo $projdir | awk '{n=split($0,a,"/");print a[3]}')
     cd ${projdir}
-    mkdir /gbsappui/root/results/$nopath_projdir/
+    #make project directory if it doesn't exist
+    if [ -d /gbsappui/root/results/$nopath_projdir/ ]; then
+        :
+    else
+        mkdir /gbsappui/root/results/$nopath_projdir/
+    fi
     tar -zcvf /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz *
     chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
     #email results link
@@ -65,6 +70,7 @@ beagle () {
         do
             sleep 10
         done
+	#rm ${projdir}beagle/beagle.out.log
         echo "Beagle complete." >> ${projdir}beagle_log.out
         mv ${projdir}beagle_log.out ${projdir}beagle/
     # fi;

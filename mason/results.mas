@@ -13,12 +13,12 @@ $analysis_name
 <script>
 //functions
 function build_link(nopath_projdir) {
-    var html = '<a style="position:relative;top:6;" href="';
+    var html = '<a id="download_button" style="position:relative;top:6;" href="';
     html+=nopath_projdir;
     html+='/analysis_results.tar.gz';
     html+='" download="analysis_results.tar.gz">Download Results for analysis ';
     html+=analysis_name;
-    html+='</a>'
+    html+='</a>';
     return html;
 }
 
@@ -30,6 +30,9 @@ $(document).ready(function(){
     console.log(url);
     var html = build_link(nopath_projdir);
     jQuery('#download').html(html);
+    let buttonwidth = (analysis_name.length * 8) + 20;
+    let buttonlocation = -112 + buttonwidth;
+    $("#download_button").css({"right": buttonlocation + "px", "width": buttonwidth});
 });
 
 </script>
