@@ -38,7 +38,7 @@ results_email () {
     chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your BreedBase Call analysis can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}?&analysis_name=${analysis_name}"
+    body="The results for your BreedBase Call analysis ${analysis_name} can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}?&analysis_name=${analysis_name}"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results" "$body" "" "";
 }
@@ -100,7 +100,7 @@ gbsapp () {
             scancel $jobnum_gbsappui
             scancel $jobnum_gbsapp
             last_log=$(tail -n 5 $gbs_slurm_log)
-            body="GBS Analysis timed out after 96 hours. Final log lines include:
+            body="GBS Analysis ${analysis_name} timed out after 96 hours. Final log lines include:
 
             $last_log
 
@@ -123,7 +123,7 @@ gbsapp () {
             fi
         #if no vcf file
         else
-            body="GBS Analysis completed but failed to produce a results file. Final log lines include:
+            body="GBS Analysis ${analysis_name} completed but failed to produce a results file. Final log lines include:
 
             $last_log
 
@@ -132,7 +132,7 @@ gbsapp () {
         fi
     #if no Analysis_Complete result
     else
-        body="GBS Analysis did not complete successfully. Final log lines include:
+        body="GBS Analysis ${analysis_name} did not complete successfully. Final log lines include:
 
         $last_log
 
@@ -142,7 +142,7 @@ gbsapp () {
 }
 
 #send initial email to test if the email is working
-initial_body="Your BreedBase Call analysis has begun! You will receive the results at this address when it completes. "
+initial_body="Your BreedBase Call analysis ${analysis_name} has begun! You will receive the results at this address when it completes. "
 initial_email "$initial_body"
 chmod -R 770 ${projdir}
 cd ${projdir}
@@ -162,7 +162,7 @@ if [ $run_beagle = 1 ]; then
             #once beagle analysis is complete email results
             results_email
         else
-            body="Imputation did not complete successfully. The vcf file to impute could not be found. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            body="Imputation for analysis ${analysis_name} did not complete successfully. The vcf file to impute could not be found. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
             error_email "$body"
         fi
     fi

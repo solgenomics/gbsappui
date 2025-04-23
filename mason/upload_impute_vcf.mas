@@ -1,6 +1,7 @@
 <%# --page actions-- %>
 <%args>
 $sgn_token
+$username => undef
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -92,6 +93,9 @@ $( document ).ready(function(){
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
+
+    //set username value to transfer to other pages
+    document.getElementById('username').value = username;
     };
 });
 
@@ -149,8 +153,8 @@ $( document ).ready(function(){
                     <input type="file" name="vcf" id="vcf" required />
                     <span style="position:relative; top:15; right:85; color:black; font-size:20">
                         <input type="submit" value="Upload" id="upload_button" />
-                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
                         <input type="hidden" id="username" name="username" />
+                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
                     </span>
                     </div>
                 </form>

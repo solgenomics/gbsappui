@@ -1,6 +1,7 @@
 <%# --page actions-- %>
 
 <%args>
+$analysis_name =>undef
 $projdir
 $email_address =>undef
 $run_gbsapp => undef
@@ -21,6 +22,7 @@ var user_id;
 var username;
 var run_beagle = 1;
 var run_gbsapp = 0;
+var analysis_name;
 
 //functions
 function get_username(cookie){
@@ -101,7 +103,15 @@ function get_email_address(cookie){
     })
 }
 
-function formChanged() {
+function analysisChanged() {
+//update email variable when user writes in email form
+    analysis_input = document.getElementsByName("analysis_input")[0].value;
+    analysis_name = analysis_input;
+    document.getElementById('analysis_name').value = analysis_name;
+    return analysis_name;
+}
+
+function emailChanged() {
 //update email variable when user writes in email form
     email_input = document.getElementsByName("email_input")[0].value;
     email_address = email_input;
@@ -111,23 +121,34 @@ function formChanged() {
 
 function validateEmail(email) {
 //make sure email is in an email-like format
-  var re = /\S+@\S+\.\S+/;
-  return re.test(email);
+    var re = /\S+@\S+\.\S+/;
+    return re.test(email);
 }
 
-function emailCheck() {
+function validateAnalysis(name) {
+//make sure an analysis name is included
+    var re = /\S/;
+    return re.test(name);
+}
+
+function analysisCheck() {
 //give error if email format is not valid
-    if(validateEmail(email_address)){
-        document.getElementById('analysis_form').submit();
+    if(validateAnalysis(analysis_name)){
+        if(validateEmail(email_address)){
+            document.getElementById('analysis_form').submit();
+        }
+        else {
+            alert("Invalid email. Please check it and re-enter your email address.");
+        }
     }
     else {
-        alert("Invalid email. Please check it and re-enter your email address.");
+        alert("Please include an analysis name.");
     }
 }
 
 function analysisButton() {
 //check email when analysis button is clicked
-    emailCheck();
+    analysisCheck();
 }
 
 $( document ).ready(function(){
@@ -214,6 +235,15 @@ $( document ).ready(function(){
     <br/>
     <br/>
     <br/>
+    <div id="analysis_name">
+        <b>
+        <br/>
+        <span id="analysis_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide a name for your analysis:
+        </span>
+        <input class="form-control" type="text" id="analysis_input" name="analysis_input" style="width:400;" value="" size="22" onclick="" onkeyup="analysisChanged()" onchange="analysisChanged()">
+        </input>
+        </b>
+    </div>
     <div id="email_info">
         <b>
         <span id="email_exists_statement" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">We currently have the following email on file:
@@ -235,6 +265,7 @@ $( document ).ready(function(){
         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
         <input type="hidden" id="run_beagle" name="run_beagle" />
         <input type="hidden" id="run_gbsapp" name="run_gbsapp" />
+        <input type="hidden" id="analysis_name" name="analysis_name" />
     </form>
     <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
 </div>

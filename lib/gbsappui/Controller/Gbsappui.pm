@@ -72,6 +72,8 @@ sub upload_impute_vcf:Path('/upload_impute_vcf') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token_impute');
+    my $username = "nousername";
+    $c->stash->{username} = $username;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{template}="upload_impute_vcf.mas";
@@ -93,7 +95,8 @@ sub impute:Path('/impute'): Args(0){
     my $run_beagle = 1;
 
     #setup data directory and project directory
-    my $username = "nousername";
+    my $username = $c->req->param('username');
+    print STDERR "Username is $username \n";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -134,6 +137,7 @@ sub impute:Path('/impute'): Args(0){
     $c->stash->{projdir} = $projdir;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{username} = $username;
     $c->stash->{template} = "impute.mas";
 }
 
@@ -155,6 +159,7 @@ sub submit:Path('/submit') : Args(0){
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
     my $username = $c->req->param('username');
+    print STDERR "Username is $username \n";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
