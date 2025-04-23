@@ -232,6 +232,7 @@ sub analyze:Path('/analyze') : Args(0){
 
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
+    print STDERR "Analysis name is $analysis_name \n";
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp $analysis_name` or die "Didn't run: $!\n";
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
