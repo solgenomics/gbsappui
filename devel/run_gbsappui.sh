@@ -31,19 +31,20 @@ error_email () {
 
 results_email () {
     #zip file and move to results folder
-    nopath_projdir=$(echo $projdir | awk '{n=split($0,a,"/");print a[3]}')
+    nopath_projdir_username=$(echo $projdir | awk '{n=split($0,a,"/");print a[3]}')
+    nopath_projdir_analysis=$(echo $projdir | awk '{n=split($0,a,"/");print a[4]}')
     cd ${projdir}
     #make project directory if it doesn't exist
-    if [ -d /gbsappui/root/results/$nopath_projdir/ ]; then
+    if [ -d /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/ ]; then
         :
     else
-        mkdir /gbsappui/root/results/$nopath_projdir/
+        mkdir /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/
     fi
-    tar -zcvf /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz *
-    chmod 777 /gbsappui/root/results/$nopath_projdir/analysis_results.tar.gz
+    tar -zcvf /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/analysis_results.tar.gz *
+    chmod 777 /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your BreedBase Call analysis ${analysis_name} can be found at the following link: ${gbsappui_domain_name}/results/?&nopath_projdir=${nopath_projdir}?&analysis_name=${analysis_name}"
+    body="The results for your BreedBase Call analysis ${analysis_name} can be found at the following link: ${gbsappui_domain_name}/results/?&username=${nopath_projdir_username}?&projdir=${nopath_projdir_analysis}?&analysis_name=${analysis_name}"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results" "$body" "" "";
 }

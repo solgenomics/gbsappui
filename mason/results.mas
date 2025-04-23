@@ -14,7 +14,9 @@ $analysis_name
 //functions
 function build_link(nopath_projdir) {
     var html = '<a id="download_button" style="position:relative;top:6;" href="';
-    html+=nopath_projdir;
+    html+=nopath_projdir_username;
+    html+='/';
+    html+=nopath_projdir_analysis;
     html+='/analysis_results.tar.gz';
     html+='" download="analysis_results.tar.gz">Download Results for analysis ';
     html+=analysis_name;

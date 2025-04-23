@@ -7,7 +7,7 @@ body=$3
 
 #Other parameters
 
-from="gbsappui@breedbase.org"
+from="root@ecf51c6e3ef5"
 boundary="ZZ_/afg6432dfgkl.94531q"
 declare -a attachments
 attachments=( $4 $5 )
@@ -49,5 +49,6 @@ done
 
 # print last boundary with closing --
 printf '%s\n' "--${boundary}--"
+
 
 } | sendmail -t -oi   # one may also use -f here to set the envelope-from
