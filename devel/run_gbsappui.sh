@@ -72,8 +72,6 @@ beagle () {
         do
             sleep 10
         done
-	#rm ${projdir}beagle/beagle.out.log
-        echo "Beagle complete." >> ${projdir}beagle_log.out
         mv ${projdir}beagle_log.out ${projdir}beagle/
     # fi;
 }
