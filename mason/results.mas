@@ -12,11 +12,11 @@ $analysis_name
 
 <script>
 //functions
-function build_link(nopath_projdir) {
+function build_link(projdir) {
     var html = '<a id="download_button" style="position:relative;top:6;" href="';
-    html+=nopath_projdir_username;
+    html+=username;
     html+='/';
-    html+=nopath_projdir_analysis;
+    html+=projdir;
     html+='/analysis_results.tar.gz';
     html+='" download="analysis_results.tar.gz">Download Results for analysis ';
     html+=analysis_name;
@@ -26,15 +26,15 @@ function build_link(nopath_projdir) {
 
 $(document).ready(function(){
     url = window.location;
-    nopath_projdir = new URLSearchParams(url.search).get('nopath_projdir');
+    username = new URLSearchParams(url.search).get('username');
+    projdir = new URLSearchParams(url.search).get('projdir');
     analysis_name = new URLSearchParams(url.search).get('analysis_name');
-    console.log(nopath_projdir);
     console.log(url);
-    var html = build_link(nopath_projdir);
+    var html = build_link(projdir);
     jQuery('#download').html(html);
-    let buttonwidth = (analysis_name.length * 8) + 20;
-    let buttonlocation = -112 + buttonwidth;
-    $("#download_button").css({"right": buttonlocation + "px", "width": buttonwidth});
+    let buttonwidth = (analysis_name.length * 9) + 320;
+    let buttonlocation = -10 + buttonwidth;
+    $("#download").css({"right": buttonlocation + "px", "width": buttonwidth});
 });
 
 </script>
