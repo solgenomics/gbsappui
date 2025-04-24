@@ -228,7 +228,7 @@ $( document ).ready(function(){
 <div id="page_function">
     <br/>
     <div id="analysis_info" style="position:relative">
-        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:50; text-align:center; font-size:13; border:10px double white">Results will be emailed in a zipped file.
+        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:25; text-align:center; font-size:13; border:10px double white">Results will be emailed in a zipped file.
         <br/>
         Imputation is run using the July 22, 2022 release of <a href="https://faculty.washington.edu/browning/beagle/beagle.html">Beagle</a>. </label>
     </div>
@@ -237,7 +237,6 @@ $( document ).ready(function(){
     <br/>
     <div id="analysis_name_div">
         <b>
-        <br/>
         <span id="analysis_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide a name for your analysis:
         </span>
         <input class="form-control" type="text" id="analysis_input" name="analysis_input" style="width:400;" value="" size="22" onclick="" onkeyup="analysisChanged()" onchange="analysisChanged()">

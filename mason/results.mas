@@ -13,15 +13,19 @@ $analysis_name
 <script>
 //functions
 function build_link(projdir) {
-    var html = '<a id="download_button" style="position:relative;top:6;" href="';
+    var html = '<a id="download_button" style="position:relative; top:6; color:white;" href="';
     html+=username;
     html+='/';
     html+=projdir;
     html+='/analysis_results.tar.gz';
-    html+='" download="analysis_results.tar.gz">Download Results for analysis ';
+    html+='" download="analysis_results.tar.gz"><b>Download Results for analysis ';
     html+=analysis_name;
-    html+='</a>';
+    html+='</b></a>';
     return html;
+}
+
+function redirect(){
+    window.location.href="/";
 }
 
 $(document).ready(function(){
@@ -32,9 +36,9 @@ $(document).ready(function(){
     console.log(url);
     var html = build_link(projdir);
     jQuery('#download').html(html);
-    let buttonwidth = (analysis_name.length * 9) + 330;
-    let buttonlocation = -10 + buttonwidth;
-    $("#download").css({"right": buttonlocation + "px", "width": buttonwidth});
+    let buttonwidth = (analysis_name.length * 9) + 340;
+    let buttonlocation = 0 + buttonwidth;
+    $("#download").css({"center": buttonlocation + "px", "width": buttonwidth, "border": 10 + "px double white"});
 });
 
 </script>
@@ -46,8 +50,11 @@ $(document).ready(function(){
 <%# ----main page---- %>
 
 <center>
-    <div id="download" style="position:relative;left:-10;bottom:-100;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:220;height:40">
+    <div id="download" style="position:relative;bottom:-100;color:white;background-color:black;font-size:20;width:220;height:60">
     </div>
+    <button id="new_analysis" style="background-color:black; border:10px double white; color:white; width:250; height:60; position:relative; top:120; font-size:20" onclick="redirect()">
+        <b>Return to main page</b>
+    </button>
 </center>
 
 <%# ----footer---- %>
