@@ -32,7 +32,7 @@ $(document).ready(function(){
     console.log(url);
     var html = build_link(projdir);
     jQuery('#download').html(html);
-    let buttonwidth = (analysis_name.length * 9) + 320;
+    let buttonwidth = (analysis_name.length * 9) + 330;
     let buttonlocation = -10 + buttonwidth;
     $("#download").css({"right": buttonlocation + "px", "width": buttonwidth});
 });
