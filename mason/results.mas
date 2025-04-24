@@ -36,7 +36,7 @@ $(document).ready(function(){
     console.log(url);
     var html = build_link(projdir);
     jQuery('#download').html(html);
-    let buttonwidth = (analysis_name.length * 9) + 340;
+    let buttonwidth = (analysis_name.length * 10) + 340;
     let buttonlocation = 0 + buttonwidth;
     $("#download").css({"center": buttonlocation + "px", "width": buttonwidth, "border": 10 + "px double white"});
 });
