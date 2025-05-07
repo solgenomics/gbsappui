@@ -106,9 +106,10 @@ function get_email_address(cookie){
 
 function analysisChanged() {
 //update email variable when user writes in email form
-    analysis_input = document.getElementsByName("analysis_input")[0].value;
+    analysis_input = JSON.stringify(document.getElementsByName("analysis_input")[0].value);
     analysis_name = analysis_input;
     document.getElementById('analysis_name').value = analysis_name;
+    console.log(analysis_name);
     return analysis_name;
 }
 
@@ -263,7 +264,7 @@ $( document ).ready(function(){
         <input type="checkbox" id="beagle" name="beagle" value="beagle" onclick="beagleCheck()">
         <label for="beagle"> Post-analysis imputation using Beagle </label>
     </div>
-    <div id="analysis_name">
+    <div id="analysis_name_div">
         <b>
         <br/>
         <span id="analysis_ask" style="position:relative; margin: 7px 7px 7px 7px;color:black;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;"> Please provide a name for your analysis:
@@ -294,7 +295,7 @@ $( document ).ready(function(){
         <input type="hidden" id="run_gbsapp" name="run_gbsapp" />
         <input type="hidden" value="email_address" id="email_address" name="email_address" />
         <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
-        <input type="hidden" value="analysis_name" id="analysis_name" name="analysis_name" />
+        <input type="hidden" id="analysis_name" name="analysis_name" />
     </form>
     <button id="analysis_button" style="position:relative;left:-10;bottom:-20;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="analysisButton()" >Submit Analysis</button>
 </div>

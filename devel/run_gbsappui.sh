@@ -6,15 +6,17 @@ run_beagle=$2
 email_address=$3
 gbsappui_domain_name=$4
 run_gbsapp=$5
-analysis_name=$6
+analysis_name="$6"
 # run_filtering=$7
+
+cd ${projdir}gbsappui_slurm_log
 
 #functions:
 initial_email () {
     #formatting email
     body=$1
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Analysis Begun" "$body" "" "";
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Analysis Begun" "$body" "" ""
 }
 
 error_email () {
@@ -26,7 +28,7 @@ error_email () {
     mv ${projdir}log2.out.gz ${projdir}log.out.gz
 
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log";
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Error" "$body" "${projdir}log.out.gz" "$gbs_slurm_log"
 }
 
 results_email () {
@@ -45,7 +47,8 @@ results_email () {
     chmod 777 /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/analysis_results.tar.gz
     #email results link
     #format email
-    body="The results for your BreedBase Call analysis ${analysis_name} can be found at the following link: ${gbsappui_domain_name}/results/?&username=${nopath_projdir_username}&projdir=${nopath_projdir_analysis}&analysis_name=${analysis_name}"
+    url_analysis_name=${analysis_name// /"%20"}
+    body="The results for your BreedBase Call analysis ${analysis_name} can be found at the following link: ${gbsappui_domain_name}/results/?&username=${nopath_projdir_username}&projdir=${nopath_projdir_analysis}&analysis_name=${url_analysis_name}"
     #send email
     /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results" "$body" "" "";
 }

@@ -105,15 +105,16 @@ function get_email_address(cookie){
 
 function analysisChanged() {
 //update email variable when user writes in email form
-    var analysis_input = document.getElementsByName("analysis_input")[0].value;
+    analysis_input = JSON.stringify(document.getElementsByName("analysis_input")[0].value);
     analysis_name = analysis_input;
     document.getElementById('analysis_name').value = analysis_name;
+    console.log(analysis_name);
     return analysis_name;
 }
 
 function emailChanged() {
 //update email variable when user writes in email form
-    var email_input = document.getElementsByName("email_input")[0].value;
+    email_input = document.getElementsByName("email_input")[0].value;
     email_address = email_input;
     document.getElementById('email_address').value = email_address;
     return email_address;
@@ -127,17 +128,12 @@ function validateEmail(email) {
 
 function validateAnalysis(name) {
 //make sure an analysis name is included
-    if (typeof name === 'undefined') {
-        return false;
-    }
-    else {
-        var re = /\S/;
-        return re.test(name);
-    }
+    var re = /\S/;
+    return re.test(name);
 }
 
-function analysisButton() {
-//give error if there is no analysis name or if email format is not valid
+function analysisCheck() {
+//give error if email format is not valid
     if(validateAnalysis(analysis_name)){
         if(validateEmail(email_address)){
             document.getElementById('analysis_form').submit();
@@ -149,6 +145,11 @@ function analysisButton() {
     else {
         alert("Please include an analysis name.");
     }
+}
+
+function analysisButton() {
+//check email when analysis button is clicked
+    analysisCheck();
 }
 
 $( document ).ready(function(){
@@ -177,6 +178,7 @@ $( document ).ready(function(){
     //set run beagle value
     document.getElementById('run_beagle').value = run_beagle;
     document.getElementById('run_gbsapp').value = 0;
+    return run_beagle;
 });
 
 </script>
