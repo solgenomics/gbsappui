@@ -248,7 +248,7 @@ $( document ).ready(function(){
 <div id="page_function">
     <br/>
     <div id="analysis_info" style="position:relative">
-        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:25; text-align:center; font-size:13; border:10px double white">Results will be emailed in a zipped file.
+        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:25; text-align:center; font-size:13; border:10px double white">You will be emailed a link to the zipped results files.
         <br/>
         Analyses can only be run on diploid organisms.
         <br/>
