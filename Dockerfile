@@ -84,7 +84,7 @@ RUN chmod 777 /var/spool/ \
 RUN cd / \
   && git clone https://github.com/solgenomics/gbsappui
 
-#install npm, jquery, and js-cookie
+#install npm and npm packages
 RUN cd /gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
 RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd ../js-cookie && npm install js-cookie && cd /gbsappui/root/static/js/node_modules/bootstrap && npm install bootstrap@3
 

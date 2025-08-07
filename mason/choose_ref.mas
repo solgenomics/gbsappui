@@ -5,6 +5,7 @@ $ref_path => undef
 $refgenomes_json
 $refgenomes_labels_json
 $sgn_token
+$scp_files
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -20,6 +21,7 @@ var gbsappui_domain_name;
 var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
+var scp_files = '<% $scp_files %>';
 
 //functions
 function get_username(cookie){
@@ -44,6 +46,7 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
+                document.getElementById('scp_files').value = scp_files;
             }
             else {
                 jQuery("#please_login").show();
@@ -180,12 +183,13 @@ $( document ).ready(function(){
 
       <%# ----Submit refgenome selection button---- %>
 
-      <form action="/upload_fastq">
+      <form action="/choose_fastq">
           <center>
             <button type="submit" id="selectrefbutton" style="background:black; color:white; height:50px; width:100px; position:relative; bottom:20; font-size:18; padding-top:5;" onclick="refgenome_choose()"><b>Select</b></button>
           </center>
           <input type="hidden" id="ref_path" name="ref_path" />
           <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+          <input type="hidden" id="scp_files" name="scp_files" />
       </form>
     </div>
 

@@ -22,9 +22,49 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $contact_email = $c->config->{contact_email};
+    my $contact_name = $c->config->{contact_name};
     my $sgn_token = "nocookie";
+
+    #retrieving json formatted list of files available for each username
+    my $raw_file_list = `ls -R /scp_uploads/*`;
+    my @scp_folders = split('/', $raw_file_list);
+    #remove first empty element
+    shift @scp_folders;
+    #remove repetitions of parent directory
+    @scp_folders = grep !/scp_uploads/, @scp_folders;
+    my %files_of;
+    for my $scp_folder (@scp_folders) {
+        my ($username, $files_combined) = split /:/, $scp_folder;
+        my @files = split("\n", $files_combined);
+        #remove empty first element
+        shift @files;
+        $files_of{ $username  } = \@files;
+    }
+    my $file_list_json = encode_json \%files_of;
+
+    #get list of all analyses
+    my $raw_analysis_folders = `ls /results/*`;
+    my @analysis_folders = split('/', $raw_analysis_folders);
+    #remove first empty element
+    shift @analysis_folders;
+    #remove repetitions of parent directory
+    @analysis_folders = grep !/results/, @analysis_folders;
+    my %analyses_of;
+    for my $analysis_folder (@analysis_folders) {
+        my ($analysis_username, $folders_combined) = split /:/, $analysis_folder;
+        my @folders = split("\n", $folders_combined);
+        #remove empty first element
+        shift @folders;
+        $analyses_of{ $analysis_username  } = \@folders;
+    }
+    my $analysis_list_json = encode_json \%analyses_of;
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{file_list_json}=$file_list_json;
+    $c->stash->{analysis_list_json}=$analysis_list_json;
+    $c->stash->{contact_email}=$contact_email;
+    $c->stash->{contact_name}=$contact_name;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
@@ -39,15 +79,18 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $ref_path = "nopath";
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token_callfilter');
+    my $scp_files = $c->req->param('scp_files');
+    print STDERR $scp_files;
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
     $c->stash->{refgenomes_labels_json}=$refgenomes_labels_json;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{scp_files}=$scp_files;
     $c->stash->{template}="choose_ref.mas";
 }
 
-sub upload_fastq:Path('/upload_fastq') : Args(0){
+sub choose_fastq:Path('/choose_fastq') : Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -57,14 +100,16 @@ sub upload_fastq:Path('/upload_fastq') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token');
     my $username = "nousername";
+    my $scp_files = $c->req->param('scp_files');
     $c->stash->{username} = $username;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
-    $c->stash->{template}="upload_fastq.mas";
+    $c->stash->{scp_files}=$scp_files;
+    $c->stash->{template}="choose_fastq.mas";
 }
 
-sub upload_impute_vcf:Path('/upload_impute_vcf') : Args(0){
+sub choose_impute_vcf:Path('/choose_impute_vcf') : Args(0){
     my $self=shift;
     my $c=shift;
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
@@ -73,10 +118,13 @@ sub upload_impute_vcf:Path('/upload_impute_vcf') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token_impute');
     my $username = "nousername";
+    my $scp_files = $c->req->param('scp_files_impute');
+    print STDERR $scp_files;
     $c->stash->{username} = $username;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
-    $c->stash->{template}="upload_impute_vcf.mas";
+    $c->stash->{scp_files}=$scp_files;
+    $c->stash->{template}="choose_impute_vcf.mas";
 }
 
 sub impute:Path('/impute'): Args(0){
@@ -120,14 +168,17 @@ sub impute:Path('/impute'): Args(0){
     my $slurmlogdir="/gbsappui_slurm_log/";
     make_path($projdir.$slurmlogdir);
 
-    #move uploaded files into project directory and name them appropriately
-    print STDERR " Uploading files to data folder \n";
-    for my $upload ($c->req->upload("vcf")) {
-        my $tempname=$upload->tempname();
-        my $orig_upload = $upload->filename();
-        print STDERR "orig name is $orig_upload \n";
-        fmove($tempname,$projdir."/".$orig_upload);
-        `chmod 777 $projdir/$orig_upload`;
+    #parse and copy chosen input files into project directory and name them appropriately
+    my $chosen_files = $c->req->param("chosen_files_final");
+    my @chosen_files_array = split(",", $chosen_files);
+    print STDERR "My chosen files are \n";
+    print STDERR Dumper @chosen_files_array;
+    print STDERR "Moving files to data folder \n";
+    foreach my $chosen_file (@chosen_files_array) {
+        print STDERR "working on \n";
+        print STDERR Dumper $chosen_file;
+        fcopy("/scp_uploads/".$username."/".$chosen_file,$projdir."/".$chosen_file);
+        `chmod 777 $projdir/$chosen_file`;
     }
 
     my $sgn_token=$c->req->param('sgn_token');
@@ -184,14 +235,17 @@ sub submit:Path('/submit') : Args(0){
     print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
     rcopy($ref_path,$projdir."/refgenomes/") or die $!;
 
-    #move uploaded files into project directory and name them appropriately
-    print STDERR " Uploading files to data folder \n";
-    for my $upload ($c->req->upload("fastq")) {
-        my $tempname=$upload->tempname();
-        my $orig_upload = $upload->filename();
-        print STDERR "orig name is $orig_upload \n";
-        fmove($tempname,$projdir."/samples/".$orig_upload);
-        `chmod 777 $projdir/samples/$orig_upload`;
+    #parse and copy chosen input files into project directory and name them appropriately
+    my $chosen_files = $c->req->param("chosen_files_final");
+    my @chosen_files_array = split(",", $chosen_files);
+    print STDERR "My chosen files are \n";
+    print STDERR Dumper @chosen_files_array;
+    print STDERR "Moving files to data folder \n";
+    foreach my $chosen_file (@chosen_files_array) {
+        print STDERR "working on \n";
+        print STDERR Dumper $chosen_file;
+        fcopy("/scp_uploads/".$username."/".$chosen_file,$projdir."/samples/".$chosen_file);
+        `chmod 777 $projdir/samples/$chosen_file`;
     }
 
     #if biparental: edit config file to include p1 (maternal parent) and p2 (paternal parent)

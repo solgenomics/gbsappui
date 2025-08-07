@@ -1,7 +1,9 @@
 <%# --page actions-- %>
 <%args>
+$ref_path
 $sgn_token
 $username => undef
+$scp_files
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -11,12 +13,15 @@ $username => undef
 
 <script>
 //variables
+var biparental;
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
+var sgn_token = '<% $sgn_token %>';
+var scp_files = '<% $scp_files %>';
+var files_html = '';
 
 //functions
 function get_username(cookie){
@@ -72,6 +77,14 @@ function logout() {
   }
 }
 
+function file_choices() {
+    var chosen_files = $('#choose_files').val();
+    //set chosen_files value to transfer to other pages
+    console.log(chosen_files);
+    // alert(chosen_files);
+    document.getElementById('chosen_files_final').value = chosen_files;
+}
+
 $( document ).ready(function(){
     domain = localStorage.getItem("gbs_domain");
     instance = localStorage.getItem("gbs_instance");
@@ -93,12 +106,47 @@ $( document ).ready(function(){
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
+    }
 
     //set username value to transfer to other pages
     document.getElementById('username').value = username;
-    };
-});
 
+    //populate file select display
+    scp_files_array = scp_files.split(',');
+
+    //remove this when you implement biparental analysis
+    jQuery("#biparental_button").hide();
+    //biparental form logic
+    jQuery("#biparental_info").hide();
+    jQuery('#biparental_button').on('click', function(){
+        jQuery("#choose_button").hide();
+        jQuery("#biparental_button").hide();
+        jQuery("#biparental_info").show();
+        return false;
+    });
+    jQuery('#biparental_submit').on('click', function(){
+        jQuery("#choose_button").show();
+        jQuery("#biparental_button").hide();
+        jQuery("#biparental_submit").hide();
+        $('maternal_input').css("outline","none");
+        $('paternal_input').css("outline","none");
+        return false;
+    });
+    // add file options to multiple file selector
+    for (var i = 0; i < scp_files_array.length; i++) {
+        const option = document.createElement("option");
+        option.value = scp_files_array[i];
+        option.text = scp_files_array[i];
+        document.getElementById('choose_files').add(option);
+    }
+    document.getElementById('select_button').onclick = function() {file_choices()};
+   //  $('biparental_submit').live('submit', function(){
+   //    $.post($(this).attr('action'), $(this).serialize(), function(response){
+   //          // do something here on success
+   //    },'json');
+   // });
+
+});
 </script>
 
 <%# ----header---- %>
@@ -135,7 +183,7 @@ $( document ).ready(function(){
 <%# ----please login dialog---- %>
 
 <center>
-  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:200;font-size:20">
+  <div id="please_login" style="background-color:black;padding-top:10;border:10px double white;color:white;width:600;height:75;position:relative;top:450;font-size:20">
     <span style="position:relative;left:0">
       <b>Please <a onclick="login()">log in</a> or <a href="/">choose a different breedbase instance</a></b>
     </span>
@@ -143,19 +191,32 @@ $( document ).ready(function(){
   <br />
 </center>
 
-<%# ----upload vcf---- %>
+<%# ----choose fastq---- %>
 <center>
     <div id="page_function">
-        <div id="upload_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:175; position:relative; top:50; font-size:20">
-            <b>Select vcf file to impute:</b>
-            <span style="position:relative;left:20">
-                <form action="/impute"  target="_self" enctype="multipart/form-data" id="upload_form" name="upload_form" method="post" style="position:relative; top:15; left:75">
-                    <input type="file" name="vcf" id="vcf" required />
-                    <span style="position:relative; top:15; right:85; color:black; font-size:20">
-                        <input type="submit" value="Upload" id="upload_button" />
-                        <input type="hidden" id="username" name="username" />
-                        <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
-                    </span>
+        <div id="select_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:400; position:relative; top:50; font-size:20">
+            <b>Select sample fastq files:</b>
+            <span style="position:relative; color:black; font-size:20; height:325; width:550">
+                <form action="/submit" target="_self" id="choose_form" name="choose_form" method="post" >
+                    <select multiple class="form-control" id="choose_files" style="height:300; width:500">
+                    </select>
+                    <br></br>
+                    <input type="submit" name="fastq" multiple="multiple" value="Select" id="select_button" required/>
+                    <input type="hidden" id="chosen_files_final" name="chosen_files_final" />
+                    <input type="hidden" value="<% $ref_path %>" id="ref_path" name="ref_path" />
+                    <input type="hidden" id="username" name="username" />
+                    <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
+                    </div>
+                    <button id="biparental_button" name="biparental_button" value="biparental population" style="width:300; height:40; position:relative; top:60; color:black; font-size:18">biparental population
+                    </button>
+                    <div id="biparental_info" name="biparental_info" value="biparental info" style="width:500; height:180; position:relative; top:100; color:black; font-size:18; border:10px double black">
+                        <div id="biparental_innards" style="position:relative; top:15">
+                            <label for="p1">Maternal File Name:</label>
+                            <input id="maternal_input" type="text" id="p1" name="p1"><br><br>
+                            <label id="paternal_input" for="p2">Paternal File Name:</label>
+                            <input type="text" id="p2" name="p2"><br><br>
+                            <input type="submit" id="biparental_submit" name="biparental_submit" value="Submit">
+                        </div>
                     </div>
                 </form>
             </span>
