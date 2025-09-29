@@ -26,7 +26,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_name = $c->config->{contact_name};
     my $sgn_token = "nocookie";
 
-    #retrieving json formatted list of files available for each username
+    #retrieving json formatted list of scp files available for each username
     my $raw_file_list = `ls -R /scp_uploads/*`;
     my @scp_folders = split('/', $raw_file_list);
     #remove first empty element
@@ -43,13 +43,16 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     }
     my $file_list_json = encode_json \%files_of;
 
-    #get list of all analyses
+    #get list of all analyses by name from results folder
     my $raw_analysis_folders = `ls /results/*`;
     my @analysis_folders = split('/', $raw_analysis_folders);
     #remove first empty element
     shift @analysis_folders;
+    #Good up to here
     #remove repetitions of parent directory
     @analysis_folders = grep !/results/, @analysis_folders;
+    print STDERR "post results removal \n";
+    print STDERR Dumper @analysis_folders;
     my %analyses_of;
     for my $analysis_folder (@analysis_folders) {
         my ($analysis_username, $folders_combined) = split /:/, $analysis_folder;
@@ -58,7 +61,58 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         shift @folders;
         $analyses_of{ $analysis_username  } = \@folders;
     }
-    my $analysis_list_json = encode_json \%analyses_of;
+    print STDERR "hash post username processing \n";
+    print STDERR Dumper %analyses_of;
+    #for each username
+    #for each analysis
+    #grab analysis name from text file
+    #hash of analysis folders | analysis names for each username
+    my %analyses_names_of;
+    #trying to figure out below: how to copy keys from one hash to another?
+    #start working version
+    foreach my $username ( keys %analyses_of ) {
+        my @analysis_name_array;
+        $analyses_names_of{ $username } = "placeholder";
+        #for each folder
+        #issues right here that need to be fixed: not parsing array correctly
+        # print STDERR "folder array for $username \n";
+        # print STDERR "@{ $analyses_of{ $username }}\n";
+        foreach my $folder ( @{ $analyses_of{ $username }}) {
+            my $analysis_name_string;
+            # print STDERR "folder for $username \n";
+            # print STDERR "$folder \n";
+            my $file_path = "/results/$username/$folder/analysis_info.txt";
+            # print STDERR "file path is $file_path \n";
+            my $info_file;
+            open $info_file, '<', $file_path or die "Could not open file '$info_file'";
+            while (my $line = <$info_file>) {
+                chomp $line;
+                # print STDERR "Line is $line \n";
+                if ($line =~ /^Analysis Name:/) {
+                    # print STDERR "Analysis name line is $line \n";
+                    $analysis_name_string = $line;
+                    $analysis_name_string =~ s/Analysis Name: //;
+                    chomp $analysis_name_string;
+                    # print STDERR "Analysis name string is $analysis_name_string \n";
+                    push(@analysis_name_array, $analysis_name_string);
+                }
+            }
+            # print STDERR "Analysis name string is $analysis_name_string \n";
+            if ( ($analysis_name_string eq "" ) || (! defined $analysis_name_string) ) {
+                $analysis_name_string = "Analysis Name Missing";
+                push(@analysis_name_array, $analysis_name_string);
+            }
+        }
+        # print STDERR "Analysis name array is: \n";
+        # print STDERR Dumper @analysis_name_array;
+        $analyses_names_of{ $username  } = \@analysis_name_array;
+        # return %analyses_names_of;
+    }
+    # print STDERR "Analysis name hash is \n";
+    # print STDERR Dumper %analyses_names_of;
+    #Make json of {username: analysis name, analysis name2, analysis name3 } {username: analysis name, analysis name2} (below)
+    my $analysis_list_json = encode_json \%analyses_names_of;
+    print STDERR "Analysis json is $analysis_list_json \n";
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
@@ -276,7 +330,6 @@ sub analyze:Path('/analyze') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $projdir=$c->req->param('projdir');
     my $run_beagle=$c->req->param('run_beagle');
-    my $run_gbsapp=$c->req->param('run_gbsapp');
     my $email_address=$c->req->param('email_address');
     my $analysis_name=$c->req->param('analysis_name');
     my $run_gbsapp=$c->req->param('run_gbsapp');
@@ -346,8 +399,6 @@ sub results:Path('/results') : Args(0) {
     $c->stash->{template}="results.mas";
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
 }
-
-
 
 
 1;

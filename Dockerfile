@@ -70,6 +70,7 @@ RUN mkdir /project/samples/
 RUN mkdir /project/gbsappui_slurm_log/
 
 RUN cp ./GBSapp/examples/input_steps.txt /project/
+RUN cp /gbsappui/analysis_info.txt /project/
 
 #Setup system files and Edit permissions
 RUN rm /etc/munge/munge.key

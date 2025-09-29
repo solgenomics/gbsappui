@@ -9,6 +9,9 @@ run_gbsapp=$5
 analysis_name="$6"
 # run_filtering=$7
 
+cd ${projdir}
+sed -i -e '$a\' analysis_info.txt
+echo "Analysis Name: ${analysis_name}" >> analysis_info.txt
 cd ${projdir}gbsappui_slurm_log
 
 #functions:
