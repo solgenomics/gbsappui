@@ -67,7 +67,7 @@ function get_username(cookie){
                 console.log(my_analyses_names);
                 var analyses_table_data = [
                     {
-                        'analyses_names' : my_analyses_names[0],
+                        'analyses_names' : my_analyses_names,
                         'date_started' : " ",
                         'type' : " ",
                         'status' : " ",
@@ -78,6 +78,8 @@ function get_username(cookie){
                         'delete' : " "
                     }
                 ];
+                console.log("Analyses table is:");
+                console.log(analyses_table_data);
                 // analyses_names.map(function(item) {
                 //     analyses_table.analyses.push({
                 //         "Name" : item.Name,
@@ -262,42 +264,6 @@ $(document).ready(function(){
     <%# ----Analysis history table---- %>
     <div class="well">
     <table class="table table-bordered table-hover" id="analyses_table">
-      // <thead>
-      // <tr>
-      //   <th>
-      //     Name
-      //   </th>
-      //   <th>
-      //     Date Started
-      //   </th>
-      //   <th>
-      //     Type
-      //   </th>
-      //   <th>
-      //     Status
-      //   </th>
-      //   <th>
-      //     Run Time
-      //   </th>
-      //   <th>
-      //     Time Started
-      //   </th>
-      //   <th>
-      //     Time Completed
-      //   </th>
-      //   <th>
-      //    View
-      //   </th>
-      //   <th>
-      //     Download
-      //   </th>
-      //   <th>
-      //     Delete
-      //   </th>
-      // </tr>
-      // </thead>
-      // <tbody>
-      // </tbody>
     </table>
     </div>
     </div>
