@@ -27,7 +27,7 @@ var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
 var scp_files;
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
-var analyses_table_data;
+var my_analyses_names;
 
 //functions
 function get_username(cookie){
@@ -63,36 +63,18 @@ function get_username(cookie){
                 //get analyses submitted by your username
                 //below line works
                 my_analyses_names = all_users_analyses[username];
-                console.log("Analyses are:");
+                console.log("Analyses are within func:");
                 console.log(my_analyses_names);
-                var analyses_table_data = [
-                    {
-                        'analyses_names' : my_analyses_names,
-                        'date_started' : " ",
-                        'type' : " ",
-                        'status' : " ",
-                        'run_time' : " ",
-                        'time_started' : " ",
-                        'time_completed' : " ",
-                        'download' : " ",
-                        'delete' : " "
-                    }
-                ];
-                console.log("Analyses table is:");
-                console.log(analyses_table_data);
-                // analyses_names.map(function(item) {
-                //     analyses_table.analyses.push({
-                //         "Name" : item.Name,
-                //         "Date_Started" : item.Date_Started,
-                //         "Type" : item.Type,
-                //         "Status" : item.Status,
-                //         "Run Time" : item.Run_time,
-                //         "Time Started" : item.Time_Started,
-                //         "Time Completed" : item.Time_Completed,
-                //         "Download" : item.Download,
-                //         "Delete" : item.Delete
-                //     });
-                // })
+                //below is wrong format
+                //need to write script to pull out analyses names in order and put them in the below order; for x in my_analyses_names
+                $('#analyses_table').DataTable( {
+                    data: [
+                        [ my_analyses_names[0], "no", "no", "no", "no", "no", "no", "no", "no" ],
+                        [ my_analyses_names[1], "no", "no", "no", "no", "no", "no", "no", "no" ],
+                        [ my_analyses_names[2], "no", "no", "no", "no", "no", "no", "no", "no" ],
+                        [ my_analyses_names[3], "no", "no", "no", "no", "no", "no", "no", "no" ]
+                    ]
+                } );
             }
             else {
                 jQuery("#please_login").show();
@@ -158,34 +140,6 @@ $(document).ready(function(){
     }
     document.getElementById('contactName').innerHTML = contact_name;
     document.getElementById('contactEmail').innerHTML = contact_email;
-    // $('#analyses_table').DataTable({
-    //     data: analyses_table,
-    //     columns: [
-    //         { data: 'Name' },
-    //         { data: 'Date Started' },
-    //         { data: 'Type' },
-    //         { data: 'Status' },
-    //         { data: 'Run Time' },
-    //         { data: 'Time Started' },
-    //         { data: 'Time Completed' },
-    //         { data: 'Download' },
-    //         { data: 'Delete' },
-    //     ]
-    // });
-    $('#analyses_table').DataTable( {
-        data: analyses_table_data,
-        columns: [
-            { data: 'analyses_names' },
-            { data: 'date_started' },
-            { data: 'type' },
-            { data: 'status' },
-            { data: 'run_time' },
-            { data: 'time_started' },
-            { data: 'time_completed' },
-            { data: 'download' },
-            { data: 'delete' }
-        ]
-    } );
 });
 
 </script>
@@ -264,6 +218,19 @@ $(document).ready(function(){
     <%# ----Analysis history table---- %>
     <div class="well">
     <table class="table table-bordered table-hover" id="analyses_table">
+        <thead>
+            <tr>
+                <th>Analyses Names</th>
+                <th>Date Started</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Run Time</th>
+                <th>Time Started</th>
+                <th>Time Completed</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
     </table>
     </div>
     </div>
