@@ -141,7 +141,6 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
-    $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
