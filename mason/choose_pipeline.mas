@@ -36,6 +36,7 @@ var time_started_array;
 var time_completed_array;
 var download_array;
 var delete_array;
+var sgn_token;
 
 //functions
 function callback_username(response) {
