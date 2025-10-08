@@ -10,7 +10,7 @@ use JSON;
 #curling and perling
 use Net::Curl::Easier;
 use LWP::Simple;
-use Catalyst::Controller::Rest;
+use Catalyst::Controller::REST;
 BEGIN { extends 'Catalyst::Controller::REST' };
 
 __PACKAGE__->config(

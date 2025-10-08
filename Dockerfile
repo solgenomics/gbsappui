@@ -26,7 +26,7 @@ RUN mkdir /beagle && \
 
 #install cpan modules
 RUN cpanm Module::Pluggable --force
-RUN cpanm Devel::InnerPackage Catalyst Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
+RUN cpanm Devel::InnerPackage Catalyst Catalyst::Controller::REST Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
 
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
