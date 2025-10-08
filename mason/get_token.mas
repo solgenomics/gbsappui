@@ -39,6 +39,8 @@ function get_username(cookie){
                 username = response.username;
                 user_id = response.user_id;
                 document.getElementById('username').value = username;
+                console.log("username is");
+                console.log(username);
             }
             else {
                 alert('No username available!');
@@ -49,9 +51,12 @@ function get_username(cookie){
 
 //displaying refgenomes of chosen instance
 $(document).ready(function(){
-
+    domain = localStorage.getItem("gbs_domain");
+    instance = localStorage.getItem("gbs_instance");
+    gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
     //check if there's a cookie (if someone is logged in)
     if (sgn_token) {
+        document.getElementById('sgn_token').value = sgn_token;
         get_username(sgn_token);
         console.log("username is");
         console.log(username);
@@ -60,10 +65,8 @@ $(document).ready(function(){
         url = window.location;
         sgn_token = new URLSearchParams(url.search).get('access_token');
         if (sgn_token) {
+            document.getElementById('sgn_token').value = sgn_token;
             get_username(sgn_token);
-            document.getElementById('username').value = username;
-            console.log("username is");
-            console.log(username);
         } else {
             alert('no token');
         }
@@ -84,21 +87,15 @@ $(document).ready(function(){
                     <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
                 </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
-                        </button>
-                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
-                        </button>
-                    </span>
                 </ul>
             </span>
         </div>
     </div>
 </nav>
 
-<%# ----please login dialog---- %>
+<%# ----transferring username---- %>
 
-<div id="page_function" style="position:relative; top:50; overflow:scroll;">
+<div id="page_function" style="position:relative; top:250; overflow:scroll;">
   <center>
     <div id="transfer_username" style="background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
       <%# ----Transfer username button---- %>
@@ -107,9 +104,11 @@ $(document).ready(function(){
           <button type="submit" id="transferusernamebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Press me!</b></button>
           </center>
           <input type="hidden" id="username" name="username" />
+          <input type="hidden" id="sgn_token" name="sgn_token" />
       </form>
     </div>
   </center>
+ </div>
 
 <%# ----footer---- %>
 

@@ -1,7 +1,7 @@
 <%# --page actions-- %>
 <%#onload="/choose_pipeline"%>
 <%args>
-$sgn_token => undef
+$username
 $file_list_json
 $analysis_list_json
 $contact_name
@@ -21,7 +21,7 @@ var instance;
 var gbsappui_domain_name;
 var sgn_token;
 var user_id;
-var username;
+var username= '<% $username %>';
 var all_users_scp_files = JSON.parse('<% $file_list_json %>');
 var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
 var scp_files;

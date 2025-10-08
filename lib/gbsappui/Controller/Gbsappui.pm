@@ -34,6 +34,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $username=$c->req->param('username');
+    my $sgn_token=$c->req->param('sgn_token');
     print STDERR "username is $username \n";
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
@@ -141,6 +142,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{username}=$username;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
