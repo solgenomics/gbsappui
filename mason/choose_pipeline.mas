@@ -28,9 +28,24 @@ var scp_files;
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
 var my_analyses_names;
+var table_rows;
+var date_started_array;
+var type_array;
+var status_array;
+var run_time_array;
+var time_started_array;
+var time_completed_array;
+var download_array;
+var delete_array;
 
 //functions
+function callback_username(response) {
+    username = response;
+}
+
 function get_username(cookie){
+    //change this into perl
+    //curl?
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
         url : domain+'/user/cookie_login/'+cookie,
@@ -40,7 +55,6 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").hide();
                 jQuery("#logout_button").hide();
-                return false;
             }
             if(response.username){
                 username = response.username;
@@ -60,21 +74,7 @@ function get_username(cookie){
                 $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
                 document.getElementById('scp_files').value = scp_files;
                 document.getElementById('scp_files_impute').value = scp_files;
-                //get analyses submitted by your username
-                //below line works
-                my_analyses_names = all_users_analyses[username];
-                console.log("Analyses are within func:");
-                console.log(my_analyses_names);
-                //below is wrong format
-                //need to write script to pull out analyses names in order and put them in the below order; for x in my_analyses_names
-                $('#analyses_table').DataTable( {
-                    data: [
-                        [ my_analyses_names[0], "no", "no", "no", "no", "no", "no", "no", "no" ],
-                        [ my_analyses_names[1], "no", "no", "no", "no", "no", "no", "no", "no" ],
-                        [ my_analyses_names[2], "no", "no", "no", "no", "no", "no", "no", "no" ],
-                        [ my_analyses_names[3], "no", "no", "no", "no", "no", "no", "no", "no" ]
-                    ]
-                } );
+                make_analysis_table();
             }
             else {
                 jQuery("#please_login").show();
@@ -104,6 +104,64 @@ function logout() {
   }
 }
 
+function make_analysis_table() {
+    //set up analyses table
+    table_rows = [];
+    //get analyses submitted by your username
+    //get analyses names
+    console.log("username is");
+    console.log(username);
+    my_analyses_names = all_users_analyses[username];
+
+    //get analysis start dates
+    //when file was made
+    date_started_array = [ "yes", "no", "no", "no" ];
+
+    //get analysis types
+    //analysis_info.txt
+    //check if snp calling and add to string
+    //check if snp filtering and add to string
+    //check if imputing and add to string
+    //put string into type array
+    type_array = [ "yes", "no", "no", "no" ];
+
+    //get analysis status
+    //slurm status /file
+    status_array = [ "yes", "no", "no", "no" ];
+
+    //get run time status
+    //if in progress: get from slurm
+    //if finished: difference between analysis_complete and start time
+    run_time_array = [ "yes", "no", "no", "no" ];
+
+    //get analysis start time statuses
+    //when file was made
+    time_started_array = [ "yes", "no", "no", "no" ];
+
+    //get analysis completion times
+    //if completed:
+    //if not completed: NA
+    time_completed_array = [ "yes", "no", "no", "no" ];
+
+    //get analysis download links
+    //same link as in email
+    download_array = [ "download", "download", "download", "download" ];
+
+    //get analysis deletion link
+    //make new deletion function and link
+    delete_array = [ "x", "x", "x", "x" ];
+
+    for (var i = 0; i < my_analyses_names.length; i++) {
+        table_rows[i] = [ my_analyses_names[i], date_started_array[i], type_array[i], status_array[i], run_time_array[i], time_started_array[i], time_completed_array[i], download_array[i], delete_array[i]];
+    }
+    console.log(table_rows);
+    $('#analyses_table').DataTable( {
+        // url: domain+'/user/cookie_login/'+cookie,
+        url: '/rest/gbsappui/analysis_table',
+        data: {"username":username,"domain":domain},
+    } );
+}
+
 //displaying refgenomes of chosen instance
 $(document).ready(function(){
     domain = localStorage.getItem("gbs_domain");
@@ -121,6 +179,8 @@ $(document).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
+        console.log("username is in if sgn token");
+        console.log(username);
     } else {
         //get cookie from sgn
         url = window.location;
@@ -132,6 +192,8 @@ $(document).ready(function(){
             jQuery("#logout_button").show();
             document.getElementById('sgn_token_callfilter').value = sgn_token;
             document.getElementById('sgn_token_impute').value = sgn_token;
+            console.log("username is in other sgn token");
+            console.log(username);
         } else {
             jQuery("#please_login").show();
             jQuery("#page_function").hide();
@@ -220,7 +282,7 @@ $(document).ready(function(){
     <table class="table table-bordered table-hover" id="analyses_table">
         <thead>
             <tr>
-                <th>Analyses Names</th>
+                <th>Analysis Name</th>
                 <th>Date Started</th>
                 <th>Type</th>
                 <th>Status</th>

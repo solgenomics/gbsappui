@@ -15,6 +15,21 @@ use JSON;
 
 BEGIN {extends 'Catalyst::Controller'};
 
+# sub choose_pipeline:Path('/') : Args(0){
+#     my $self=shift;
+#     my $c=shift;
+#     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+# 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+# 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+#     $c->stash->{sgn_token} = $sgn_token;
+#     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+#     $c->stash->{file_list_json}=$file_list_json;
+#     $c->stash->{analysis_list_json}=$analysis_list_json;
+#     $c->stash->{contact_email}=$contact_email;
+#     $c->stash->{contact_name}=$contact_name;
+#     $c->stash->{template}="choose_pipeline.mas";
+# }
+
 sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $self=shift;
     my $c=shift;
@@ -24,7 +39,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
-    my $sgn_token = "nocookie";
+    my $user_name=$c->req->param('user_name');
+    print STDERR "user name grabbed is $user_name \n";
 
     #retrieving json formatted list of scp files available for each username
     my $raw_file_list = `ls -R /scp_uploads/*`;
@@ -68,33 +84,40 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #grab analysis name from text file
     #hash of analysis folders | analysis names for each username
     my %analyses_names_of;
+    my %analyses_hash_of_arrays;
     #trying to figure out below: how to copy keys from one hash to another?
     #start working version
     foreach my $username ( keys %analyses_of ) {
         my @analysis_name_array;
+        my @snp_calling_array;
         $analyses_names_of{ $username } = "placeholder";
+
         #for each folder
         #issues right here that need to be fixed: not parsing array correctly
         # print STDERR "folder array for $username \n";
         # print STDERR "@{ $analyses_of{ $username }}\n";
         foreach my $folder ( @{ $analyses_of{ $username }}) {
             my $analysis_name_string;
-            # print STDERR "folder for $username \n";
-            # print STDERR "$folder \n";
+            my $snp_calling_string;
             my $file_path = "/results/$username/$folder/analysis_info.txt";
-            # print STDERR "file path is $file_path \n";
             my $info_file;
             open $info_file, '<', $file_path or die "Could not open file '$info_file'";
             while (my $line = <$info_file>) {
                 chomp $line;
                 # print STDERR "Line is $line \n";
                 if ($line =~ /^Analysis Name:/) {
-                    # print STDERR "Analysis name line is $line \n";
                     $analysis_name_string = $line;
                     $analysis_name_string =~ s/Analysis Name: //;
                     chomp $analysis_name_string;
                     # print STDERR "Analysis name string is $analysis_name_string \n";
                     push(@analysis_name_array, $analysis_name_string);
+                }
+                if ($line =~ /^SNP Calling:/) {
+                    $snp_calling_string = $line;
+                    $snp_calling_string =~ s/SNP Calling: //;
+                    chomp $snp_calling_string;
+                    print STDERR "SNP calling string is $snp_calling_string \n";
+                    push(@snp_calling_array, $snp_calling_string);
                 }
             }
             # print STDERR "Analysis name string is $analysis_name_string \n";
@@ -106,14 +129,18 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         # print STDERR "Analysis name array is: \n";
         # print STDERR Dumper @analysis_name_array;
         $analyses_names_of{ $username  } = \@analysis_name_array;
-        # return %analyses_names_of;
+        #make array of arrays
+        my @table_arrays;
+        #fill hash with array of arrays
+        $analyses_hash_of_arrays{ $username } = \@analysis_name_array;
+        #append to hash of arrays for that username
     }
     # print STDERR "Analysis name hash is \n";
     # print STDERR Dumper %analyses_names_of;
     #Make json of {username: analysis name, analysis name2, analysis name3 } {username: analysis name, analysis name2} (below)
     my $analysis_list_json = encode_json \%analyses_names_of;
     print STDERR "Analysis json is $analysis_list_json \n";
-    $c->stash->{sgn_token} = $sgn_token;
+    $c->stash->{user_name} = $user_name;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
     $c->stash->{analysis_list_json}=$analysis_list_json;
@@ -132,7 +159,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-    my $sgn_token=$c->req->param('sgn_token_callfilter');
+    my $sgn_token=$c->req->param('sgn_token');
     my $scp_files = $c->req->param('scp_files');
     print STDERR $scp_files;
     $c->stash->{sgn_token} = $sgn_token;
