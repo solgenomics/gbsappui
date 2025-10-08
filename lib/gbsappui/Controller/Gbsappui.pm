@@ -15,20 +15,16 @@ use JSON;
 
 BEGIN {extends 'Catalyst::Controller'};
 
-# sub choose_pipeline:Path('/') : Args(0){
-#     my $self=shift;
-#     my $c=shift;
-#     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
-# 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
-# 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
-#     $c->stash->{sgn_token} = $sgn_token;
-#     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
-#     $c->stash->{file_list_json}=$file_list_json;
-#     $c->stash->{analysis_list_json}=$analysis_list_json;
-#     $c->stash->{contact_email}=$contact_email;
-#     $c->stash->{contact_name}=$contact_name;
-#     $c->stash->{template}="choose_pipeline.mas";
-# }
+sub get_token:Path('/get_token') : Args(0){
+    my $self=shift;
+    my $c=shift;
+    $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
+	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
+	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{template}="get_token.mas";
+}
 
 sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $self=shift;
@@ -37,10 +33,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $username=$c->req->param('username');
+    print STDERR "username is $username \n";
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
-    my $user_name=$c->req->param('user_name');
-    print STDERR "user name grabbed is $user_name \n";
 
     #retrieving json formatted list of scp files available for each username
     my $raw_file_list = `ls -R /scp_uploads/*`;
@@ -140,12 +136,12 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #Make json of {username: analysis name, analysis name2, analysis name3 } {username: analysis name, analysis name2} (below)
     my $analysis_list_json = encode_json \%analyses_names_of;
     print STDERR "Analysis json is $analysis_list_json \n";
-    $c->stash->{user_name} = $user_name;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
+    $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
@@ -179,7 +175,7 @@ sub choose_fastq:Path('/choose_fastq') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path=$c->req->param('ref_path');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-    my $sgn_token=$c->req->param('sgn_token');
+    my $sgn_token=$c->req->param('sgn_token_callfilter');
     my $username = "nousername";
     my $scp_files = $c->req->param('scp_files');
     $c->stash->{username} = $username;
