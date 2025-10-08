@@ -19,7 +19,6 @@ $contact_email
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_token;
 var user_id;
 var username= '<% $username %>';
 var all_users_scp_files = JSON.parse('<% $file_list_json %>');
