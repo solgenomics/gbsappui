@@ -46,6 +46,8 @@ function callback_username(response) {
 function get_username(cookie){
     //change this into perl
     //curl?
+    console.log(cookie);
+    console.log(domain);
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
         url : domain+'/user/cookie_login/'+cookie,
@@ -184,7 +186,8 @@ $(document).ready(function(){
     } else {
         //get cookie from sgn
         url = window.location;
-        sgn_token = new URLSearchParams(url.search).get('access_token');
+        sgn_token = new URLSearchParams(url.search).get('sgn_token');
+        console.log(sgn_token);
         if (sgn_token) {
             get_username(sgn_token);
             jQuery("#please_login").hide();
