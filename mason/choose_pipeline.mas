@@ -2,6 +2,7 @@
 <%#onload="/choose_pipeline"%>
 <%args>
 $username
+$sgn_token
 $file_list_json
 $analysis_list_json
 $contact_name
@@ -21,8 +22,10 @@ var instance;
 var gbsappui_domain_name;
 var user_id;
 var username= '<% $username %>';
-var all_users_scp_files = JSON.parse('<% $file_list_json %>');
-var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
+// var all_users_scp_files = JSON.parse('<% $file_list_json %>');
+// var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
+// var all_users_scp_files = "";
+// var all_users_analyses = "";
 var scp_files;
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
@@ -36,18 +39,11 @@ var time_started_array;
 var time_completed_array;
 var download_array;
 var delete_array;
-var sgn_token;
+var sgn_token= '<% $sgn_token %>';
 
 //functions
-function callback_username(response) {
-    username = response;
-}
 
 function get_username(cookie){
-    //change this into perl
-    //curl?
-    console.log(cookie);
-    console.log(domain);
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
         url : domain+'/user/cookie_login/'+cookie,
@@ -69,8 +65,10 @@ function get_username(cookie){
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
                 //get files available for your username
-                scp_files = all_users_scp_files[username];
-                available_files.innerHTML = scp_files.join("<br>");
+                //scp_files = all_users_scp_files[username];
+                scp_files = "";
+                // available_files.innerHTML = scp_files.join("<br>");
+                available_files.innerHTML = "";
                 let filesheight = (scp_files.length * 17) + 20;
                 let fileslocation = 0 + filesheight;
                 $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
@@ -111,10 +109,8 @@ function make_analysis_table() {
     table_rows = [];
     //get analyses submitted by your username
     //get analyses names
-    console.log("username is");
-    console.log(username);
-    my_analyses_names = all_users_analyses[username];
-
+    // my_analyses_names = all_users_analyses[username];
+    my_analyses_names = "";
     //get analysis start dates
     //when file was made
     date_started_array = [ "yes", "no", "no", "no" ];
@@ -181,13 +177,10 @@ $(document).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
-        console.log("username is in if sgn token");
-        console.log(username);
     } else {
         //get cookie from sgn
         url = window.location;
         sgn_token = new URLSearchParams(url.search).get('sgn_token');
-        console.log(sgn_token);
         if (sgn_token) {
             get_username(sgn_token);
             jQuery("#please_login").hide();
@@ -195,8 +188,6 @@ $(document).ready(function(){
             jQuery("#logout_button").show();
             document.getElementById('sgn_token_callfilter').value = sgn_token;
             document.getElementById('sgn_token_impute').value = sgn_token;
-            console.log("username is in other sgn token");
-            console.log(username);
         } else {
             jQuery("#please_login").show();
             jQuery("#page_function").hide();

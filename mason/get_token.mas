@@ -21,13 +21,8 @@ var user_id;
 var username;
 
 //functions
-function callback_username(response) {
-    username = response;
-}
 
 function get_username(cookie){
-    //change this into perl
-    //curl?
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
         url : domain+'/user/cookie_login/'+cookie,
@@ -37,10 +32,10 @@ function get_username(cookie){
             }
             if(response.username){
                 username = response.username;
-                user_id = response.user_id;
-                document.getElementById('username').value = username;
-                console.log("username is");
+                console.log("username is within function");
                 console.log(username);
+                document.getElementById('username').value = username;
+                document.getElementById('redirect_form').submit();
             }
             else {
                 alert('No username available!');
@@ -58,7 +53,7 @@ $(document).ready(function(){
     if (sgn_token) {
         document.getElementById('sgn_token').value = sgn_token;
         get_username(sgn_token);
-        console.log("username is");
+        console.log("username is when already have token");
         console.log(username);
     } else {
         //get cookie from sgn
@@ -97,12 +92,9 @@ $(document).ready(function(){
 
 <div id="page_function" style="position:relative; top:250; overflow:scroll;">
   <center>
-    <div id="transfer_username" style="background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+    <div id="transfer_username" >
       <%# ----Transfer username button---- %>
-      <form action="/choose_pipeline">
-          <center>
-          <button type="submit" id="transferusernamebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Press me!</b></button>
-          </center>
+      <form id="redirect_form" action="/choose_pipeline" target="_self" method="post">
           <input type="hidden" id="username" name="username" />
           <input type="hidden" id="sgn_token" name="sgn_token" />
       </form>
