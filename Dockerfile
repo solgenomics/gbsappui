@@ -88,8 +88,6 @@ RUN cd / \
 #install npm and npm packages
 RUN cd /gbsappui/root/static/js/ && apt-get update && apt-get install -y npm
 RUN cd /gbsappui/root/static/js/node_modules/jquery && npm install jquery && cd ../js-cookie && npm install js-cookie && cd /gbsappui/root/static/js/node_modules/bootstrap && npm install bootstrap@3
-RUN mkdir /gbsappui/root/static/js/node_modules/DataTables
-RUN cd /gbsappui/root/static/js/node_modules/DataTables && npm install datatables.net-dt
 
 #Replace GBSapp install script and internal parameters with updated versions for ngm changes
 RUN cp /gbsappui/GBSapp_internal_parameters.sh /GBSapp/scripts/

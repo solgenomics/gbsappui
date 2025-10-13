@@ -13,13 +13,10 @@ $contact_email
 <script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 
-<link rel="stylesheet" href="/static/js/node_modules/DataTables/datatables.css" />
-<script src="/static/js/node_modules/DataTables/datatables.js"></script>
-<script>
-//import
-import jQuery from "jquery";
-import DataTable from 'datatables.net-dt';
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.css" rel="stylesheet" integrity="sha384-R5Azes02wvL9ervyq6xo5WLyg1ufX0qwun0F/0qos0E0wNjnnRTADTQpjpnNLakj" crossorigin="anonymous">
 
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.js" integrity="sha384-mtJ3+H/dkUyvhmcXYSyIZyaeG0TnEkh91c1JwFkrkBLHBv8oQ3lFjUp8xfDan41b" crossorigin="anonymous"></script>
+<script>
 //variables
 var domain;
 var instance;
