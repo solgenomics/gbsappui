@@ -16,6 +16,10 @@ $contact_email
 <link rel="stylesheet" href="/static/js/node_modules/DataTables/datatables.css" />
 <script src="/static/js/node_modules/DataTables/datatables.js"></script>
 <script>
+//import
+import jQuery from "jquery";
+import DataTable from 'datatables.net-dt';
+
 //variables
 var domain;
 var instance;
