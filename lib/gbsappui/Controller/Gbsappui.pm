@@ -40,8 +40,9 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
-    print STDERR $raw_file_list;
-    my $file_list ="";
+    my @file_list = split("\n", $raw_file_list);
+    shift @file_list;
+    print STDERR @file_list;
     my $analysis_list ="";
     my $file_list_json="";
     my $analysis_list_json="";
