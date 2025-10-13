@@ -42,9 +42,11 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $raw_file_list = `ls -R /scp_uploads/$username`;
     my @file_list = split("\n", $raw_file_list);
     shift @file_list;
-    print STDERR @file_list;
+    my %files_of;
+    $files_of{ $username } = \@file_list;
+    my $file_list_json = encode_json \%files_of;
+    print STDERR "json file list is $file_list_json \n";
     my $analysis_list ="";
-    my $file_list_json="";
     my $analysis_list_json="";
     #retrieving list of scp files available for username
 

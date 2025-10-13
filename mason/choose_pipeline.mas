@@ -23,13 +23,11 @@ var instance;
 var gbsappui_domain_name;
 var user_id;
 var username= '<% $username %>';
-// var all_users_scp_files = JSON.parse('<% $file_list_json %>');
-// var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
-// var all_users_scp_files = "";
 // var all_users_analyses = "";
-var scp_files;
+var scp_files = JSON.parse('<% $file_list_json %>');
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
+var scp_files_array;
 var my_analyses_names;
 var table_rows;
 var date_started_array;
@@ -66,13 +64,11 @@ function get_username(cookie){
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
                 //get files available for your username
-                //scp_files = all_users_scp_files[username];
-                scp_files = "";
                 // available_files.innerHTML = scp_files.join("<br>");
-                available_files.innerHTML = "";
-                let filesheight = (scp_files.length * 17) + 20;
-                let fileslocation = 0 + filesheight;
-                $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
+                // available_files.innerHTML = "";
+                // let filesheight = (scp_files.length * 17) + 20;
+                // let fileslocation = 0 + filesheight;
+                // $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
                 document.getElementById('scp_files').value = scp_files;
                 document.getElementById('scp_files_impute').value = scp_files;
                 make_analysis_table();
@@ -105,13 +101,30 @@ function logout() {
   }
 }
 
+function make_files_table(available_files) {
+    //set up analyses table
+    table_rows = [  ];
+    //get analyses submitted by your username
+    //get analyses names
+    // my_analyses_names = all_users_analyses[username];
+    file_names = available_files;
+
+    for (var i = 0; i < file_names.length; i++) {
+        table_rows[i] = [ file_names[i]];
+    }
+    console.log(table_rows);
+    $('#available_files_table').DataTable( {
+        data: table_rows
+    } );
+}
+
 function make_analysis_table() {
     //set up analyses table
     table_rows = [];
     //get analyses submitted by your username
     //get analyses names
     // my_analyses_names = all_users_analyses[username];
-    my_analyses_names = "";
+    my_analyses_names = [ "test", "test", "test", "test" ];
     //get analysis start dates
     //when file was made
     date_started_array = [ "yes", "no", "no", "no" ];
@@ -156,8 +169,9 @@ function make_analysis_table() {
     console.log(table_rows);
     $('#analyses_table').DataTable( {
         // url: domain+'/user/cookie_login/'+cookie,
-        url: '/rest/gbsappui/analysis_table',
-        data: {"username":username,"domain":domain},
+        // url: '/rest/gbsappui/analysis_table',
+        // data: {"username":username,"domain":domain},
+        data: table_rows
     } );
 }
 
@@ -197,6 +211,9 @@ $(document).ready(function(){
     }
     document.getElementById('contactName').innerHTML = contact_name;
     document.getElementById('contactEmail').innerHTML = contact_email;
+    scp_files_array = scp_files[username];
+    console.log(scp_files_array)
+    make_files_table(scp_files_array);
 });
 
 </script>
@@ -237,41 +254,51 @@ $(document).ready(function(){
 </center>
 
 <div id="page_function" style="position:relative; top:50; overflow:scroll;">
+    <center>
+        <label for="new_analysis" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
+        <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-bottom:10 padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+          <%# ----Calling and filtering button---- %>
+          <form action="/choose_ref">
+              <center>
+              <button type="submit" id="callfilterbutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Call, filter, and/or impute fastq files</b></button>
+              </center>
+              <input type="hidden" id="sgn_token_callfilter" name="sgn_token_callfilter" />
+              <input type="hidden" id="scp_files" name="scp_files" />
+          </form>
+
+          <%# ----Imputation Button---- %>
+
+          <form action="/choose_impute_vcf">
+            <center>
+              <button type="submit" id="imputebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Impute a vcf file</b></button>
+            </center>
+            <input type="hidden" id="sgn_token_impute" name="sgn_token_impute" />
+            <input type="hidden" id="scp_files_impute" name="scp_files_impute" />
+            </form>
+          </div>
+      </center>
+
+  <br />
+
   <center>
-    <label for="new_analysis" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
-    <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
-      <%# ----Calling and filtering button---- %>
-      <form action="/choose_ref">
-          <center>
-          <button type="submit" id="callfilterbutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Call, filter, and/or impute fastq files</b></button>
-          </center>
-          <input type="hidden" id="sgn_token_callfilter" name="sgn_token_callfilter" />
-          <input type="hidden" id="scp_files" name="scp_files" />
-      </form>
-
-      <%# ----Imputation Button---- %>
-
-      <form action="/choose_impute_vcf">
-        <center>
-          <button type="submit" id="imputebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Impute a vcf file</b></button>
-        </center>
-        <input type="hidden" id="sgn_token_impute" name="sgn_token_impute" />
-        <input type="hidden" id="scp_files_impute" name="scp_files_impute" />
-        </form>
-    </div>
-  </center>
-
-  <center>
-    <label for="available_files" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>Available Files</b></h3></label>
-    <div id="available_files" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+    <label for="available_files_table_wrapper" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative; width:1000;"><h3><b>Files Available For Analysis</b></h3></label>
+    <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000;">
     <%# ----Files available in scp folder---- %>
-    <b>files here</b>
+    <div class="well">
+    <table class="table table-bordered table-hover" id="available_files_table">
+        <thead>
+            <tr>
+                <th> </th>
+            </tr>
+        </thead>
+    </table>
+    </div>
     </div>
   </center>
 
   <center>
-    <label for="analyses_table_wrapper" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>Your Analyses</b></h3></label>
-    <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+    <label for="analyses_table_wrapper" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative; width:1000"><h3><b>Your Analyses</b></h3></label>
+    <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000">
     <%# ----Analysis history table---- %>
     <div class="well">
     <table class="table table-bordered table-hover" id="analyses_table">
@@ -301,7 +328,6 @@ $(document).ready(function(){
   </center>
 
 </div>
-
 
 
 <%# ----footer---- %>
