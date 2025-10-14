@@ -17,18 +17,18 @@ $contact_email
 
 <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.js" integrity="sha384-mtJ3+H/dkUyvhmcXYSyIZyaeG0TnEkh91c1JwFkrkBLHBv8oQ3lFjUp8xfDan41b" crossorigin="anonymous"></script>
 <script>
+
 //variables
 var domain;
 var instance;
 var gbsappui_domain_name;
 var user_id;
 var username= '<% $username %>';
-// var all_users_analyses = "";
 var scp_files = JSON.parse('<% $file_list_json %>');
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
 var scp_files_array;
-var my_analyses_names;
+var analyses_names = JSON.parse('<% $analysis_list_json %>');
 var table_rows;
 var date_started_array;
 var type_array;
@@ -71,7 +71,6 @@ function get_username(cookie){
                 // $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
                 document.getElementById('scp_files').value = scp_files;
                 document.getElementById('scp_files_impute').value = scp_files;
-                make_analysis_table();
             }
             else {
                 jQuery("#please_login").show();
@@ -118,13 +117,13 @@ function make_files_table(available_files) {
     } );
 }
 
-function make_analysis_table() {
+function make_analysis_table(available_analyses) {
     //set up analyses table
     table_rows = [];
     //get analyses submitted by your username
     //get analyses names
     // my_analyses_names = all_users_analyses[username];
-    my_analyses_names = [ "test", "test", "test", "test" ];
+    analyses_names = available_analyses;
     //get analysis start dates
     //when file was made
     date_started_array = [ "yes", "no", "no", "no" ];
@@ -163,8 +162,8 @@ function make_analysis_table() {
     //make new deletion function and link
     delete_array = [ "x", "x", "x", "x" ];
 
-    for (var i = 0; i < my_analyses_names.length; i++) {
-        table_rows[i] = [ my_analyses_names[i], date_started_array[i], type_array[i], status_array[i], run_time_array[i], time_started_array[i], time_completed_array[i], download_array[i], delete_array[i]];
+    for (var i = 0; i < analyses_names.length; i++) {
+        table_rows[i] = [ analyses_names[i], date_started_array[i], type_array[i], status_array[i], run_time_array[i], time_started_array[i], time_completed_array[i], download_array[i], delete_array[i]];
     }
     console.log(table_rows);
     $('#analyses_table').DataTable( {
@@ -209,20 +208,22 @@ $(document).ready(function(){
             jQuery("#logout_button").hide();
         }
     }
-    document.getElementById('contactName').innerHTML = contact_name;
-    document.getElementById('contactEmail').innerHTML = contact_email;
-    scp_files_array = scp_files[username];
-    console.log(scp_files_array)
-    make_files_table(scp_files_array);
+    if (sgn_token) {
+        document.getElementById('contactName').innerHTML = contact_name;
+        document.getElementById('contactEmail').innerHTML = contact_email;
+        scp_files_array = scp_files[username];
+        make_files_table(scp_files_array);
+        analyses_names_array = analyses_names[username];
+        make_analysis_table(analyses_names_array);
+    }
 });
 
 </script>
-
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+            <span style="max-height:150px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
                     <a href="https://github.com/bodeolukolu/GBSapp">
                         <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
                     </a>
@@ -230,12 +231,14 @@ $(document).ready(function(){
                     <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
                 </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
-                        </button>
-                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                    <span id="login_button_html_div" style="position:relative;top:-20;right:-45px;white-space:nowrap;width:200;float:right">
+                        <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt">Login
                         </button>
                     </span>
+                    <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:0px;margin: 7px 7px 7px 7px;width:60; height:35">
+                        Logout
+                        <span class="glyphicon glyphicon-log-out"></span>
+                    </button>
                 </ul>
             </span>
         </div>
@@ -253,10 +256,10 @@ $(document).ready(function(){
   <br />
 </center>
 
-<div id="page_function" style="position:relative; top:50; overflow:scroll;">
+<div id="page_function" style="position:relative; top:25; overflow:scroll;">
     <center>
-        <label for="new_analysis" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
-        <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-bottom:10 padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+        <label for="new_analysis" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
+        <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-bottom:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
           <%# ----Calling and filtering button---- %>
           <form action="/choose_ref">
               <center>
@@ -281,14 +284,14 @@ $(document).ready(function(){
   <br />
 
   <center>
-    <label for="available_files_table_wrapper" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative; width:1000;"><h3><b>Files Available For Analysis</b></h3></label>
+    <label for="available_files_table_wrapper" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative; width:1000;"><h3><b>Files Available For Analysis</b></h3></label>
     <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000;">
     <%# ----Files available in scp folder---- %>
     <div class="well">
     <table class="table table-bordered table-hover" id="available_files_table">
         <thead>
             <tr>
-                <th> </th>
+                <th> File Name </th>
             </tr>
         </thead>
     </table>
@@ -297,7 +300,7 @@ $(document).ready(function(){
   </center>
 
   <center>
-    <label for="analyses_table_wrapper" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative; width:1000"><h3><b>Your Analyses</b></h3></label>
+    <label for="analyses_table_wrapper" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative; width:1000"><h3><b>Your Analyses</b></h3></label>
     <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000">
     <%# ----Analysis history table---- %>
     <div class="well">

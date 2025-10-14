@@ -35,23 +35,26 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $username=$c->req->param('username');
     my $sgn_token=$c->req->param('sgn_token');
-    print STDERR "username is $username \n";
-    print STDERR "sgn token is $sgn_token \n";
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
+    #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
     shift @file_list;
     my %files_of;
     $files_of{ $username } = \@file_list;
     my $file_list_json = encode_json \%files_of;
-    print STDERR "json file list is $file_list_json \n";
-    my $analysis_list ="";
-    my $analysis_list_json="";
-    #retrieving list of scp files available for username
-
-    # my $analysis_list_json = encode_json \%analyses_names_of;
-    print STDERR "Analysis json is $analysis_list_json \n";
+    #get list of analyses
+    my $raw_analysis_folders = `ls /results/$username`;
+    print STDERR "raw analysis folders are $raw_analysis_folders \n";
+    my @analysis_folders = split("\n", $raw_analysis_folders);
+    print STDERR "split analysis folders are @analysis_folders \n";
+    my %analyses_names_of;
+    $analyses_names_of{ $username } = \@analysis_folders;
+    print STDERR "Hashed analysis names are \n";
+    print STDERR Dumper %analyses_names_of;
+    my $analysis_list_json = encode_json \%analyses_names_of;
+    print STDERR "Analysis folders are @analysis_folders \n";
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
