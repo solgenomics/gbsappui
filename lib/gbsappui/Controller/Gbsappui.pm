@@ -77,6 +77,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token');
     my $scp_files = $c->req->param('scp_files');
+    print STDERR "scp files are: \n";
     print STDERR $scp_files;
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{ref_path} = $ref_path;
