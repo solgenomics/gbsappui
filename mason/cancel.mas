@@ -32,7 +32,7 @@ $( document ).ready(function(){
     console.log(username);
     document.getElementById('sgn_token').value = sgn_token;
     document.getElementById('username').value = username;
-    window.setTimeout(redirect, 100000);
+    window.setTimeout(redirect, 1000);
 });
 
 </script>

@@ -162,8 +162,8 @@ $( document ).ready(function(){
             <form action="/cancel">
                 <button id="cancel_button" style="position:relative;top:10;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')"><b>Cancel Analysis</b></button>
                 <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
-                <input type="hidden" id="username_cancel" name="username" />
-                <input type="hidden" id="sgn_token_cancel" name="sgn_token" />
+                <input type="hidden" id="username_cancel" name="username_cancel"/>
+                <input type="hidden" id="sgn_token_cancel" name="sgn_token_cancel" />
             </form>
         </div>
         <form id="redirect_form" action="/choose_pipeline" target="_self" method="post">
