@@ -45,6 +45,10 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
+                document.getElementById('sgn_token').value = sgn_token;
+                document.getElementById('username').value = username;
+                document.getElementById('sgn_token_cancel').value = sgn_token;
+                document.getElementById('username_cancel').value = username;
             }
             else {
                 jQuery("#please_login").show();
@@ -61,7 +65,7 @@ function login() {
   } else {
     //localhost version:
     //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/get_token/';
   }
 }
 
@@ -76,7 +80,7 @@ function logout() {
 }
 
 function redirect(){
-    window.location.href=gbsappui_domain_name;
+    window.location.href=gbsappui_domain_name+'/choose_pipeline'+'?sgn_token='+sgn_token;
 }
 
 $( document ).ready(function(){
@@ -158,11 +162,17 @@ $( document ).ready(function(){
             <form action="/cancel">
                 <button id="cancel_button" style="position:relative;top:10;margin: 7px 7px 0px 0px;color:white;background-color:black;border-radius:3px;font-size:20;width:200" onclick="return confirm ('Are you sure you want to cancel the running job?')"><b>Cancel Analysis</b></button>
                 <input type="hidden" value="<% $projdir %>" id="projdir" name="projdir" />
+                <input type="hidden" id="username_cancel" name="username" />
+                <input type="hidden" id="sgn_token_cancel" name="sgn_token" />
             </form>
         </div>
-        <button id="new_analysis" style="background-color:black; border:10px double white; color:white; width:250; height:60; position:relative; top:80; font-size:20" onclick="redirect()">
-            <b>Return to main page</b>
-        </button>
+        <form id="redirect_form" action="/choose_pipeline" target="_self" method="post">
+            <button id="new_analysis" style="background-color:black; border:10px double white; color:white; width:250; height:60; position:relative; top:80; font-size:20" >
+                <b>Return to main page</b>
+                <input type="hidden" id="username" name="username" />
+                <input type="hidden" id="sgn_token" name="sgn_token" />
+            </button>
+        </form>
     </div>
 </center>
 

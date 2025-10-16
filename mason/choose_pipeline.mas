@@ -10,12 +10,13 @@ $contact_email
 </%args>
 <%# ----header---- %>
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
-<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
 
 <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.css" rel="stylesheet" integrity="sha384-R5Azes02wvL9ervyq6xo5WLyg1ufX0qwun0F/0qos0E0wNjnnRTADTQpjpnNLakj" crossorigin="anonymous">
 
-<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.js" integrity="sha384-mtJ3+H/dkUyvhmcXYSyIZyaeG0TnEkh91c1JwFkrkBLHBv8oQ3lFjUp8xfDan41b" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.js" integrity="sha384-mtJ3+H/dkUyvhmcXYSyIZyaeG0TnEkh91c1JwFkrkBLHBv8oQ3lFjUp8xfDan41b" crossorigin="anonymous">
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+</script>
 <script>
 
 //variables
@@ -69,8 +70,8 @@ function get_username(cookie){
                 // let filesheight = (scp_files.length * 17) + 20;
                 // let fileslocation = 0 + filesheight;
                 // $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
-                document.getElementById('scp_files').value = scp_files;
-                document.getElementById('scp_files_impute').value = scp_files;
+                document.getElementById('scp_files').value = scp_files_array;
+                document.getElementById('scp_files_impute').value = scp_files_array;
             }
             else {
                 jQuery("#please_login").show();
@@ -87,7 +88,7 @@ function login() {
   } else {
     //localhost version:
     //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/get_token/';
   }
 }
 
@@ -211,11 +212,14 @@ $(document).ready(function(){
     if (sgn_token) {
         document.getElementById('contactName').innerHTML = contact_name;
         document.getElementById('contactEmail').innerHTML = contact_email;
+        document.getElementById('sgn_token_callfilter').value = sgn_token;
+        document.getElementById('sgn_token_impute').value = sgn_token;
         scp_files_array = scp_files[username];
         make_files_table(scp_files_array);
         analyses_names_array = analyses_names[username];
         make_analysis_table(analyses_names_array);
     }
+    console.log(sgn_token);
 });
 
 </script>
@@ -325,7 +329,7 @@ $(document).ready(function(){
 
   <%#Contact information scp account to upload additional data for analysis. Based on gbsappui_local.conf%>
   <center>
-    <div id="contact_info" style="margin:10px; background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:black; position:relative; width:800; font-size:18; border-style:solid; border-color:black">
+    <div id="contact_info" style="margin:15px; background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:black; position:relative; width:800; font-size:18; border-style:solid; border-color:black">
     <b>Please contact <span id="contactName"></span> at <span id="contactEmail"></span> if you need to upload additional files for analysis. </b>
     </div>
   </center>

@@ -55,6 +55,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     print STDERR Dumper %analyses_names_of;
     my $analysis_list_json = encode_json \%analyses_names_of;
     print STDERR "Analysis folders are @analysis_folders \n";
+    print STDERR "sgn token is $sgn_token \n";
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
@@ -75,7 +76,7 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $refgenomes_labels_json = $c->config->{refgenomes_labels_json};
     my $ref_path = "nopath";
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-    my $sgn_token=$c->req->param('sgn_token');
+    my $sgn_token=$c->req->param('sgn_token_callfilter');
     my $scp_files = $c->req->param('scp_files');
     print STDERR "scp files are: \n";
     print STDERR $scp_files;
@@ -96,7 +97,7 @@ sub choose_fastq:Path('/choose_fastq') : Args(0){
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $ref_path=$c->req->param('ref_path');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-    my $sgn_token=$c->req->param('sgn_token_callfilter');
+    my $sgn_token=$c->req->param('sgn_token');
     my $username = "nousername";
     my $scp_files = $c->req->param('scp_files');
     $c->stash->{username} = $username;
@@ -324,9 +325,15 @@ sub cancel:Path('/cancel') : Args(0) {
     #eventually prompt: discard analysis or would you like to return to it later?
     #eventually option to rerun/start where left off
     #redirect to start when analysis complete
+    my $sgn_token=$c->req->param('sgn_token_cancel');
+    my $username=$c->req->param('username_cancel');
+    print STDERR $sgn_token;
+    print STDERR $username;
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{username}=$username;
     $c->stash->{template}="cancel.mas";
 }
 

@@ -63,7 +63,7 @@ function login() {
   } else {
     //localhost version:
     //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/get_token/';
   }
 }
 
