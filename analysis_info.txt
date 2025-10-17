@@ -1,16 +1,1 @@
-#####SNP Calling/Filtering
-SNP Calling: yes
-SNP Filtering: yes
-SNP Calling/Filtering Input sample files:
-SNP Calling/Filtering Input reference genome file:
-Minor Allele Frequency Threshold: 0.02
-SNP Calling/Filtering Log File: gbsapp_log.out
-SNP Calling Output File:
-SNP Filtering Output File:
 
-#####Imputation
-Imputation: yes
-Beagle Input file:
-Genetic Map file:
-Imputation Log File: beagle_log.out
-Imputation Output File: /beagle/beagle.out.vcf.gz

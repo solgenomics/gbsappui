@@ -9,9 +9,37 @@ run_gbsapp=$5
 analysis_name="$6"
 # run_filtering=$7
 
+#Fill out analysis information into analysis_info.txt
 cd ${projdir}
 sed -i -e '$a\' analysis_info.txt
 echo "Analysis Name: ${analysis_name}" >> analysis_info.txt
+
+echo "#####SNP Calling/Filtering" >> analysis_info.txt
+if [[ "$run_gbsapp" == 1 ]]; then
+    echo "SNP Calling: yes" >> analysis_info.txt
+    echo "SNP Filtering: yes" >> analysis_info.txt
+    echo "SNP Calling/Filtering Input sample files: See samples_list_node_1.txt" >> analysis_info.txt
+    echo "SNP Calling/Filtering Input reference genome file:"  >> analysis_info.txt
+    refgenome=$(ls ${projdir}refgenomes)
+    echo "SNP Calling/Filtering Input reference genome file(s): ${refgenome}" >>analysis_info.txt
+    echo "Minor Allele Frequency Threshold: 0.02" >>analysis_info.txt
+    echo "SNP Calling/Filtering Log File: gbsapp_log.out" >>analysis_info.txt
+    echo "SNP Calling Output File: " >>analysis_info.txt
+    echo "SNP Filtering Output File: " >>analysis_info.txt
+else
+    echo "SNP Calling: no" >> analysis_info.txt
+    echo "SNP Filtering: no" >> analysis_info.txt
+fi
+
+echo "#####Imputation" >> analysis_info.txt
+if [[ "$run_beagle" == 1 ]]; then
+    echo "Imputation: yes" >> analysis_info.txt
+    echo "Imputation Log File: beagle_log.out" >> analysis_info.txt
+    echo "Imputation Output File: /beagle/beagle.out.vcf.gz" >> analysis_info.txt
+else
+    echo "Imputation: no" >> analysis_info.txt
+fi
+
 cd ${projdir}gbsappui_slurm_log
 
 #functions:

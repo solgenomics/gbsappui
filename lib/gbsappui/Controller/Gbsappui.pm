@@ -38,24 +38,66 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
+
     #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
     shift @file_list;
     my %files_of;
     $files_of{ $username } = \@file_list;
     my $file_list_json = encode_json \%files_of;
-    #get list of analyses
+
+    #get list of analysis folders
     my $raw_analysis_folders = `ls /results/$username`;
-    print STDERR "raw analysis folders are $raw_analysis_folders \n";
     my @analysis_folders = split("\n", $raw_analysis_folders);
-    print STDERR "split analysis folders are @analysis_folders \n";
+
+    #for each analysis
+    #grab analysis name and analysis type from text file
+    my @analysis_name_array;
+    my @
+    for each $folder (@analysis_folders) {
+        my $analysis_name_string
+        my $snp_calling_string
+        my $file_path = "/results/$username/$folder/analysis_info.txt";
+        my $info_file;
+        open $info_file, '<', $file_path or die "Could not open file '$info_file'";
+        while (my $line = <$info_file>) {
+            chomp $line;
+            # print STDERR "Line is $line \n";
+            if ($line =~ /^Analysis Name:/) {
+                $analysis_name_string = $line;
+                $analysis_name_string =~ s/Analysis Name: //;
+                chomp $analysis_name_string;
+                # print STDERR "Analysis name string is $analysis_name_string \n";
+                push(@analysis_name_array, $analysis_name_string);
+            }
+            if ($line =~ /^SNP Calling:/) {
+                $snp_calling_string = $line;
+                $snp_calling_string =~ s/SNP Calling: //;
+                chomp $snp_calling_string;
+                print STDERR "SNP calling string is $snp_calling_string \n";
+                push(@snp_calling_array, $snp_calling_string);
+            }
+        }
+    }
     my %analyses_names_of;
     $analyses_names_of{ $username } = \@analysis_folders;
-    print STDERR "Hashed analysis names are \n";
-    print STDERR Dumper %analyses_names_of;
+    # $analyses_names_of{ $username } = \@analysis_names;
     my $analysis_list_json = encode_json \%analyses_names_of;
-    print STDERR "Analysis folders are @analysis_folders \n";
-    print STDERR "sgn token is $sgn_token \n";
+
+    #Get start times for analyses
+    # my @start_date_array;
+    # for each $folder (@analysis_folders) {
+    #     my $fh=;
+    #     my $epoch_timestamp=(stat($fh))[9];
+    #     my $timestamp=;
+    #     my $datestamp=;
+    #     push @start_date_array, ;
+    # }
+    # @start_time_array=(stat($fh))[9];
+    # my %start_time_hash;
+    # $start_time_hash{ $username } = \@start_time_array;
+    # my $start_time_json= encode_json %start_time_hash;
+
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
@@ -63,6 +105,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
     $c->stash->{username}=$username;
+    # $c->stash->{start_date_json}=$start_date_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
@@ -277,6 +320,7 @@ sub analyze:Path('/analyze') : Args(0){
     my $run_beagle=$c->req->param('run_beagle');
     my $email_address=$c->req->param('email_address');
     my $analysis_name=$c->req->param('analysis_name');
+    print STDERR "analysis name is $analysis_name \n";
     my $run_gbsapp=$c->req->param('run_gbsapp');
 
     #remove extraneous spaces from email address
