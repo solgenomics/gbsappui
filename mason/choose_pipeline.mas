@@ -5,6 +5,7 @@ $username
 $sgn_token
 $file_list_json
 $analysis_list_json
+$analysis_types_json
 $contact_name
 $contact_email
 </%args>
@@ -30,6 +31,7 @@ var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
 var scp_files_array;
 var analyses_names = JSON.parse('<% $analysis_list_json %>');
+var analyses_types = JSON.parse('<% $analysis_types_json %>');
 var table_rows;
 var date_started_array;
 var type_array;
@@ -135,8 +137,7 @@ function make_analysis_table(available_analyses) {
     //check if snp filtering and add to string
     //check if imputing and add to string
     //put string into type array
-    type_array = [ "yes", "no", "no", "no" ];
-
+    type_array = analyses_types[username];
     //get analysis status
     //slurm status /file
     status_array = [ "yes", "no", "no", "no" ];

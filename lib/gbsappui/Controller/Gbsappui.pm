@@ -54,9 +54,12 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #grab analysis name and analysis type from text file
     my @analysis_name_array;
     my @snp_calling_array;
+    my @imputation_array;
+    my @analysis_type_array;
     foreach my $folder (@analysis_folders) {
         my $analysis_name_string;
         my $snp_calling_string;
+        my $imputation_string;
         my $file_path = "/results/$username/$folder/analysis_info.txt";
         my $info_file;
         open $info_file, '<', $file_path or die "Could not open file '$info_file'";
@@ -74,16 +77,31 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                 $snp_calling_string = $line;
                 $snp_calling_string =~ s/SNP Calling: //;
                 chomp $snp_calling_string;
-                print STDERR "SNP calling string is $snp_calling_string \n";
                 push(@snp_calling_array, $snp_calling_string);
+            }
+            if ($line =~ /^Imputation:/) {
+                $imputation_string = $line;
+                $imputation_string =~ s/Imputation: //;
+                chomp $imputation_string;
+                push(@imputation_array, $imputation_string);
             }
         }
     }
-    my %analyses_names_of;
-    # $analyses_names_of{ $username } = \@analysis_folders;
-    $analyses_names_of{ $username } = \@analysis_name_array;
-    my $analysis_list_json = encode_json \%analyses_names_of;
-
+    my $snp_calling_array = @snp_calling_array;
+    for (my $i = 0; $i < $snp_calling_array; $i++) {
+        if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
+            @analysis_type_array[$i] = "Calling/Filtering/Imputation";
+        }
+        elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
+            @analysis_type_array[$i] = "Imputation";
+        }
+        elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
+            @analysis_type_array[$i] = "Calling/Filtering";
+        }
+        else {
+            @analysis_type_array[$i] = "N/A";
+        }
+    }
     #Get start times for analyses
     # my @start_date_array;
     # for each $folder (@analysis_folders) {
@@ -98,13 +116,25 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     # $start_time_hash{ $username } = \@start_time_array;
     # my $start_time_json= encode_json %start_time_hash;
 
+    #Make hashes and encode them into json format for each table column
+    #analysis names
+    my %analyses_names_of;
+    $analyses_names_of{ $username } = \@analysis_name_array;
+    my $analysis_list_json = encode_json \%analyses_names_of;
+
+    #analysis types
+    my %analyses_types_of;
+    $analyses_types_of{ $username } = \@analysis_type_array;
+    my $analysis_types_json = encode_json \%analyses_types_of;
+
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
-    $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
     $c->stash->{username}=$username;
+    $c->stash->{analysis_list_json}=$analysis_list_json;
+    $c->stash->{analysis_types_json}=$analysis_types_json;
     # $c->stash->{start_date_json}=$start_date_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
