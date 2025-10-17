@@ -293,7 +293,7 @@ $(document).ready(function(){
     <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000;">
     <%# ----Files available in scp folder---- %>
     <div class="well">
-    <table class="table table-bordered table-hover" id="available_files_table">
+    <table class="stripe" id="available_files_table">
         <thead>
             <tr>
                 <th> File Name </th>
@@ -309,7 +309,7 @@ $(document).ready(function(){
     <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000">
     <%# ----Analysis history table---- %>
     <div class="well">
-    <table class="table table-bordered table-hover" id="analyses_table">
+    <table class="stripe" id="analyses_table">
         <thead>
             <tr>
                 <th>Analysis Name</th>
