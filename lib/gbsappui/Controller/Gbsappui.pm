@@ -53,10 +53,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #for each analysis
     #grab analysis name and analysis type from text file
     my @analysis_name_array;
-    my @
-    for each $folder (@analysis_folders) {
-        my $analysis_name_string
-        my $snp_calling_string
+    my @snp_calling_array;
+    foreach my $folder (@analysis_folders) {
+        my $analysis_name_string;
+        my $snp_calling_string;
         my $file_path = "/results/$username/$folder/analysis_info.txt";
         my $info_file;
         open $info_file, '<', $file_path or die "Could not open file '$info_file'";
@@ -80,8 +80,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         }
     }
     my %analyses_names_of;
-    $analyses_names_of{ $username } = \@analysis_folders;
-    # $analyses_names_of{ $username } = \@analysis_names;
+    # $analyses_names_of{ $username } = \@analysis_folders;
+    $analyses_names_of{ $username } = \@analysis_name_array;
     my $analysis_list_json = encode_json \%analyses_names_of;
 
     #Get start times for analyses
