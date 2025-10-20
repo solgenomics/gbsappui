@@ -268,14 +268,19 @@ $(document).ready(function(){
   <br />
 </center>
 
+<br />
+<br />
+
 <div id="page_function" style="position:relative; top:25; overflow:scroll;">
     <center>
-        <label for="new_analysis" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
-        <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-bottom:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+        <div id="new_analysis_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">New Analysis</h2>
+        </div>
+        <div id="new_analysis" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:300; height:125; font-size:13; border-style:solid; border-color:black">
+          <br />
           <%# ----Calling and filtering button---- %>
           <form action="/choose_ref">
               <center>
-              <button type="submit" id="callfilterbutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Call, filter, and/or impute fastq files</b></button>
+              <button type="submit" id="callfilterbutton" style="background-color:lightgray; color:black; height:40px; position:relative; font-size:15; padding-top:5;"><b>Call, filter, and/or impute fastq files</b></button>
               </center>
               <input type="hidden" id="sgn_token_callfilter" name="sgn_token_callfilter" />
               <input type="hidden" id="scp_files" name="scp_files" />
@@ -285,19 +290,22 @@ $(document).ready(function(){
 
           <form action="/choose_impute_vcf">
             <center>
-              <button type="submit" id="imputebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Impute a vcf file</b></button>
+              <button type="submit" id="imputebutton" style="background-color:lightgray; color:black; position:relative; font-size:15; height:40px "><b>Impute a vcf file</b></button>
             </center>
             <input type="hidden" id="sgn_token_impute" name="sgn_token_impute" />
             <input type="hidden" id="scp_files_impute" name="scp_files_impute" />
             </form>
+            <br />
           </div>
       </center>
 
   <br />
+  <br />
 
   <center>
-    <label for="available_files_table_wrapper" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative; width:1000;"><h3><b>Files Available For Analysis</b></h3></label>
-    <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000;">
+      <div id="available_files_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Available Files</h2>
+      </div>
+    <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-top:10px;">
     <%# ----Files available in scp folder---- %>
     <div class="well">
     <table class="stripe" id="available_files_table">
@@ -311,9 +319,13 @@ $(document).ready(function(){
     </div>
   </center>
 
+  <br />
+  <br />
+
   <center>
-    <label for="analyses_table_wrapper" style="text-align:center; font-size:23; padding-left:10; padding-right:10; color:black; position:relative; width:1000"><h3><b>Your Analyses</b></h3></label>
-    <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; width:1000">
+      <div id="analyses_table_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Analyses Table</h2>
+      </div>
+    <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-botton:50px; margin-top:10px;">
     <%# ----Analysis history table---- %>
     <div class="well">
     <table class="stripe" id="analyses_table">
