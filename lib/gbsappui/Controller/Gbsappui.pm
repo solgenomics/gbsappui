@@ -102,30 +102,41 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
             @analysis_type_array[$i] = "N/A";
         }
     }
-    #Get start times for analyses
-    # my @start_date_array;
-    # for each $folder (@analysis_folders) {
-    #     my $fh=;
-    #     my $epoch_timestamp=(stat($fh))[9];
-    #     my $timestamp=;
-    #     my $datestamp=;
-    #     push @start_date_array, ;
-    # }
-    # @start_time_array=(stat($fh))[9];
-    # my %start_time_hash;
-    # $start_time_hash{ $username } = \@start_time_array;
-    # my $start_time_json= encode_json %start_time_hash;
 
+    #Get start times for analyses
+    my @start_times_array;
+    foreach my $folder (@analysis_folders) {
+        my $epoch_timestamp;
+        my $fh="/results/$username/$folder/GBSapp_run_node_1.sh";
+        my $epoch_timestamp=(stat($fh))[9];
+        if ($epoch_timestamp) {
+            my $timestamp=scalar localtime($epoch_timestamp);
+            push @start_times_array, $timestamp;
+        }
+        else {
+            my $timestamp="N/A";
+            push @start_times_array, $timestamp;
+        }
+    }
     #Make hashes and encode them into json format for each table column
     #analysis names
     my %analyses_names_of;
     $analyses_names_of{ $username } = \@analysis_name_array;
     my $analysis_list_json = encode_json \%analyses_names_of;
 
-    #analysis types
+    #format analysis types
     my %analyses_types_of;
     $analyses_types_of{ $username } = \@analysis_type_array;
     my $analysis_types_json = encode_json \%analyses_types_of;
+
+    #format start times
+    my %start_times_hash;
+    $start_times_hash{ $username } = \@start_times_array;
+    my $start_times_json= encode_json \%start_times_hash;
+    print STDERR "START TIME IS: \n";
+    print STDERR Dumper %start_times_hash;
+    print STDERR "START TIME IS: \n";
+    print STDERR Dumper $start_times_json;
 
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
@@ -135,7 +146,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{username}=$username;
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{analysis_types_json}=$analysis_types_json;
-    # $c->stash->{start_date_json}=$start_date_json;
+    $c->stash->{start_times_json}=$start_times_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
