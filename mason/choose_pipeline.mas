@@ -7,6 +7,7 @@ $file_list_json
 $analysis_list_json
 $analysis_types_json
 $start_times_json
+$finish_times_json
 $contact_name
 $contact_email
 </%args>
@@ -34,12 +35,12 @@ var scp_files_array;
 var analyses_names = JSON.parse('<% $analysis_list_json %>');
 var analyses_types = JSON.parse('<% $analysis_types_json %>');
 var start_times = JSON.parse('<% $start_times_json %>');
+var finish_times = JSON.parse('<% $finish_times_json %>');
 var table_rows;
 var start_times_array;
 var types_array;
 var status_array;
 var run_times_array;
-var time_completed_array;
 var download_array;
 var delete_array;
 var sgn_token= '<% $sgn_token %>';
@@ -130,8 +131,6 @@ function make_analysis_table(available_analyses) {
     //get analysis start dates/times
     //when file was made
     start_times_array = start_times[username];
-    console.log("in function start times");
-    console.log(start_times_array);
     //convert start_times_array from utc into local time
     for (var i = 0; i < start_times_array.length; i++) {
         if (start_times_array[i] === "N/A") {
@@ -158,9 +157,17 @@ function make_analysis_table(available_analyses) {
     run_time_array = [ "yes", "no", "no", "no" ];
 
     //get analysis completion times
-    //if completed:
-    //if not completed: NA
-    time_completed_array = [ "yes", "no", "no", "no" ];
+    finish_times_array = finish_times[username];
+    console.log("in function finish times");
+    console.log(finish_times_array);
+    //convert finish_times_array from utc into local time
+    for (var i = 0; i < finish_times_array.length; i++) {
+        if (finish_times_array[i] === "N/A") {
+        } else {
+            var utc_time = finish_times_array[i]+" UTC";
+            finish_times_array[i] = new Date(utc_time);
+        }
+    }
 
     //get analysis download links
     //same link as in email
@@ -171,7 +178,7 @@ function make_analysis_table(available_analyses) {
     delete_array = [ "x", "x", "x", "x" ];
 
     for (var i = 0; i < analyses_names.length; i++) {
-        table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], run_time_array[i], time_completed_array[i], download_array[i], delete_array[i]];
+        table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], run_time_array[i], finish_times_array[i], download_array[i], delete_array[i]];
     }
     $('#analyses_table').DataTable( {
         // url: domain+'/user/cookie_login/'+cookie,

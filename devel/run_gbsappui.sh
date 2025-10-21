@@ -230,13 +230,21 @@ gbsapp () {
         fi
     #if no Analysis_Complete result
     else
-        body="Calling and filtering for analysis ${analysis_name} did not complete successfully. Final log lines include:
+        if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
+            #if imputation isn't selected
+            if [ $run_beagle -eq 0 ]; then
+                results_email
+            fi
+        #if no vcf file
+        else
+            body="Calling and Filtering for analysis ${analysis_name} completed but failed to produce results files. Final log lines include:
 
-        $last_log
+            $last_log
 
-        Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
-        error_email_gbsapp "$body"
-        exit 0
+            Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            error_email_gbsapp "$body"
+            exit 0
+        fi
     fi
 }
 

@@ -38,6 +38,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
+    my $beagle_error = 0;
+    my $gbs_error = 0;
 
     #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
@@ -89,55 +91,171 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     }
     my $snp_calling_array = @snp_calling_array;
     for (my $i = 0; $i < $snp_calling_array; $i++) {
-        if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
-            @analysis_type_array[$i] = "Calling/Filtering/Imputation";
+        if ($snp_calling_array[$i] eq "yes" && $imputation_array[$i] eq "yes") {
+            $analysis_type_array[$i] = "Calling/Filtering/Imputation";
         }
-        elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
-            @analysis_type_array[$i] = "Imputation";
+        elsif ($snp_calling_array[$i] eq "no" && $imputation_array[$i] eq "yes") {
+            $analysis_type_array[$i] = "Imputation";
         }
-        elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
-            @analysis_type_array[$i] = "Calling/Filtering";
-        }
-        else {
-            @analysis_type_array[$i] = "N/A";
-        }
-    }
-
-    #Get start times for analyses
-    my @start_times_array;
-    foreach my $folder (@analysis_folders) {
-        my $epoch_timestamp;
-        my $fh="/results/$username/$folder/GBSapp_run_node_1.sh";
-        my $epoch_timestamp=(stat($fh))[9];
-        if ($epoch_timestamp) {
-            my $timestamp=scalar localtime($epoch_timestamp);
-            push @start_times_array, $timestamp;
+        elsif ($snp_calling_array[$i] eq "yes" && $imputation_array[$i] eq "no") {
+            $analysis_type_array[$i] = "Calling/Filtering";
         }
         else {
-            my $timestamp="N/A";
-            push @start_times_array, $timestamp;
+            $analysis_type_array[$i] = "N/A";
         }
     }
-    #Make hashes and encode them into json format for each table column
-    #analysis names
+    #Make a hash and encode it into json format for analysis names
     my %analyses_names_of;
     $analyses_names_of{ $username } = \@analysis_name_array;
     my $analysis_list_json = encode_json \%analyses_names_of;
 
-    #format analysis types
+    #Make a hash and encode it into json format for analysis types
     my %analyses_types_of;
     $analyses_types_of{ $username } = \@analysis_type_array;
     my $analysis_types_json = encode_json \%analyses_types_of;
 
+    #Get start times for analyses
+    my @start_times_array;
+    my $analysis_folders = @analysis_folders;
+    for (my $i = 0; $i < $analysis_folders; $i++) {
+        my $folder = $analysis_folders[$i];
+        my $epoch_timestamp;
+        my $fh;
+        my $timestamp;
+        if ($snp_calling_array[$i] eq "yes") {
+            $fh="/results/$username/$folder//GBSapp_run_node_1.sh";
+            $epoch_timestamp=(stat($fh))[9];
+            if ($epoch_timestamp) {
+                $timestamp=scalar localtime($epoch_timestamp);
+            }
+            else {
+                $timestamp="N/A";
+            }
+        }
+        else {
+            $fh="/results/$username/$folder/beagle/beagle_log.out";
+            $epoch_timestamp=(stat($fh))[9];
+            if ($epoch_timestamp) {
+                $timestamp=scalar localtime($epoch_timestamp);
+            }
+            else {
+                $timestamp="N/A";
+            }
+        }
+        push @start_times_array, $timestamp;
+    }
     #format start times
     my %start_times_hash;
     $start_times_hash{ $username } = \@start_times_array;
     my $start_times_json= encode_json \%start_times_hash;
-    print STDERR "START TIME IS: \n";
-    print STDERR Dumper %start_times_hash;
-    print STDERR "START TIME IS: \n";
-    print STDERR Dumper $start_times_json;
 
+    #Get completion times for analyses
+    my @finish_times_array;
+    for (my $i = 0; $i < $snp_calling_array; $i++) {
+        #If analysis type is Calling/Filtering/Imputation
+        my $epoch_timestamp;
+        my $fh;
+        my $timestamp;
+        my $folder = @analysis_folders[$i];
+        my $path = "/results/$username/$folder";
+        my @files;
+        if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
+            #check for vcf file in calling folder
+            @files = glob("$path/snpcall/*x.vcf.gz");
+            print STDERR "globed files are @files \n";
+            if (@files) {
+            #check if imputation completed
+            #first check if beagle output file exists
+                @files = glob("$path/beagle/*.out.vcf.gz");
+                if (@files) {
+                    #then check if there were any errors during imputation by reading the beagle log file
+                    my $beagle_log;
+                    my $beagle_log_path = "$path/beagle/beagle_log.out";
+                    open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
+                    while (my $line = <$beagle_log>) {
+                        if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+                            @finish_times_array[$i] = "N/A";
+                            $beagle_error = 1;
+                        }
+                        else {
+                            #if no errors:
+                            #check when imputation file was last edited
+                            $fh="$path/beagle/beagle.out.vcf.gz";
+                            $epoch_timestamp=(stat($fh))[9];
+                            $timestamp=scalar localtime($epoch_timestamp);
+                            push @finish_times_array, $timestamp;
+                        }
+                    }
+                }
+                else {
+                    @finish_times_array[$i] = "N/A";
+                }
+            }
+            #If there's no calling result fill in the column with N/A
+            else {
+                @finish_times_array[$i] = "N/A";
+            }
+        }
+        elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
+            @files = glob("$path/beagle/*.out.vcf.gz");
+            print STDERR "globed files are @files \n";
+            if (@files) {
+                #then check if there were any errors during imputation by reading the beagle log file
+                my $beagle_log;
+                my $beagle_log_path = "$path/beagle/beagle_log.out";
+                open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
+                while (my $line = <$beagle_log>) {
+                    if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+                        @finish_times_array[$i] = "N/A";
+                        $beagle_error = 1;
+                    }
+                    else {
+                        #if no errors:
+                        #check when imputation file was last edited
+                        $fh="$path/beagle/beagle.out.vcf.gz";
+                        $epoch_timestamp=(stat($fh))[9];
+                        $timestamp=scalar localtime($epoch_timestamp);
+                        push @finish_times_array, $timestamp;
+                    }
+                }
+            }
+            else {
+                @finish_times_array[$i] = "N/A";
+            }
+        }
+        elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
+            @files = glob("$path/snpcall/*x.vcf.gz");
+            print STDERR "globed files are @files \n";
+            #check for vcf file in calling folder
+            if (@files) {
+                $fh="$path/Analysis_Complete*";
+                my @analysis_complete = glob($fh);
+                if (@analysis_complete) {
+                    $fh="$path/Analysis_Complete";
+                    $epoch_timestamp=(stat($fh))[9];
+                    $timestamp=scalar localtime($epoch_timestamp);
+                    push @finish_times_array, $timestamp;
+                }
+                else {
+                    $fh=glob("$path/snpcall/*x.vcf.gz");
+                    my $epoch_timestamp=(stat($fh))[9];
+                    my $timestamp=scalar localtime($epoch_timestamp);
+                    push @finish_times_array, $timestamp;
+                }
+            }
+            else {
+                @finish_times_array[$i] = "N/A";
+            }
+        }
+        #If none of the above are true
+        else {
+            @finish_times_array[$i] = "N/A";
+        }
+    }
+    #format finish times
+    my %finish_times_hash;
+    $finish_times_hash{ $username } = \@finish_times_array;
+    my $finish_times_json= encode_json \%finish_times_hash;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
@@ -147,6 +265,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{analysis_types_json}=$analysis_types_json;
     $c->stash->{start_times_json}=$start_times_json;
+    $c->stash->{finish_times_json}=$finish_times_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
