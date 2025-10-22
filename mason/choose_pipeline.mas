@@ -8,6 +8,7 @@ $analysis_list_json
 $analysis_types_json
 $start_times_json
 $finish_times_json
+$status_json
 $contact_name
 $contact_email
 </%args>
@@ -36,6 +37,7 @@ var analyses_names = JSON.parse('<% $analysis_list_json %>');
 var analyses_types = JSON.parse('<% $analysis_types_json %>');
 var start_times = JSON.parse('<% $start_times_json %>');
 var finish_times = JSON.parse('<% $finish_times_json %>');
+var statuses = JSON.parse('<% $status_json %>');
 var table_rows;
 var start_times_array;
 var types_array;
@@ -147,9 +149,7 @@ function make_analysis_table(available_analyses) {
     //check if imputing and add to string
     //put string into type array
     types_array = analyses_types[username];
-    //get analysis status
-    //slurm status /file
-    status_array = [ "yes", "no", "no", "no" ];
+    status_array = statuses[username];
 
     //get run time status
     //if in progress: get from slurm

@@ -11,6 +11,8 @@ use File::Spec;
 use File::Temp qw/ :seekable /;
 #use File::Find;
 use JSON;
+# use Time::Piece;
+# use Time::Seconds;
 
 
 BEGIN {extends 'Catalyst::Controller'};
@@ -38,8 +40,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
-    my $beagle_error = 0;
-    my $gbs_error = 0;
+    my @beagle_error;
+    my $beagle_error = @beagle_error;
+    my @gbs_error;
+    my $gbs_error = @gbs_error;
 
     #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
@@ -162,7 +166,6 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
             #check for vcf file in calling folder
             @files = glob("$path/snpcall/*x.vcf.gz");
-            print STDERR "globed files are @files \n";
             if (@files) {
             #check if imputation completed
             #first check if beagle output file exists
@@ -175,7 +178,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                     while (my $line = <$beagle_log>) {
                         if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
                             @finish_times_array[$i] = "N/A";
-                            $beagle_error = 1;
+                            $beagle_error[$i] = 1;
                         }
                         else {
                             #if no errors:
@@ -184,6 +187,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                             $epoch_timestamp=(stat($fh))[9];
                             $timestamp=scalar localtime($epoch_timestamp);
                             push @finish_times_array, $timestamp;
+                            $gbs_error[$i] = 0;
+                            $beagle_error[$i] = 0;
                         }
                     }
                 }
@@ -198,7 +203,6 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         }
         elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
             @files = glob("$path/beagle/*.out.vcf.gz");
-            print STDERR "globed files are @files \n";
             if (@files) {
                 #then check if there were any errors during imputation by reading the beagle log file
                 my $beagle_log;
@@ -207,7 +211,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                 while (my $line = <$beagle_log>) {
                     if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
                         @finish_times_array[$i] = "N/A";
-                        $beagle_error = 1;
+                        $beagle_error[$i] = 1;
                     }
                     else {
                         #if no errors:
@@ -216,6 +220,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         $epoch_timestamp=(stat($fh))[9];
                         $timestamp=scalar localtime($epoch_timestamp);
                         push @finish_times_array, $timestamp;
+                        $beagle_error[$i] = 0;
                     }
                 }
             }
@@ -225,7 +230,6 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         }
         elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
             @files = glob("$path/snpcall/*x.vcf.gz");
-            print STDERR "globed files are @files \n";
             #check for vcf file in calling folder
             if (@files) {
                 $fh="$path/Analysis_Complete*";
@@ -235,12 +239,14 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                     $epoch_timestamp=(stat($fh))[9];
                     $timestamp=scalar localtime($epoch_timestamp);
                     push @finish_times_array, $timestamp;
+                    $gbs_error[$i] = 0;
                 }
                 else {
                     $fh=glob("$path/snpcall/*x.vcf.gz");
                     my $epoch_timestamp=(stat($fh))[9];
                     my $timestamp=scalar localtime($epoch_timestamp);
                     push @finish_times_array, $timestamp;
+                    $gbs_error[$i] = 0;
                 }
             }
             else {
@@ -256,6 +262,65 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my %finish_times_hash;
     $finish_times_hash{ $username } = \@finish_times_array;
     my $finish_times_json= encode_json \%finish_times_hash;
+
+    #calculate analysis status
+    my @status_array;
+    for (my $i = 0; $i < $analysis_folders; $i++) {
+        my $folder = @analysis_folders[$i];
+        my $path = "/results/$username/$folder";
+        my $ui_log="$path/gbsappui_slurm_log/";
+        my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
+        if (@finish_times_array[$i]=~/[0-9]:[0-9]/) {
+            @status_array[$i] = "Completed";
+        }
+        elsif ($gbs_error[$i] eq 1) {
+            @status_array[$i] = "Calling/Filtering Error";
+        }
+        elsif ($beagle_error[$i] eq 1) {
+            @status_array[$i] = "Imputation Error"
+        }
+        elsif (`squeue -j $jobnum -h --noheader`=~/$jobnum/) {
+            @status_array[$i] = "Running";
+        }
+        else {
+            #remove any starting or trailing white spaces
+            $jobnum =~ s/^\s+|\s+$//g;
+            my $file_path = $ui_log."slurm-$jobnum".".out";
+            my $slurm_file;
+            open $slurm_file, '<', $file_path or die "Could not open file '$slurm_file'";
+            while (my $line = <$slurm_file>) {
+                if ($line =~ /slurmstepd/ && $line =~ /JOB $jobnum/ && $line =~ /CANCELLED/) {
+                    @status_array[$i] = "Canceled";
+                }
+                else {
+                    @status_array[$i] = "N/A";
+                }
+            }
+        }
+    }
+    #format analysis status
+    my %status_hash;
+    $status_hash{ $username } = \@status_array;
+    my $status_json= encode_json \%status_hash;
+
+    #calculate run time
+    my @run_time_array;
+    for (my $i = 0; $i < $analysis_folders; $i++) {
+        if (@status_array[$i] =~ /Completed/) {
+            # my $formatted_start = strptime(@start_times_array[$i]);
+            # print STDERR $formatted_start;
+            # my $formatted_finish = strptime(@finish_times_array[$i]);
+            # print STDERR $formatted_finish;
+            #completed minus started
+        }
+        #if completed
+        #if Calling/Filtering Error
+        #if imputation error
+        #if running
+        #if canceled
+        #else N/A
+    }
+
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
@@ -266,6 +331,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{analysis_types_json}=$analysis_types_json;
     $c->stash->{start_times_json}=$start_times_json;
     $c->stash->{finish_times_json}=$finish_times_json;
+    $c->stash->{status_json}=$status_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
@@ -281,8 +347,6 @@ sub choose_ref:Path('/choose_ref') : Args(0){
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $sgn_token=$c->req->param('sgn_token_callfilter');
     my $scp_files = $c->req->param('scp_files');
-    print STDERR "scp files are: \n";
-    print STDERR $scp_files;
     $c->stash->{sgn_token} = $sgn_token;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{refgenomes_json}=$refgenomes_json;
@@ -321,7 +385,6 @@ sub choose_impute_vcf:Path('/choose_impute_vcf') : Args(0){
     my $sgn_token=$c->req->param('sgn_token_impute');
     my $username = "nousername";
     my $scp_files = $c->req->param('scp_files_impute');
-    print STDERR $scp_files;
     $c->stash->{username} = $username;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
@@ -346,7 +409,6 @@ sub impute:Path('/impute'): Args(0){
 
     #setup data directory and project directory
     my $username = $c->req->param('username');
-    print STDERR "Username is $username \n";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -356,11 +418,9 @@ sub impute:Path('/impute'): Args(0){
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
     my $projdir = $projdir_object->{DIRNAME};
     my $projdir_orig = $projdir;
-    print STDERR "Original proj dir is $projdir_orig \n";
     $projdir=~s/\;//g; #don't allow ';' in project directory name
     $projdir=~s/_//g; #don't allow '_' in project directory name
     $projdir_object->{DIRNAME} = $projdir;
-    print STDERR "New proj dir is $projdir \n";
     if ($projdir_orig ne $projdir) {
         print STDERR "Original name was not acceptable ($projdir_orig). Changing it to $projdir. Removing $projdir_orig .\n";
         `rm -rf $projdir_orig`;
@@ -531,8 +591,6 @@ sub cancel:Path('/cancel') : Args(0) {
     #redirect to start when analysis complete
     my $sgn_token=$c->req->param('sgn_token_cancel');
     my $username=$c->req->param('username_cancel');
-    print STDERR $sgn_token;
-    print STDERR $username;
     $c->stash->{projdir} = $projdir;
     $c->stash->{email_address} = $email_address;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
