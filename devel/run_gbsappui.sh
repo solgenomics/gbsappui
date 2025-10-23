@@ -157,12 +157,16 @@ beagle () {
 
                 Full log files attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
                 error_email_beagle "$body"
+                beagle_error=1
                 exit 0
             fi
         done
         #remove duplicate auto-generated log file
         rm ${projdir}beagle/beagle.out.log
-        #if there's an error in the log file set error variable
+        #make analysis finished file if it completed successfully
+        if [ $beagle_error -eq 0 ]; then
+            touch ${projdir}beagle/beagle_complete
+        fi
     # fi;
 }
 
@@ -231,6 +235,7 @@ gbsapp () {
     #if no Analysis_Complete result
     else
         if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
+            touch ${projdir}Analysis_Complete
             #if imputation isn't selected
             if [ $run_beagle -eq 0 ]; then
                 results_email

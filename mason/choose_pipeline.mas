@@ -4,10 +4,12 @@
 $username
 $sgn_token
 $file_list_json
+$analysis_folders_json
 $analysis_list_json
 $analysis_types_json
 $start_times_json
 $finish_times_json
+$download_json
 $status_json
 $contact_name
 $contact_email
@@ -33,16 +35,17 @@ var scp_files = JSON.parse('<% $file_list_json %>');
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
 var scp_files_array;
+var analyses_folders = JSON.parse('<% $analysis_folders_json %>');
 var analyses_names = JSON.parse('<% $analysis_list_json %>');
 var analyses_types = JSON.parse('<% $analysis_types_json %>');
 var start_times = JSON.parse('<% $start_times_json %>');
 var finish_times = JSON.parse('<% $finish_times_json %>');
 var statuses = JSON.parse('<% $status_json %>');
+var download = JSON.parse('<% $download_json %>');
 var table_rows;
 var start_times_array;
 var types_array;
 var status_array;
-var run_times_array;
 var download_array;
 var delete_array;
 var sgn_token= '<% $sgn_token %>';
@@ -107,6 +110,14 @@ function logout() {
   }
 }
 
+function delete_analysis(analysis_folder) {
+    var answer = confirm("Are you sure you want to delete this analysis? This will delete all input and output files and cannot be undone.");
+    if (answer === true) {
+        $("#analysis_folder_delete").value = analysis_folder;
+        $("#delete_form").submit();
+    }
+}
+
 function make_files_table(available_files) {
     //set up analyses table
     table_rows = [  ];
@@ -127,11 +138,8 @@ function make_analysis_table(available_analyses) {
     //set up analyses table
     table_rows = [];
     //get analyses submitted by your username
-    //get analyses names
-    // my_analyses_names = all_users_analyses[username];
     analyses_names = available_analyses;
     //get analysis start dates/times
-    //when file was made
     start_times_array = start_times[username];
     //convert start_times_array from utc into local time
     for (var i = 0; i < start_times_array.length; i++) {
@@ -141,20 +149,8 @@ function make_analysis_table(available_analyses) {
             start_times_array[i] = new Date(utc_time);
         }
     }
-
-    //get analysis types
-    //analysis_info.txt
-    //check if snp calling and add to string
-    //check if snp filtering and add to string
-    //check if imputing and add to string
-    //put string into type array
     types_array = analyses_types[username];
     status_array = statuses[username];
-
-    //get run time status
-    //if in progress: get from slurm
-    //if finished: difference between analysis_complete and start time
-    run_time_array = [ "yes", "no", "no", "no" ];
 
     //get analysis completion times
     finish_times_array = finish_times[username];
@@ -170,15 +166,23 @@ function make_analysis_table(available_analyses) {
     }
 
     //get analysis download links
-    //same link as in email
-    download_array = [ "download", "download", "download", "download" ];
+    download_array = download[username];
+    for (var i = 0; i < download_array.length; i++) {
+        download_array[i] = '<a href="' + download_array[i] + '">Download</a>';
+    }
+    // data = '<a href="view.php?id=' + data + '">' + row.id + '</a>';
 
     //get analysis deletion link
-    //make new deletion function and link
-    delete_array = [ "x", "x", "x", "x" ];
+    analyses_folders_array = analyses_folders[username];
+    delete_array = analyses_folders_array;
+    //onclick =
+    for (var i = 0; i < delete_array.length; i++) {
+        delete_array[i] = '<a onclick="delete_analysis(' + analyses_folders_array[i] + ')">x</a>';
+    }
 
+    //make table out of all variables
     for (var i = 0; i < analyses_names.length; i++) {
-        table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], run_time_array[i], finish_times_array[i], download_array[i], delete_array[i]];
+        table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], finish_times_array[i], download_array[i], delete_array[i]];
     }
     $('#analyses_table').DataTable( {
         // url: domain+'/user/cookie_login/'+cookie,
@@ -342,7 +346,6 @@ $(document).ready(function(){
                 <th>Time Started</th>
                 <th>Type</th>
                 <th>Status</th>
-                <th>Run Time</th>
                 <th>Time Completed</th>
                 <th>Download</th>
                 <th>Delete</th>
@@ -363,6 +366,11 @@ $(document).ready(function(){
 </div>
 <br></br>
 <br></br>
+<form id="delete_form" action="/delete" target="_self" method="post">
+        <input type="hidden" id="username" name="username" />
+        <input type="hidden" id="sgn_token" name="sgn_token" />
+        <input type="hidden" id="analysis_folder_delete" name="analysis_folder_delete" />
+</form>
 <%# ----footer---- %>
 
 <& /site/footer.mas &>

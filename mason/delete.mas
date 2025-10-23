@@ -1,0 +1,57 @@
+<%# --page actions-- %>
+
+<%args>
+$gbsappui_domain_name
+$sgn_token
+$username
+</%args>
+
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<script>
+//variables
+var gbsappui_domain_name = '<% $gbsappui_domain_name %>';
+var sgn_token = '<% $sgn_token %>';
+var username = '<% $username %>';
+
+//functions
+function redirect(){
+    $("#redirect_form").submit();
+}
+
+$( document ).ready(function(){
+    // event.preventDefault();
+    //await new Promise(r => setTimeout(r, 2000));
+    //go back to main page
+    console.log(sgn_token);
+    console.log(username);
+    document.getElementById('sgn_token').value = sgn_token;
+    document.getElementById('username').value = username;
+    window.setTimeout(redirect, 1000);
+});
+
+</script>
+
+<%# ----header---- %>
+
+<& /site/index_header.mas &>
+
+<center>
+    <div id="Cancel" style="margin:10px; background-color:black; padding:10; padding-bottom:5;color:white; width:605; height:100; position:relative; top:100; text-align:left; line-height:3; font-size:20; border:10px double white">
+        <center>
+            <b> Analysis Deleted</b>
+        </center>
+    </div>
+</center>
+
+<form id="redirect_form" action="/choose_pipeline" target="_self" method="post">
+        <input type="hidden" id="username" name="username" />
+        <input type="hidden" id="sgn_token" name="sgn_token" />
+</form>
+
+<%# ----footer---- %>
+
+<& /site/footer.mas &>

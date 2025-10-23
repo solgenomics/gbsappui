@@ -41,9 +41,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $contact_name = $c->config->{contact_name};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
     my @beagle_error;
-    my $beagle_error = @beagle_error;
     my @gbs_error;
-    my $gbs_error = @gbs_error;
+    my $epoch_timestamp;
+    my $fh;
+    my $timestamp;
 
     #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
@@ -55,6 +56,11 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #get list of analysis folders
     my $raw_analysis_folders = `ls /results/$username`;
     my @analysis_folders = split("\n", $raw_analysis_folders);
+
+    #Make a hash and encode it into json format for analysis folders
+    my %analyses_folders_of;
+    $analyses_folders_of{ $username } = \@analysis_folders;
+    my $analysis_folders_json = encode_json \%analyses_folders_of;
 
     #for each analysis
     #grab analysis name and analysis type from text file
@@ -123,11 +129,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $analysis_folders = @analysis_folders;
     for (my $i = 0; $i < $analysis_folders; $i++) {
         my $folder = $analysis_folders[$i];
-        my $epoch_timestamp;
-        my $fh;
-        my $timestamp;
         if ($snp_calling_array[$i] eq "yes") {
-            $fh="/results/$username/$folder//GBSapp_run_node_1.sh";
+            $fh="/results/$username/$folder/GBSapp_run_node_1.sh";
             $epoch_timestamp=(stat($fh))[9];
             if ($epoch_timestamp) {
                 $timestamp=scalar localtime($epoch_timestamp);
@@ -155,11 +158,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
 
     #Get completion times for analyses
     my @finish_times_array;
-    for (my $i = 0; $i < $snp_calling_array; $i++) {
+    for (my $i = 0; $i < $analysis_folders; $i++) {
         #If analysis type is Calling/Filtering/Imputation
-        my $epoch_timestamp;
-        my $fh;
-        my $timestamp;
         my $folder = @analysis_folders[$i];
         my $path = "/results/$username/$folder";
         my @files;
@@ -182,8 +182,8 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         }
                         else {
                             #if no errors:
-                            #check when imputation file was last edited
-                            $fh="$path/beagle/beagle.out.vcf.gz";
+                            #check when beagle complete file was last edited
+                            $fh="$path/beagle/beagle_complete";
                             $epoch_timestamp=(stat($fh))[9];
                             $timestamp=scalar localtime($epoch_timestamp);
                             push @finish_times_array, $timestamp;
@@ -215,12 +215,14 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                     }
                     else {
                         #if no errors:
-                        #check when imputation file was last edited
-                        $fh="$path/beagle/beagle.out.vcf.gz";
-                        $epoch_timestamp=(stat($fh))[9];
-                        $timestamp=scalar localtime($epoch_timestamp);
-                        push @finish_times_array, $timestamp;
-                        $beagle_error[$i] = 0;
+                        #check when beagle_complete was last edited
+                        if (glob("$path/beagle/beagle_complete*")) {
+                            $fh="$path/beagle/beagle_complete";
+                            $epoch_timestamp=(stat($fh))[9];
+                            $timestamp=scalar localtime($epoch_timestamp);
+                            push @finish_times_array, $timestamp;
+                            $beagle_error[$i] = 0;
+                        }
                     }
                 }
             }
@@ -303,23 +305,20 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $status_hash{ $username } = \@status_array;
     my $status_json= encode_json \%status_hash;
 
-    #calculate run time
-    my @run_time_array;
+    #download links
+    #same link as in email
+    my @download_array;
     for (my $i = 0; $i < $analysis_folders; $i++) {
-        if (@status_array[$i] =~ /Completed/) {
-            # my $formatted_start = strptime(@start_times_array[$i]);
-            # print STDERR $formatted_start;
-            # my $formatted_finish = strptime(@finish_times_array[$i]);
-            # print STDERR $formatted_finish;
-            #completed minus started
-        }
-        #if completed
-        #if Calling/Filtering Error
-        #if imputation error
-        #if running
-        #if canceled
-        #else N/A
+        my $folder = @analysis_folders[$i];
+        my $download_link = "https://gbsappui.breedbase.org/results/".$username."/"."$folder"."/analysis_results.tar.gz";
+        @download_array[$i] = $download_link;
     }
+    print STDERR Dumper @download_array;
+    #https://gbsappui.breedbase.org/results/lockrow/MG4v/analysis_results.tar.gz
+    #format download links
+    my %download_hash;
+    $download_hash{ $username } = \@download_array;
+    my $download_json= encode_json \%download_hash;
 
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
@@ -327,11 +326,13 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
     $c->stash->{username}=$username;
+    $c->stash->{analysis_folders_json}=$analysis_folders_json;
     $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{analysis_types_json}=$analysis_types_json;
     $c->stash->{start_times_json}=$start_times_json;
     $c->stash->{finish_times_json}=$finish_times_json;
     $c->stash->{status_json}=$status_json;
+    $c->stash->{download_json}=$download_json;
     $c->stash->{template}="choose_pipeline.mas";
 }
 
@@ -597,6 +598,27 @@ sub cancel:Path('/cancel') : Args(0) {
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{username}=$username;
     $c->stash->{template}="cancel.mas";
+}
+
+sub delete:Path('/delete') : Args(0) {
+    my $self=shift;
+    my $c=shift;
+    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    my $analysis_folder = $c->req->param('analysis_folder_delete');
+    my $sgn_token=$c->req->param('sgn_token');
+    my $username=$c->req->param('username');
+    if ($analysis_folder) {
+        #delete results folder
+        `rm -rf /results/$username/$analysis_folder`;
+        #delete zipped folder
+        `rm -rf /gbsappui/root/results/$username/$analysis_folder`;
+    }
+    else {
+        print STDERR "No analysis folder provided";
+    }
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{template}="delete.mas";
 }
 
 sub results:Path('/results') : Args(0) {
