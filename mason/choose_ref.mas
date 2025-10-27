@@ -47,6 +47,7 @@ function get_username(cookie){
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
                 document.getElementById('scp_files').value = scp_files;
+                document.getElementById('sgn_token').value = cookie;
             }
             else {
                 jQuery("#please_login").show();
@@ -63,7 +64,7 @@ function login() {
   } else {
     //localhost version:
     //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/get_token/';
   }
 }
 
@@ -118,9 +119,19 @@ $( document ).ready(function(){
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
     } else {
-        jQuery("#please_login").show();
-        jQuery("#page_function").hide();
-        jQuery("#logout_button").hide();
+        //get cookie from sgn
+        url = window.location;
+        sgn_token = new URLSearchParams(url.search).get('sgn_token_callfilter');
+        if (sgn_token) {
+            get_username(sgn_token);
+            jQuery("#please_login").hide();
+            jQuery("#page_function").show();
+            jQuery("#logout_button").show();
+        } else {
+            jQuery("#please_login").show();
+            jQuery("#page_function").hide();
+            jQuery("#logout_button").hide();
+        }
     }
     jQuery('#refgenome_dropdown_all').html(html);
 });
@@ -139,7 +150,7 @@ $( document ).ready(function(){
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+            <span style="max-height:150px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
                     <a href="https://github.com/bodeolukolu/GBSapp">
                         <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
                     </a>
@@ -147,12 +158,13 @@ $( document ).ready(function(){
                     <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
                 </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
-                        </button>
-                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                    <span id="login_button_html_div" style="position:relative;top:-5;right:-45px;white-space:nowrap;width:200;float:right">
+                        <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt">Login
                         </button>
                     </span>
+                    <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:10px;margin: 7px 7px 7px 7px;width:30; height:35">
+                        <span class="glyphicon glyphicon-log-out" style="position:relative;right:5"></span>
+                    </button>
                 </ul>
             </span>
         </div>

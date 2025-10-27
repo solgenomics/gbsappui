@@ -1,0 +1,107 @@
+<%# --page actions-- %>
+<%#onload="/get_token"%>
+<%args>
+$sgn_token => undef
+$username => undef
+</%args>
+<%# ----header---- %>
+<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
+
+<link rel="stylesheet" href="/static/js/node_modules/DataTables/datatables.css" />
+<script src="/static/js/node_modules/DataTables/datatables.js"></script>
+<script>
+//variables
+var sgn_token;
+var domain;
+var instance;
+var gbsappui_domain_name;
+var user_id;
+var username;
+
+//functions
+
+function get_username(cookie){
+    jQuery.ajax( {
+//          url :'http://localhost:8080/user/cookie_login/'+cookie,
+        url : domain+'/user/cookie_login/'+cookie,
+        success: function(response){
+            if(response.error){
+                alert(response.error);
+            }
+            if(response.username){
+                username = response.username;
+                console.log("username is within function");
+                console.log(username);
+                document.getElementById('username').value = username;
+                document.getElementById('redirect_form').submit();
+            }
+            else {
+                alert('No username available!');
+            }
+        }
+    })
+}
+
+//displaying refgenomes of chosen instance
+$(document).ready(function(){
+    domain = localStorage.getItem("gbs_domain");
+    instance = localStorage.getItem("gbs_instance");
+    gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
+    //check if there's a cookie (if someone is logged in)
+    if (sgn_token) {
+        document.getElementById('sgn_token').value = sgn_token;
+        get_username(sgn_token);
+        console.log("username is when already have token");
+        console.log(username);
+    } else {
+        //get cookie from sgn
+        url = window.location;
+        sgn_token = new URLSearchParams(url.search).get('access_token');
+        if (sgn_token) {
+            document.getElementById('sgn_token').value = sgn_token;
+            get_username(sgn_token);
+        } else {
+            alert('no token');
+        }
+    }
+});
+
+</script>
+
+<body style="margin:0;padding:0">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+                    <a href="https://github.com/bodeolukolu/GBSapp">
+                        <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
+                    </a>
+                <a class="navbar-brand sgn_brand_name" href="https://breedbase.org">
+                    <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
+                </a>
+                <ul class="nav navbar-nav navbar-right">
+                </ul>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<%# ----transferring username---- %>
+
+<div id="page_function" style="position:relative; top:250; overflow:scroll;">
+  <center>
+    <div id="transfer_username" >
+      <%# ----Transfer username button---- %>
+      <form id="redirect_form" action="/choose_pipeline" target="_self" method="post">
+          <input type="hidden" id="username" name="username" />
+          <input type="hidden" id="sgn_token" name="sgn_token" />
+      </form>
+    </div>
+  </center>
+ </div>
+
+<%# ----footer---- %>
+
+<& /site/footer.mas &>

@@ -26,7 +26,7 @@ RUN mkdir /beagle && \
 
 #install cpan modules
 RUN cpanm Module::Pluggable --force
-RUN cpanm Devel::InnerPackage Catalyst Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
+RUN cpanm Devel::InnerPackage Catalyst Catalyst::Controller::REST Catalyst::Runtime Catalyst::Restarter Catalyst::View Catalyst::View::HTML::Mason JSON Email::Sender Email::Sender::Simple
 
 #clone GBSApp from github
 RUN git clone https://github.com/bodeolukolu/GBSapp.git
@@ -70,6 +70,7 @@ RUN mkdir /project/samples/
 RUN mkdir /project/gbsappui_slurm_log/
 
 RUN cp ./GBSapp/examples/input_steps.txt /project/
+RUN cp /gbsappui/analysis_info.txt /project/
 
 #Setup system files and Edit permissions
 RUN rm /etc/munge/munge.key

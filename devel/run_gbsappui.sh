@@ -9,6 +9,37 @@ run_gbsapp=$5
 analysis_name="$6"
 # run_filtering=$7
 
+#Fill out analysis information into analysis_info.txt
+cd ${projdir}
+sed -i -e '$a\' analysis_info.txt
+echo "Analysis Name: ${analysis_name}" >> analysis_info.txt
+
+echo "#####SNP Calling/Filtering" >> analysis_info.txt
+if [[ "$run_gbsapp" == 1 ]]; then
+    echo "SNP Calling: yes" >> analysis_info.txt
+    echo "SNP Filtering: yes" >> analysis_info.txt
+    echo "SNP Calling/Filtering Input sample files: See samples_list_node_1.txt" >> analysis_info.txt
+    echo "SNP Calling/Filtering Input reference genome file:"  >> analysis_info.txt
+    refgenome=$(ls ${projdir}refgenomes)
+    echo "SNP Calling/Filtering Input reference genome file(s): ${refgenome}" >>analysis_info.txt
+    echo "Minor Allele Frequency Threshold: 0.02" >>analysis_info.txt
+    echo "SNP Calling/Filtering Log File: gbsapp_log.out" >>analysis_info.txt
+    echo "SNP Calling Output File: " >>analysis_info.txt
+    echo "SNP Filtering Output File: " >>analysis_info.txt
+else
+    echo "SNP Calling: no" >> analysis_info.txt
+    echo "SNP Filtering: no" >> analysis_info.txt
+fi
+
+echo "#####Imputation" >> analysis_info.txt
+if [[ "$run_beagle" == 1 ]]; then
+    echo "Imputation: yes" >> analysis_info.txt
+    echo "Imputation Log File: beagle_log.out" >> analysis_info.txt
+    echo "Imputation Output File: /beagle/beagle.out.vcf.gz" >> analysis_info.txt
+else
+    echo "Imputation: no" >> analysis_info.txt
+fi
+
 cd ${projdir}gbsappui_slurm_log
 
 #functions:
@@ -126,12 +157,16 @@ beagle () {
 
                 Full log files attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
                 error_email_beagle "$body"
+                beagle_error=1
                 exit 0
             fi
         done
         #remove duplicate auto-generated log file
         rm ${projdir}beagle/beagle.out.log
-        #if there's an error in the log file set error variable
+        #make analysis finished file if it completed successfully
+        if [ $beagle_error -eq 0 ]; then
+            touch ${projdir}beagle/beagle_complete
+        fi
     # fi;
 }
 
@@ -199,13 +234,22 @@ gbsapp () {
         fi
     #if no Analysis_Complete result
     else
-        body="Calling and filtering for analysis ${analysis_name} did not complete successfully. Final log lines include:
+        if [ -f ${projdir}snpcall/*x.vcf.gz ]; then
+            touch ${projdir}Analysis_Complete
+            #if imputation isn't selected
+            if [ $run_beagle -eq 0 ]; then
+                results_email
+            fi
+        #if no vcf file
+        else
+            body="Calling and Filtering for analysis ${analysis_name} completed but failed to produce results files. Final log lines include:
 
-        $last_log
+            $last_log
 
-        Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
-        error_email_gbsapp "$body"
-        exit 0
+            Full log files also attached. Please email Amber Lockrow to resolve this error at awl67@cornell.edu"
+            error_email_gbsapp "$body"
+            exit 0
+        fi
     fi
 }
 

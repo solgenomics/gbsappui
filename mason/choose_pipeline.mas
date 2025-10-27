@@ -1,33 +1,57 @@
 <%# --page actions-- %>
 <%#onload="/choose_pipeline"%>
 <%args>
-$sgn_token => undef
+$username
+$sgn_token
 $file_list_json
+$analysis_folders_json
 $analysis_list_json
+$analysis_types_json
+$start_times_json
+$finish_times_json
+$download_json
+$status_json
 $contact_name
 $contact_email
 </%args>
-
+<%# ----header---- %>
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
-
 <script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
-<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
+<link href="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.css" rel="stylesheet" integrity="sha384-R5Azes02wvL9ervyq6xo5WLyg1ufX0qwun0F/0qos0E0wNjnnRTADTQpjpnNLakj" crossorigin="anonymous">
+
+<script src="https://cdn.datatables.net/v/dt/jq-3.7.0/dt-2.3.4/datatables.min.js" integrity="sha384-mtJ3+H/dkUyvhmcXYSyIZyaeG0TnEkh91c1JwFkrkBLHBv8oQ3lFjUp8xfDan41b" crossorigin="anonymous">
+<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+</script>
 <script>
+
 //variables
 var domain;
 var instance;
 var gbsappui_domain_name;
-var sgn_token;
 var user_id;
-var username;
-var all_users_scp_files = JSON.parse('<% $file_list_json %>');
-var all_users_analyses = JSON.parse('<% $analysis_list_json %>');
-var scp_files;
+var username= '<% $username %>';
+var scp_files = JSON.parse('<% $file_list_json %>');
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
+var scp_files_array;
+var analyses_folders = JSON.parse('<% $analysis_folders_json %>');
+var analyses_names = JSON.parse('<% $analysis_list_json %>');
+var analyses_types = JSON.parse('<% $analysis_types_json %>');
+var start_times = JSON.parse('<% $start_times_json %>');
+var finish_times = JSON.parse('<% $finish_times_json %>');
+var statuses = JSON.parse('<% $status_json %>');
+var download = JSON.parse('<% $download_json %>');
+var table_rows;
+var start_times_array;
+var types_array;
+var status_array;
+var download_array;
+var delete_array;
+var sgn_token= '<% $sgn_token %>';
 
 //functions
+
 function get_username(cookie){
     jQuery.ajax( {
 //          url :'http://localhost:8080/user/cookie_login/'+cookie,
@@ -38,7 +62,6 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").hide();
                 jQuery("#logout_button").hide();
-                return false;
             }
             if(response.username){
                 username = response.username;
@@ -51,16 +74,13 @@ function get_username(cookie){
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
                 //get files available for your username
-                scp_files = all_users_scp_files[username];
-                available_files.innerHTML = scp_files.join("<br>");
-                let filesheight = (scp_files.length * 17) + 20;
-                let fileslocation = 0 + filesheight;
-                $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
-                document.getElementById('scp_files').value = scp_files;
-                document.getElementById('scp_files_impute').value = scp_files;
-                //get analyses submitted by your username
-                analyses = all_users_analyses[username];
-                console.log(analyses);
+                // available_files.innerHTML = scp_files.join("<br>");
+                // available_files.innerHTML = "";
+                // let filesheight = (scp_files.length * 17) + 20;
+                // let fileslocation = 0 + filesheight;
+                // $("#available_files").css({"center": fileslocation + "px", "height": filesheight});
+                document.getElementById('scp_files').value = scp_files_array;
+                document.getElementById('scp_files_impute').value = scp_files_array;
             }
             else {
                 jQuery("#please_login").show();
@@ -77,7 +97,7 @@ function login() {
   } else {
     //localhost version:
     //window.location.href=domain+'/brapi/authorize?redirect_uri=http://localhost:8090/choose_pipeline/'
-    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/choose_pipeline/';
+    window.location.href=domain+'/brapi/authorize?redirect_uri='+gbsappui_domain_name+'/get_token/';
   }
 }
 
@@ -90,8 +110,101 @@ function logout() {
   }
 }
 
+function delete_analysis(analysis_folder_number) {
+    var analysis_folder = analyses_folders_array[analysis_folder_number];
+    var answer = confirm("Are you sure you want to delete this analysis? This will delete all input and output files and cannot be undone.");
+    if (answer === true) {
+        document.getElementById('analysis_folder_delete').value = analysis_folder;
+        document.getElementById('sgn_token_delete').value = sgn_token;
+        document.getElementById('username_delete').value = username;
+        document.getElementById('delete_form').submit();
+    }
+}
+
+function make_files_table(available_files) {
+    //set up analyses table
+    table_rows = [  ];
+    //get analyses submitted by your username
+    //get analyses names
+    // my_analyses_names = all_users_analyses[username];
+    file_names = available_files;
+
+    for (var i = 0; i < file_names.length; i++) {
+        table_rows[i] = [ file_names[i]];
+    }
+    $('#available_files_table').DataTable( {
+        data: table_rows
+    } );
+}
+
+function make_analysis_table(available_analyses) {
+    //set up analyses table
+    table_rows = [];
+    //get analyses submitted by your username
+    analyses_names = available_analyses;
+    //get analysis start dates/times
+    start_times_array = start_times[username];
+    //convert start_times_array from utc into local time
+    for (var i = 0; i < start_times_array.length; i++) {
+        if (start_times_array[i] === "N/A") {
+        } else {
+            var utc_time = start_times_array[i]+" UTC";
+            start_times_array[i] = new Date(utc_time);
+        }
+    }
+    types_array = analyses_types[username];
+    status_array = statuses[username];
+
+    //get analysis completion times
+    finish_times_array = finish_times[username];
+    console.log("in function finish times");
+    console.log(finish_times_array);
+    //convert finish_times_array from utc into local time
+    for (var i = 0; i < finish_times_array.length; i++) {
+        if (finish_times_array[i] === "N/A") {
+        } else {
+            var utc_time = finish_times_array[i]+" UTC";
+            finish_times_array[i] = new Date(utc_time);
+        }
+    }
+
+    //get analysis download links
+    download_array = download[username];
+    for (var i = 0; i < download_array.length; i++) {
+        download_array[i] = '<a href="' + download_array[i] + '">Download</a>';
+    }
+    // data = '<a href="view.php?id=' + data + '">' + row.id + '</a>';
+
+    //get analysis deletion link
+    analyses_folders_array = analyses_folders[username];
+
+    const delete_array = [];
+    for (var i = 0; i < analyses_folders_array.length; i++) {
+        delete_array[i] = '';
+    }
+    //build html
+    for (var i = 0; i < delete_array.length; i++) {
+        delete_array[i]='<button onclick="delete_analysis(';
+        delete_array[i]+=i;
+        delete_array[i]+=')">x</button>';
+    }
+    //make table out of all variables
+    for (var i = 0; i < analyses_names.length; i++) {
+        table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], finish_times_array[i], download_array[i], delete_array[i]];
+    }
+    $('#analyses_table').DataTable( {
+        // url: domain+'/user/cookie_login/'+cookie,
+        // url: '/rest/gbsappui/analysis_table',
+        // data: {"username":username,"domain":domain},
+        data: table_rows
+    } );
+}
+
 //displaying refgenomes of chosen instance
-$( document ).ready(function(){
+$(document).ready(function(){
+    console.log(sgn_token);
+    console.log("start times:");
+    console.log(start_times[username]);
     domain = localStorage.getItem("gbs_domain");
     instance = localStorage.getItem("gbs_instance");
     gbsappui_domain_name = localStorage.getItem("gbsappui_domain_name");
@@ -124,30 +237,24 @@ $( document ).ready(function(){
             jQuery("#logout_button").hide();
         }
     }
-    document.getElementById('contactName').innerHTML = contact_name;
-    document.getElementById('contactEmail').innerHTML = contact_email;
-    // jQuery('#analyses_table').DataTable({
-    //     'ajax': { 'url': '/ajax/analyses/by_user' }
-    // });
-    console.log(contact_email);
-    console.log(contact_name);
+    if (sgn_token) {
+        document.getElementById('contactName').innerHTML = contact_name;
+        document.getElementById('contactEmail').innerHTML = contact_email;
+        document.getElementById('sgn_token_callfilter').value = sgn_token;
+        document.getElementById('sgn_token_impute').value = sgn_token;
+        scp_files_array = scp_files[username];
+        make_files_table(scp_files_array);
+        analyses_names_array = analyses_names[username];
+        make_analysis_table(analyses_names_array);
+    }
 });
 
 </script>
-
-<%# ----header---- %>
-
-<head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
-
-<script src="/static/js/node_modules/js-cookie/dist/js.cookie.js"></script>
-<script src="/static/js/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-
-<link rel="stylesheet" href="/static/js/node_modules/bootstrap/dist/css/bootstrap.min.css">
 <body style="margin:0;padding:0">
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <span style="max-height:50px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
+            <span style="max-height:150px;background-color:#f6f6f6;width:100%;position:absolute;top:0;padding:0">
                     <a href="https://github.com/bodeolukolu/GBSapp">
                         <img src="/static/images/gbsapp_cropped.PNG" width="80" style="position:absolute;left:180px" />
                     </a>
@@ -155,12 +262,14 @@ $( document ).ready(function(){
                     <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
                 </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <span id="login_button_html_div" style="white-space:nowrap;width:200;float:right">
-                        <button id="login_button" style="position:relative;right:-92px;margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt;">Login
-                        </button>
-                        <button id="logout_button" type="button" class="btn btn-default glyphicon glyphicon-log-out"style="position:relative;top:0px;right:-22px;margin: 7px 7px 7px 7px;" title="Logout">
+                    <span id="login_button_html_div" style="position:relative;top:-20;right:-45px;white-space:nowrap;width:200;float:right">
+                        <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;height:35;font-family:Helvetica;font-size:11pt">Login
                         </button>
                     </span>
+                    <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:0px;margin: 7px 7px 7px 7px;width:60; height:35">
+                        Logout
+                        <span class="glyphicon glyphicon-log-out"></span>
+                    </button>
                 </ul>
             </span>
         </div>
@@ -178,99 +287,98 @@ $( document ).ready(function(){
   <br />
 </center>
 
-<div id="page_function" style="position:relative; top:50; overflow:scroll;">
+<br />
+<br />
+
+<div id="page_function" style="position:relative; top:25; overflow:scroll;">
+    <center>
+        <div id="new_analysis_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">New Analysis</h2>
+        </div>
+        <div id="new_analysis" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:300; height:125; font-size:13; border-style:solid; border-color:black">
+          <br />
+          <%# ----Calling and filtering button---- %>
+          <form action="/choose_ref">
+              <center>
+              <button type="submit" id="callfilterbutton" style="background-color:lightgray; color:black; height:40px; position:relative; font-size:15; padding-top:5;"><b>Call, filter, and/or impute fastq files</b></button>
+              </center>
+              <input type="hidden" id="sgn_token_callfilter" name="sgn_token_callfilter" />
+              <input type="hidden" id="scp_files" name="scp_files" />
+          </form>
+
+          <%# ----Imputation Button---- %>
+
+          <form action="/choose_impute_vcf">
+            <center>
+              <button type="submit" id="imputebutton" style="background-color:lightgray; color:black; position:relative; font-size:15; height:40px "><b>Impute a vcf file</b></button>
+            </center>
+            <input type="hidden" id="sgn_token_impute" name="sgn_token_impute" />
+            <input type="hidden" id="scp_files_impute" name="scp_files_impute" />
+            </form>
+            <br />
+          </div>
+      </center>
+
+  <br />
+  <br />
+
   <center>
-    <label for="new_analysis" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>New Analysis</b></h3></label>
-    <div id="new_analysis" style="background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
-      <%# ----Calling and filtering button---- %>
-      <form action="/choose_ref">
-          <center>
-          <button type="submit" id="callfilterbutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Call, filter, and/or impute fastq files</b></button>
-          </center>
-          <input type="hidden" id="sgn_token_callfilter" name="sgn_token_callfilter" />
-          <input type="hidden" id="scp_files" name="scp_files" />
-      </form>
-
-      <%# ----Imputation Button---- %>
-
-      <form action="/choose_impute_vcf">
-        <center>
-          <button type="submit" id="imputebutton" style="background:black; color:white; height:50px; position:relative; font-size:15; padding-top:5; padding-left:10; padding-right:10;"><b>Impute a vcf file</b></button>
-        </center>
-        <input type="hidden" id="sgn_token_impute" name="sgn_token_impute" />
-        <input type="hidden" id="scp_files_impute" name="scp_files_impute" />
-        </form>
-    </div>
-  </center>
-
-  <center>
-    <label for="available_files" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>Available Files</b></h3></label>
-    <br>
-    </br>
-    <div id="available_files" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
+      <div id="available_files_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Available Files</h2>
+      </div>
+    <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-top:10px;">
     <%# ----Files available in scp folder---- %>
-    <b>files here</b>
-    </div>
-  </center>
-
-  <center>
-    <label for="analyses_table" style="text-align:left; padding-left:10; padding-right:10; color:black; position:relative"><h3><b>Past and Current Analyses</b></h3></label>
-    <div id="analyses_table" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; width:800; font-size:13; border-style:solid; border-color:black">
-    <%# ----Analysis history table---- %>
     <div class="well">
-    <table class="table table-bordered table-hover" id="analyses_table">
-      <thead>
-      <tr>
-        <th>
-          Name
-        </th>
-        <th>
-          Date
-        </th>
-        <th>
-          Type
-        </th>
-        <th>
-          Status
-        </th>
-        <th>
-          Run Time
-        </th>
-        <th>
-          Time Started
-        </th>
-        <th>
-          Time Completed
-        </th>
-        <th>
-         View
-        </th>
-        <th>
-          Download
-        </th>
-        <th>
-          Delete
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      </tbody>
+    <table class="stripe" id="available_files_table">
+        <thead>
+            <tr>
+                <th> File Name </th>
+            </tr>
+        </thead>
     </table>
     </div>
     </div>
   </center>
 
-  <%#Contact Lukas (link) for scp account to upload additional data for analysis%>
+  <br />
+  <br />
+
   <center>
-    <div id="contact_info" style="margin:10px; background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:black; position:relative; width:800; font-size:18; border-style:solid; border-color:black">
+      <div id="analyses_table_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Analyses Table</h2>
+      </div>
+    <div id="analyses_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-botton:50px; margin-top:10px;">
+    <%# ----Analysis history table---- %>
+    <div class="well">
+    <table class="stripe" id="analyses_table">
+        <thead>
+            <tr>
+                <th>Analysis Name</th>
+                <th>Time Started</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Time Completed</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+    </table>
+    </div>
+    </div>
+  </center>
+
+  <%#Contact information scp account to upload additional data for analysis. Based on gbsappui_local.conf%>
+  <center>
+    <div id="contact_info" style="margin:15px; background-color:WhiteSmoke; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:black; position:relative; width:800; font-size:18; border-style:solid; border-color:black">
     <b>Please contact <span id="contactName"></span> at <span id="contactEmail"></span> if you need to upload additional files for analysis. </b>
     </div>
   </center>
 
 </div>
-
-
-
+<br></br>
+<br></br>
+<form id="delete_form" action="/delete" target="_self" method="post">
+        <input type="hidden" id="username_delete" name="username_delete" />
+        <input type="hidden" id="sgn_token_delete" name="sgn_token_delete" />
+        <input type="hidden" id="analysis_folder_delete" name="analysis_folder_delete" />
+</form>
 <%# ----footer---- %>
 
 <& /site/footer.mas &>

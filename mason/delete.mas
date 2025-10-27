@@ -1,9 +1,6 @@
 <%# --page actions-- %>
 
 <%args>
-$projdir
-$email_address
-$gbsappui_domain_name
 $sgn_token
 $username
 </%args>
@@ -15,7 +12,6 @@ $username
 
 <script>
 //variables
-var gbsappui_domain_name = '<% $gbsappui_domain_name %>';
 var sgn_token = '<% $sgn_token %>';
 var username = '<% $username %>';
 
@@ -32,7 +28,7 @@ $( document ).ready(function(){
     console.log(username);
     document.getElementById('sgn_token').value = sgn_token;
     document.getElementById('username').value = username;
-    window.setTimeout(redirect, 1000);
+    window.setTimeout(redirect, 0);
 });
 
 </script>
@@ -44,7 +40,7 @@ $( document ).ready(function(){
 <center>
     <div id="Cancel" style="margin:10px; background-color:black; padding:10; padding-bottom:5;color:white; width:605; height:100; position:relative; top:100; text-align:left; line-height:3; font-size:20; border:10px double white">
         <center>
-            <b> Analysis Canceled</b>
+            <b> Analysis Deleted</b>
         </center>
     </div>
 </center>
