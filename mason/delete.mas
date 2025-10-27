@@ -1,7 +1,6 @@
 <%# --page actions-- %>
 
 <%args>
-$gbsappui_domain_name
 $sgn_token
 $username
 </%args>
@@ -13,7 +12,6 @@ $username
 
 <script>
 //variables
-var gbsappui_domain_name = '<% $gbsappui_domain_name %>';
 var sgn_token = '<% $sgn_token %>';
 var username = '<% $username %>';
 
@@ -30,7 +28,7 @@ $( document ).ready(function(){
     console.log(username);
     document.getElementById('sgn_token').value = sgn_token;
     document.getElementById('username').value = username;
-    window.setTimeout(redirect, 1000);
+    window.setTimeout(redirect, 0);
 });
 
 </script>

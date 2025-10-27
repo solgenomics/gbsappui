@@ -4,12 +4,12 @@ import { test, expect } from '@playwright/test';
 test('Full analysis setup', async ({ page }) => {
     await page.goto('https://gbsappui.breedbase.org');
 
-    //Select SGN
-    await page.locator('#instance_dropdown').selectOption('https://solgenomics.net');
+    //Select CassavaBase
+    await page.locator('#instance_dropdown').selectOption('CassavaBase');
     await expect(page.getByRole('button', { name: 'Select' })).toBeVisible();
     await page.getByRole('button', { name: 'Select' }).click();
 
-    //Login to SGN
+    //Login to CassavaBase
     await page.getByPlaceholder('Username').click();
     await page.getByPlaceholder('Username').fill('janedoe');
     await page.getByPlaceholder('Password').click();
@@ -42,7 +42,7 @@ test('Full analysis setup', async ({ page }) => {
     await expect(page.locator('#instance_dropdown')).toBeVisible();
 });
 
-//Further testing on index page only
+//Further testing on index page
 test('Index page, login, and logout', async ({ page }) => {
     await page.goto('https://gbsappui.breedbase.org');
 
@@ -70,4 +70,12 @@ test('Index page, login, and logout', async ({ page }) => {
 
     //Check that logout worked
     await expect(page.locator('#please_login')).toBeVisible();
+});
+
+//Testing on available files
+test('Available Files', async ({ page }) => {
+});
+
+//Testing on analysis table
+test('Analysis table check', async ({ page }) => {
 });

@@ -110,11 +110,14 @@ function logout() {
   }
 }
 
-function delete_analysis(analysis_folder) {
+function delete_analysis(analysis_folder_number) {
+    var analysis_folder = analyses_folders_array[analysis_folder_number];
     var answer = confirm("Are you sure you want to delete this analysis? This will delete all input and output files and cannot be undone.");
     if (answer === true) {
-        $("#analysis_folder_delete").value = analysis_folder;
-        $("#delete_form").submit();
+        document.getElementById('analysis_folder_delete').value = analysis_folder;
+        document.getElementById('sgn_token_delete').value = sgn_token;
+        document.getElementById('username_delete').value = username;
+        document.getElementById('delete_form').submit();
     }
 }
 
@@ -174,12 +177,17 @@ function make_analysis_table(available_analyses) {
 
     //get analysis deletion link
     analyses_folders_array = analyses_folders[username];
-    delete_array = analyses_folders_array;
-    //onclick =
-    for (var i = 0; i < delete_array.length; i++) {
-        delete_array[i] = '<a onclick="delete_analysis(' + analyses_folders_array[i] + ')">x</a>';
-    }
 
+    const delete_array = [];
+    for (var i = 0; i < analyses_folders_array.length; i++) {
+        delete_array[i] = '';
+    }
+    //build html
+    for (var i = 0; i < delete_array.length; i++) {
+        delete_array[i]='<button onclick="delete_analysis(';
+        delete_array[i]+=i;
+        delete_array[i]+=')">x</button>';
+    }
     //make table out of all variables
     for (var i = 0; i < analyses_names.length; i++) {
         table_rows[i] = [ analyses_names[i], start_times_array[i], types_array[i], status_array[i], finish_times_array[i], download_array[i], delete_array[i]];
@@ -255,7 +263,7 @@ $(document).ready(function(){
                 </a>
                 <ul class="nav navbar-nav navbar-right">
                     <span id="login_button_html_div" style="position:relative;top:-20;right:-45px;white-space:nowrap;width:200;float:right">
-                        <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt">Login
+                        <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;height:35;font-family:Helvetica;font-size:11pt">Login
                         </button>
                     </span>
                     <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:0px;margin: 7px 7px 7px 7px;width:60; height:35">
@@ -367,8 +375,8 @@ $(document).ready(function(){
 <br></br>
 <br></br>
 <form id="delete_form" action="/delete" target="_self" method="post">
-        <input type="hidden" id="username" name="username" />
-        <input type="hidden" id="sgn_token" name="sgn_token" />
+        <input type="hidden" id="username_delete" name="username_delete" />
+        <input type="hidden" id="sgn_token_delete" name="sgn_token_delete" />
         <input type="hidden" id="analysis_folder_delete" name="analysis_folder_delete" />
 </form>
 <%# ----footer---- %>

@@ -56,6 +56,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #get list of analysis folders
     my $raw_analysis_folders = `ls /results/$username`;
     my @analysis_folders = split("\n", $raw_analysis_folders);
+    #remove any starting or trailing white spaces
+    foreach my $folder (@analysis_folders) {
+        $folder =~ s/^\s+|\s+$//g;
+    }
 
     #Make a hash and encode it into json format for analysis folders
     my %analyses_folders_of;
@@ -181,14 +185,25 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                             $beagle_error[$i] = 1;
                         }
                         else {
-                            #if no errors:
-                            #check when beagle complete file was last edited
-                            $fh="$path/beagle/beagle_complete";
-                            $epoch_timestamp=(stat($fh))[9];
-                            $timestamp=scalar localtime($epoch_timestamp);
-                            push @finish_times_array, $timestamp;
-                            $gbs_error[$i] = 0;
-                            $beagle_error[$i] = 0;
+                            @files = glob("$path/beagle/*beagle_complete");
+                            if (@files) {
+                                #if no errors and beagle complete exists:
+                                #check when beagle complete file was last edited
+                                $fh="$path/beagle/beagle_complete";
+                                $epoch_timestamp=(stat($fh))[9];
+                                $timestamp=scalar localtime($epoch_timestamp);
+                                @finish_times_array[$i] = $timestamp;
+                                $gbs_error[$i] = 0;
+                                $beagle_error[$i] = 0;
+                            }
+                            else {
+                                $fh="$path/beagle/beagle.out.vcf.gz";
+                                $epoch_timestamp=(stat($fh))[9];
+                                $timestamp=scalar localtime($epoch_timestamp);
+                                @finish_times_array[$i] = $timestamp;
+                                $gbs_error[$i] = 0;
+                                $beagle_error[$i] = 0;
+                            }
                         }
                     }
                 }
@@ -216,11 +231,23 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                     else {
                         #if no errors:
                         #check when beagle_complete was last edited
-                        if (glob("$path/beagle/beagle_complete*")) {
+                        @files = glob("$path/beagle/*beagle_complete");
+                        if (@files) {
+                            #if no errors and beagle complete exists:
+                            #check when beagle complete file was last edited
                             $fh="$path/beagle/beagle_complete";
                             $epoch_timestamp=(stat($fh))[9];
                             $timestamp=scalar localtime($epoch_timestamp);
-                            push @finish_times_array, $timestamp;
+                            @finish_times_array[$i] = $timestamp;
+                            $gbs_error[$i] = 0;
+                            $beagle_error[$i] = 0;
+                        }
+                        else {
+                            $fh="$path/beagle/beagle.out.vcf.gz";
+                            $epoch_timestamp=(stat($fh))[9];
+                            $timestamp=scalar localtime($epoch_timestamp);
+                            @finish_times_array[$i] = $timestamp;
+                            $gbs_error[$i] = 0;
                             $beagle_error[$i] = 0;
                         }
                     }
@@ -313,7 +340,6 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         my $download_link = "https://gbsappui.breedbase.org/results/".$username."/"."$folder"."/analysis_results.tar.gz";
         @download_array[$i] = $download_link;
     }
-    print STDERR Dumper @download_array;
     #https://gbsappui.breedbase.org/results/lockrow/MG4v/analysis_results.tar.gz
     #format download links
     my %download_hash;
@@ -473,13 +499,11 @@ sub submit:Path('/submit') : Args(0){
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
     my $username = $c->req->param('username');
-    print STDERR "Username is $username \n";
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
         make_path($data_dir);
     }
-    print STDERR "data dir is $data_dir \n";
     my $dirname_template = 'XXXX';
     my $projdir_object = File::Temp->newdir ($dirname_template,      DIR => $data_dir, CLEANUP => 0);
     my $projdir = $projdir_object->{DIRNAME};
@@ -541,7 +565,6 @@ sub analyze:Path('/analyze') : Args(0){
     my $run_beagle=$c->req->param('run_beagle');
     my $email_address=$c->req->param('email_address');
     my $analysis_name=$c->req->param('analysis_name');
-    print STDERR "analysis name is $analysis_name \n";
     my $run_gbsapp=$c->req->param('run_gbsapp');
 
     #remove extraneous spaces from email address
@@ -549,7 +572,6 @@ sub analyze:Path('/analyze') : Args(0){
 
     $projdir=$projdir."/";
     my $ui_log=$projdir."gbsappui_slurm_log";
-    print STDERR "Analysis name is $analysis_name \n";
     `cd $ui_log && bash /gbsappui/devel/submit_gbsappui.sh $projdir $run_beagle $email_address $gbsappui_domain_name $run_gbsapp $analysis_name` or die "Didn't run: $!\n";
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
@@ -603,12 +625,11 @@ sub cancel:Path('/cancel') : Args(0) {
 sub delete:Path('/delete') : Args(0) {
     my $self=shift;
     my $c=shift;
-    my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
     my $analysis_folder = $c->req->param('analysis_folder_delete');
-    my $sgn_token=$c->req->param('sgn_token');
-    my $username=$c->req->param('username');
+    my $sgn_token=$c->req->param('sgn_token_delete');
+    my $username=$c->req->param('username_delete');
     if ($analysis_folder) {
-        #delete results folder
+        # delete results folder
         `rm -rf /results/$username/$analysis_folder`;
         #delete zipped folder
         `rm -rf /gbsappui/root/results/$username/$analysis_folder`;
@@ -617,7 +638,7 @@ sub delete:Path('/delete') : Args(0) {
         print STDERR "No analysis folder provided";
     }
     $c->stash->{sgn_token}=$sgn_token;
-    $c->stash->{sgn_token}=$sgn_token;
+    $c->stash->{username}=$username;
     $c->stash->{template}="delete.mas";
 }
 
