@@ -338,7 +338,13 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     for (my $i = 0; $i < $analysis_folders; $i++) {
         my $folder = @analysis_folders[$i];
         my $download_link = "https://gbsappui.breedbase.org/results/".$username."/"."$folder"."/analysis_results.tar.gz";
-        @download_array[$i] = $download_link;
+        my $download_zipfile = "/gbsappui/root/results/$username/$folder/analysis_results.tar.gz";
+        if (-e $download_zipfile) {
+            @download_array[$i] = $download_link;
+        }
+        else {
+            @download_array[$i] = "N/A";
+        }
     }
     #https://gbsappui.breedbase.org/results/lockrow/MG4v/analysis_results.tar.gz
     #format download links

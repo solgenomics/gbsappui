@@ -171,7 +171,14 @@ function make_analysis_table(available_analyses) {
     //get analysis download links
     download_array = download[username];
     for (var i = 0; i < download_array.length; i++) {
-        download_array[i] = '<a href="' + download_array[i] + '">Download</a>';
+        if (finish_times_array[i] === "N/A") {
+            download_array[i] = "N/A";
+        } else if (download_array[i] === "N/A") {
+            download_array[i] = "N/A";
+        }
+        else {
+            download_array[i] = '<a href="' + download_array[i] + '">Download</a>';
+        }
     }
     // data = '<a href="view.php?id=' + data + '">' + row.id + '</a>';
 
@@ -358,7 +365,6 @@ $(document).ready(function(){
                 <th>Download</th>
                 <th>Delete</th>
             </tr>
-        </thead>
     </table>
     </div>
     </div>

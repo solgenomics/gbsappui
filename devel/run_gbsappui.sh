@@ -85,6 +85,8 @@ results_email () {
         mkdir /gbsappui/root/results/$nopath_projdir_username/
         mkdir /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/
     fi
+    rm -rf /results/$nopath_projdir_username/$nopath_projdir_analysis/samples/*fastq*
+    rm -rf /results/$nopath_projdir_username/$nopath_projdir_analysis/samples/*fasta*
     tar -zcvf /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/analysis_results.tar.gz *
     chmod 777 /gbsappui/root/results/$nopath_projdir_username/$nopath_projdir_analysis/analysis_results.tar.gz
     #email results link
