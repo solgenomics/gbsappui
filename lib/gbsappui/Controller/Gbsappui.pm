@@ -39,6 +39,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $sgn_token=$c->req->param('sgn_token');
     my $contact_email = $c->config->{contact_email};
     my $contact_name = $c->config->{contact_name};
+    my $refs_json = $c->config->{refgenomes_json};
     my $raw_file_list = `ls -R /scp_uploads/$username`;
     my @beagle_error;
     my @gbs_error;
@@ -355,6 +356,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{file_list_json}=$file_list_json;
+    $c->stash->{refs_json}=$refs_json;
     $c->stash->{contact_email}=$contact_email;
     $c->stash->{contact_name}=$contact_name;
     $c->stash->{username}=$username;

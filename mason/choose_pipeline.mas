@@ -4,6 +4,7 @@
 $username
 $sgn_token
 $file_list_json
+$refs_json
 $analysis_folders_json
 $analysis_list_json
 $analysis_types_json
@@ -32,6 +33,7 @@ var gbsappui_domain_name;
 var user_id;
 var username= '<% $username %>';
 var scp_files = JSON.parse('<% $file_list_json %>');
+var refs = JSON.parse('<% $refs_json %>')
 var contact_name = '<% $contact_name %>';
 var contact_email = '<% $contact_email %>';
 var scp_files_array;
@@ -133,6 +135,22 @@ function make_files_table(available_files) {
         table_rows[i] = [ file_names[i]];
     }
     $('#available_files_table').DataTable( {
+        data: table_rows
+    } );
+}
+
+function make_refs_table(available_refs) {
+    //set up analyses table
+    table_rows = [  ];
+    //get analyses submitted by your username
+    //get analyses names
+    // my_analyses_names = all_users_analyses[username];
+    file_names = available_refs;
+
+    for (var i = 0; i < file_names.length; i++) {
+        table_rows[i] = [ file_names[i]];
+    }
+    $('#available_refs_table').DataTable( {
         data: table_rows
     } );
 }
@@ -251,6 +269,8 @@ $(document).ready(function(){
         document.getElementById('sgn_token_impute').value = sgn_token;
         scp_files_array = scp_files[username];
         make_files_table(scp_files_array);
+        refs_array = refs[instance];
+        make_refs_table(refs_array);
         analyses_names_array = analyses_names[username];
         make_analysis_table(analyses_names_array);
     }
@@ -329,7 +349,7 @@ $(document).ready(function(){
   <br />
 
   <center>
-      <div id="available_files_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Available Files</h2>
+      <div id="available_files_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Available Samples</h2>
       </div>
     <div id="available_files_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-top:10px;">
     <%# ----Files available in scp folder---- %>
@@ -337,7 +357,27 @@ $(document).ready(function(){
     <table class="stripe" id="available_files_table">
         <thead>
             <tr>
-                <th> File Name </th>
+                <th> Sample Files </th>
+            </tr>
+        </thead>
+    </table>
+    </div>
+    </div>
+  </center>
+
+    <br />
+    <br />
+
+  <center>
+      <div id="available_refs_title" style="border-style:solid; background-color:black; border-color:black; width:225; text-align:center; position:relative; margin-bottom:10px "><h2 style="color:white">Available Reference Genomes</h2>
+      </div>
+    <div id="available_refs_table_wrapper" style="background-color:WhiteSmoke; padding-left:10; padding-right:10; color:black; position:relative; font-size:13; border-style:solid; border-color:black; margin-right:50px; margin-left:50px; margin-top:10px;">
+    <%# ----Files available in scp folder---- %>
+    <div class="well">
+    <table class="stripe" id="available_refs_table">
+        <thead>
+            <tr>
+                <th> Reference Genome Files </th>
             </tr>
         </thead>
     </table>
