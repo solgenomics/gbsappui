@@ -635,6 +635,24 @@ sub delete:Path('/delete') : Args(0) {
     my $sgn_token=$c->req->param('sgn_token_delete');
     my $username=$c->req->param('username_delete');
     if ($analysis_folder) {
+        #Check if analysis is still running and cancel gbs job if slurm file(s) exists in projdir
+        my $projdir = "/results/$username/$analysis_folder/";
+        if (glob("$projdir*slurm*")) {
+            my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
+            #cancel job number
+            if (index(`squeue`, $jobnum) != -1) {
+                print STDERR "Canceling Job Number(s) $jobnum \n";
+                `scancel $jobnum`;
+            }
+        }
+        #cancel full ui job
+        my $ui_log=$projdir."gbsappui_slurm_log";
+        my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
+        #cancel job number
+        if (index(`squeue`, $jobnum) != -1) {
+            print STDERR "Canceling Job Number(s) $jobnum \n";
+            `scancel $jobnum`;
+        }
         # delete results folder
         `rm -rf /results/$username/$analysis_folder`;
         #delete zipped folder

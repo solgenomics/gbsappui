@@ -363,7 +363,7 @@ $(document).ready(function(){
                 <th>Status</th>
                 <th>Time Completed</th>
                 <th>Download</th>
-                <th>Delete</th>
+                <th>Delete/Cancel</th>
             </tr>
     </table>
     </div>
