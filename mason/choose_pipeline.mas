@@ -179,8 +179,7 @@ function make_analysis_table(available_analyses) {
     console.log(finish_times_array);
     //convert finish_times_array from utc into local time
     for (var i = 0; i < finish_times_array.length; i++) {
-        if (finish_times_array[i] === "N/A") {
-        } else {
+        if (finish_times_array[i] != "N/A" && finish_times_array[i] != "Not Completed") {
             var utc_time = finish_times_array[i]+" UTC";
             finish_times_array[i] = new Date(utc_time);
         }
@@ -191,10 +190,9 @@ function make_analysis_table(available_analyses) {
     for (var i = 0; i < download_array.length; i++) {
         if (finish_times_array[i] === "N/A") {
             download_array[i] = "N/A";
-        } else if (download_array[i] === "N/A") {
-            download_array[i] = "N/A";
-        }
-        else {
+        } else if (finish_times_array[i] === "Not Completed") {
+            download_array[i] = "Not Completed";
+        } else {
             download_array[i] = '<a href="' + download_array[i] + '">Download</a>';
         }
     }

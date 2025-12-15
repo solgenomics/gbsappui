@@ -6,6 +6,7 @@ $projdir
 $email_address =>undef
 $run_gbsapp => undef
 $sgn_token
+$analysis_list_json
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -16,6 +17,7 @@ $sgn_token
 <script>
 //variables
 var domain;
+var duplicate = 0;
 var gbsappui_domain_name;
 var sgn_token = '<% $sgn_token %>';
 var user_id;
@@ -23,6 +25,8 @@ var username;
 var run_beagle = 1;
 var run_gbsapp = 0;
 var analysis_name;
+var analyses_names = JSON.parse('<% $analysis_list_json %>');
+var analyses_names_array;
 
 //functions
 function get_username(cookie){
@@ -47,6 +51,7 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
+                analyses_names_array = analyses_names[username];
             }
             else {
                 jQuery("#please_login").show();
@@ -104,7 +109,7 @@ function get_email_address(cookie){
 }
 
 function analysisChanged() {
-//update email variable when user writes in email form
+//update analysis variable when user writes in analysis name form
     analysis_input = JSON.stringify(document.getElementsByName("analysis_input")[0].value);
     analysis_name = analysis_input;
     document.getElementById('analysis_name').value = analysis_name;
@@ -135,14 +140,23 @@ function validateAnalysis(name) {
 function analysisCheck() {
 //give error if email format is not valid
     if(validateAnalysis(analysis_name)){
-        if(validateEmail(email_address)){
-            document.getElementById('analysis_form').submit();
+        for (var i=0; i < analyses_names_array.length; i++) {
+            var temp_name = analyses_names_array[i];
+            if (temp_name === analysis_name) {
+                duplicate = 1;
+            }
         }
-        else {
-            alert("Invalid email. Please check it and re-enter your email address.");
+        if (duplicate === 1) {
+            alert("This analysis name is already in use. Please use a different analysis name.");
+        } else {
+            if(validateEmail(email_address)){
+                document.getElementById('analysis_form').submit();
+            }
+            else {
+                alert("Invalid email. Please check it and re-enter your email address.");
+            }
         }
-    }
-    else {
+    } else {
         alert("Please include an analysis name.");
     }
 }
@@ -168,17 +182,16 @@ $( document ).ready(function(){
         jQuery("#please_login").hide();
         jQuery("#page_function").show();
         jQuery("#logout_button").show();
+        //get email from sgn token
+        get_email_address(sgn_token);
+        //set run beagle value
+        document.getElementById('run_beagle').value = run_beagle;
+        document.getElementById('run_gbsapp').value = 0;
     } else {
         jQuery("#please_login").show();
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
     }
-    //get email from sgn token
-    get_email_address(sgn_token);
-    //set run beagle value
-    document.getElementById('run_beagle').value = run_beagle;
-    document.getElementById('run_gbsapp').value = 0;
-    return run_beagle;
 });
 
 </script>

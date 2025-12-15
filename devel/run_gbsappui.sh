@@ -9,6 +9,9 @@ run_gbsapp=$5
 analysis_name="$6"
 # run_filtering=$7
 
+#other variables
+beagle_error=0
+
 #Fill out analysis information into analysis_info.txt
 cd ${projdir}
 sed -i -e '$a\' analysis_info.txt
@@ -47,7 +50,7 @@ initial_email () {
     #formatting email
     body=$1
     #send email
-    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Analysis Begun" "$body" "" ""
+    /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Analysis Started" "$body" "" ""
 }
 
 error_email_gbsapp () {
@@ -122,7 +125,6 @@ beagle () {
     cd $projdir
     echo "Running beagle."
     echo "Project directory is $projdir ."
-    beagle_error=0
     # if [ -d ${projdir}beagle ]; then
     #     echo "Already ran beagle"
     # else

@@ -46,6 +46,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $epoch_timestamp;
     my $fh;
     my $timestamp;
+    my @beagle_files;
 
     #retrieving list of scp files available for username
     my @file_list = split("\n", $raw_file_list);
@@ -77,31 +78,36 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         my $analysis_name_string;
         my $snp_calling_string;
         my $imputation_string;
-        my $file_path = "/results/$username/$folder/analysis_info.txt";
-        my $info_file;
-        open $info_file, '<', $file_path or die "Could not open file '$info_file'";
-        while (my $line = <$info_file>) {
-            chomp $line;
-            # print STDERR "Line is $line \n";
-            if ($line =~ /^Analysis Name:/) {
-                $analysis_name_string = $line;
-                $analysis_name_string =~ s/Analysis Name: //;
-                chomp $analysis_name_string;
-                # print STDERR "Analysis name string is $analysis_name_string \n";
-                push(@analysis_name_array, $analysis_name_string);
+        my @text_file_exists = glob("/results/$username/$folder/analysis_info*.txt");
+        if (@text_file_exists) {
+            my $file_path = "/results/$username/$folder/analysis_info.txt";
+            my $info_file;
+            open $info_file, '<', $file_path or die "Could not open file '$info_file'";
+            while (my $line = <$info_file>) {
+                chomp $line;
+                if ($line =~ /^Analysis Name:/) {
+                    $analysis_name_string = $line;
+                    $analysis_name_string =~ s/Analysis Name: //;
+                    chomp $analysis_name_string;
+                    push(@analysis_name_array, $analysis_name_string);
+                }
+                if ($line =~ /^SNP Calling:/) {
+                    $snp_calling_string = $line;
+                    $snp_calling_string =~ s/SNP Calling: //;
+                    chomp $snp_calling_string;
+                    push(@snp_calling_array, $snp_calling_string);
+                }
+                if ($line =~ /^Imputation:/) {
+                    $imputation_string = $line;
+                    $imputation_string =~ s/Imputation: //;
+                    chomp $imputation_string;
+                    push(@imputation_array, $imputation_string);
+                }
             }
-            if ($line =~ /^SNP Calling:/) {
-                $snp_calling_string = $line;
-                $snp_calling_string =~ s/SNP Calling: //;
-                chomp $snp_calling_string;
-                push(@snp_calling_array, $snp_calling_string);
-            }
-            if ($line =~ /^Imputation:/) {
-                $imputation_string = $line;
-                $imputation_string =~ s/Imputation: //;
-                chomp $imputation_string;
-                push(@imputation_array, $imputation_string);
-            }
+        } else { #if there's no analysis info text file
+            push(@analysis_name_array, "Analysis name missing");
+            push(@snp_calling_array, "SNP calling info missing");
+            push(@imputation_array, "Imputation info missing");
         }
     }
     my $snp_calling_array = @snp_calling_array;
@@ -162,172 +168,273 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     my $start_times_json= encode_json \%start_times_hash;
 
     #Get completion times for analyses
+    my @status_array;
     my @finish_times_array;
+    @status_array[0] = 0;
+
+
+    #calculate analysis status and finish times
     for (my $i = 0; $i < $analysis_folders; $i++) {
-        #If analysis type is Calling/Filtering/Imputation
+        @status_array[$i] = "";
         my $folder = @analysis_folders[$i];
         my $path = "/results/$username/$folder";
-        my @files;
-        if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
-            #check for vcf file in calling folder
-            @files = glob("$path/snpcall/*x.vcf.gz");
-            if (@files) {
-            #check if imputation completed
-            #first check if beagle output file exists
-                @files = glob("$path/beagle/*.out.vcf.gz");
-                if (@files) {
-                    #then check if there were any errors during imputation by reading the beagle log file
-                    my $beagle_log;
-                    my $beagle_log_path = "$path/beagle/beagle_log.out";
-                    open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
-                    while (my $line = <$beagle_log>) {
-                        if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+        my $ui_log="$path/gbsappui_slurm_log";
+        my @glob_slurm=glob("$ui_log/slurm*");
+        my $slurm_command = `squeue -j --noheader`;
+        $slurm_command = "$slurm_command";
+        my @slurm_command_split = split /\s+/, $slurm_command;
+        my $slurm_command_split_length = scalar @slurm_command_split;
+        my $jobnum;
+        if (@glob_slurm) {
+            my $slurm_filename=`cd $ui_log; ls slurm*`;
+            my @filename_array = split /[.-]/, $slurm_filename;
+            $jobnum = @filename_array[1];
+            #remove any starting or trailing white spaces
+            $jobnum =~ s/^\s+|\s+$//g;
+            my $analysis_name_temp = @analysis_name_array[$i];
+        }
+        if ($jobnum) { #Check if job is running
+            my @jobnums_running;
+            my $jobnums_running_length = scalar @jobnums_running;
+            for (my $split_num = 1; $split_num + 7 < $slurm_command_split_length; $split_num+=8) { #make array of job numbers currently running
+                push @jobnums_running, $slurm_command_split[$split_num];
+            }
+            if ( grep(/^$jobnum$/, @jobnums_running)) {
+                @status_array[$i] = "Running";
+                @finish_times_array[$i] = "Not Completed";
+            }
+            #if job isn't still running
+            if (@status_array[$i] ne "Running") { #if the analysis is not currently running
+                #If analysis type is Calling/Filtering/Imputation
+                if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
+                    my @gbs_files;
+                    #check for vcf file in calling folder
+                    @gbs_files = glob("$path/snpcall/*x.vcf.gz");
+                    if (@gbs_files) {
+                        #set gbs error value to 0 (no error)
+                        $gbs_error[$i] = 0;
+                        #check if imputation completed
+                        #then check if there were any errors during imputation by reading the beagle log file
+                        @beagle_files = glob("$path/beagle/beagle.out.vcf*gz");
+                        if (@beagle_files) { #first check if beagle output file exists
+                            my $beagle_log;
+                            my @beagle_log_path = glob("$path/beagle/beagle_log*.out");
+                            if (@beagle_log_path) {#if there is a log file
+                                my $beagle_log_path = "$path/beagle/beagle_log.out";
+                                open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
+                                while (my $line = <$beagle_log>) {
+                                    if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+                                        @finish_times_array[$i] = "Not Completed";
+                                        $beagle_error[$i] = 1;
+                                    } else {
+                                        $beagle_error[$i] = 0;
+                                        my @beagle_complete_files = glob("$path/beagle/beagle_complete*");
+                                        if (@beagle_complete_files) {
+                                            #if no errors and beagle complete file exists:
+                                            #check when beagle complete file was last edited
+                                            $fh="$path/beagle/beagle_complete";
+                                            $epoch_timestamp=(stat($fh))[9];
+                                            $timestamp=scalar localtime($epoch_timestamp);
+                                            @finish_times_array[$i] = $timestamp;
+                                        } else {
+                                            $fh="$path/beagle/beagle.out.vcf.gz";
+                                            $epoch_timestamp=(stat($fh))[9];
+                                            $timestamp=scalar localtime($epoch_timestamp);
+                                            @finish_times_array[$i] = $timestamp;
+                                        }
+                                    }
+                                }
+                            } else { #if there's no log file
+                                my @beagle_complete_files = glob("$path/beagle/beagle_complete*");
+                                if (@beagle_complete_files) {
+                                    #if no errors and beagle complete file exists:
+                                    #check when beagle complete file was last edited
+                                    $fh="$path/beagle/beagle_complete";
+                                    $epoch_timestamp=(stat($fh))[9];
+                                    $timestamp=scalar localtime($epoch_timestamp);
+                                    @finish_times_array[$i] = $timestamp;
+                                    $beagle_error[$i] = "N/A";
+                                } else {
+                                    $fh="$path/beagle/beagle.out.vcf.gz";
+                                    $epoch_timestamp=(stat($fh))[9];
+                                    $timestamp=scalar localtime($epoch_timestamp);
+                                    @finish_times_array[$i] = $timestamp;
+                                    $beagle_error[$i] = "N/A";
+                                }
+                            }
+                        } else { #if there are no beagle result files
                             @finish_times_array[$i] = "N/A";
-                            $beagle_error[$i] = 1;
+                            $beagle_error[$i] = "N/A";
                         }
-                        else {
-                            @files = glob("$path/beagle/*beagle_complete");
-                            if (@files) {
-                                #if no errors and beagle complete exists:
+                    } else { #If there's no calling result fill in the column with N/A and set gbs error to 1 unless the analysis was cancelled
+                        my @glob_slurm=glob("$ui_log/slurm*");
+                        if (@glob_slurm) {
+                            $gbs_error[$i] = 1;
+                            $beagle_error[$i] = 0;
+                            @finish_times_array[$i] = "Not Completed";
+                            my $ui_log;
+                            my $ui_log_path = @glob_slurm[0];
+                            open $ui_log, '<', $ui_log_path or die "Could not open file '$ui_log_path'";
+                            while (my $line = <$ui_log>) {
+                                #check if the analysis was cancelled
+                                if ($line =~ /CANCELLED/ ) {
+                                    @finish_times_array[$i] = "Not Completed";
+                                    @status_array[$i] = "Cancelled";
+                                    $gbs_error[$i] = 0;
+                                }
+                            }
+                        }
+                    }
+                } elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
+                    $gbs_error[$i] = 0;
+                    #set gbs error value to 0 (no error)
+                    #check if imputation completed
+                    #then check if there were any errors during imputation by reading the beagle log file
+                    my @beagle_files = glob("$path/beagle/beagle.out.vcf*gz");
+                    if (@beagle_files) { #first check if beagle output file exists
+                        my $beagle_log;
+                        my @beagle_log_path = glob("$path/beagle/beagle_log*.out");
+                        if (@beagle_log_path) {#if there is a log file
+                            my $beagle_log_path = "$path/beagle/beagle_log.out";
+                            open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
+                            while (my $line = <$beagle_log>) {
+                                if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+                                    @finish_times_array[$i] = "N/A";
+                                    $beagle_error[$i] = 1;
+                                } else {
+                                    $beagle_error[$i] = 0;
+                                    my @beagle_complete_files = glob("$path/beagle/beagle_complete*");
+                                    if (@beagle_complete_files) {
+                                        #if no errors and beagle complete file exists:
+                                        #check when beagle complete file was last edited
+                                        $fh="$path/beagle/beagle_complete";
+                                        $epoch_timestamp=(stat($fh))[9];
+                                        $timestamp=scalar localtime($epoch_timestamp);
+                                        @finish_times_array[$i] = $timestamp;
+                                    } else {
+                                        $fh="$path/beagle/beagle.out.vcf.gz";
+                                        $epoch_timestamp=(stat($fh))[9];
+                                        $timestamp=scalar localtime($epoch_timestamp);
+                                        @finish_times_array[$i] = $timestamp;
+                                    }
+                                }
+                            }
+                        } else { #if there's no beagle log file
+                            my @beagle_complete_files = glob("$path/beagle/beagle_complete*");
+                            if (@beagle_complete_files) {
+                                #if no errors and beagle complete file exists:
                                 #check when beagle complete file was last edited
                                 $fh="$path/beagle/beagle_complete";
                                 $epoch_timestamp=(stat($fh))[9];
                                 $timestamp=scalar localtime($epoch_timestamp);
                                 @finish_times_array[$i] = $timestamp;
-                                $gbs_error[$i] = 0;
-                                $beagle_error[$i] = 0;
-                            }
-                            else {
+                                $beagle_error[$i] = "N/A";
+                            } else {
                                 $fh="$path/beagle/beagle.out.vcf.gz";
                                 $epoch_timestamp=(stat($fh))[9];
                                 $timestamp=scalar localtime($epoch_timestamp);
                                 @finish_times_array[$i] = $timestamp;
-                                $gbs_error[$i] = 0;
-                                $beagle_error[$i] = 0;
+                                $beagle_error[$i] = "N/A";
                             }
                         }
-                    }
-                }
-                else {
-                    @finish_times_array[$i] = "N/A";
-                }
-            }
-            #If there's no calling result fill in the column with N/A
-            else {
-                @finish_times_array[$i] = "N/A";
-            }
-        }
-        elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
-            @files = glob("$path/beagle/*.out.vcf.gz");
-            if (@files) {
-                #then check if there were any errors during imputation by reading the beagle log file
-                my $beagle_log;
-                my $beagle_log_path = "$path/beagle/beagle_log.out";
-                open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
-                while (my $line = <$beagle_log>) {
-                    if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
+                    } else { #if there are no beagle result files
+                        $beagle_error[$i] = "N/A";
                         @finish_times_array[$i] = "N/A";
-                        $beagle_error[$i] = 1;
                     }
-                    else {
-                        #if no errors:
-                        #check when beagle_complete was last edited
-                        @files = glob("$path/beagle/*beagle_complete");
-                        if (@files) {
-                            #if no errors and beagle complete exists:
-                            #check when beagle complete file was last edited
-                            $fh="$path/beagle/beagle_complete";
+                }
+                elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
+                    $beagle_error[$i] = 0;
+                    my @files = glob("$path/snpcall/*x.vcf.gz");
+                    #check for vcf file in calling folder
+                    if (@files) {
+                        $gbs_error[$i] = 0;
+                        $fh="$path/Analysis_Complete*";
+                        my @analysis_complete = glob($fh);
+                        if (@analysis_complete) {
+                            $fh="$path/Analysis_Complete";
                             $epoch_timestamp=(stat($fh))[9];
                             $timestamp=scalar localtime($epoch_timestamp);
-                            @finish_times_array[$i] = $timestamp;
-                            $gbs_error[$i] = 0;
-                            $beagle_error[$i] = 0;
+                            push @finish_times_array, $timestamp;
                         }
                         else {
-                            $fh="$path/beagle/beagle.out.vcf.gz";
-                            $epoch_timestamp=(stat($fh))[9];
-                            $timestamp=scalar localtime($epoch_timestamp);
-                            @finish_times_array[$i] = $timestamp;
-                            $gbs_error[$i] = 0;
-                            $beagle_error[$i] = 0;
+                            my @glob=glob("$path/snpcall/*x.vcf.gz");
+                            $fh=@glob[0];
+                            my $epoch_timestamp=(stat($fh))[9];
+                            my $timestamp=scalar localtime($epoch_timestamp);
+                            push @finish_times_array, $timestamp;
                         }
+                    }
+                    else { #If there are no calling results fill in the column with Not Completed and set gbs error to 1 unless the analysis was cancelled
+                        my @glob_slurm=glob("$ui_log/slurm*");
+                        if (@glob_slurm) {#If there's a slurm log
+                            $gbs_error[$i] = 1;
+                            $beagle_error[$i] = 0;
+                            @finish_times_array[$i] = "Not Completed";
+                            my $ui_log;
+                            my $ui_log_path = @glob_slurm[0];
+                            open $ui_log, '<', $ui_log_path or die "Could not open file '$ui_log_path'";
+                            while (my $line = <$ui_log>) {
+                                #check if the analysis was cancelled and if so change error value
+                                if ($line =~ /CANCELLED/ ) {
+                                    @finish_times_array[$i] = "Not Completed";
+                                    @status_array[$i] = "Cancelled";
+                                    $beagle_error[$i] = 0;
+                                    $gbs_error[$i] = 0;
+                                }
+                            }
+                        } else { #else if there's no slurm log
+                            $gbs_error[$i] = 1;
+                            $beagle_error[$i] = 0;
+                            @status_array[$i] = "Not Run";
+                            @finish_times_array[$i] = "Not Completed";
+                        }
+                    }
+                } else { #If none of the above combinations are true
+                    @finish_times_array[$i] = "N/A";
+                    $gbs_error[$i] = "N/A";
+                    $beagle_error[$i] = "N/A";
+                }
+                if (@finish_times_array[$i]=~/[0-9]:[0-9]/) {
+                    @status_array[$i] = "Completed";
+                }
+                elsif ($gbs_error[$i] eq 1) {
+                    @status_array[$i] = "Calling/Filtering Error";
+                    @finish_times_array[$i] = "Not Completed";
+                }
+                elsif ($beagle_error[$i] eq 1) {
+                    @status_array[$i] = "Imputation Error";
+                    @finish_times_array[$i] = "Not Completed";
+                } else { #If the analysis did not complete but there are no errors
+                    my @slurm_out_glob = glob("$ui_log/slurm*.out");
+                    if (@slurm_out_glob) {
+                        my $file_path = $ui_log."/slurm-$jobnum".".out";
+                        my $slurm_file;
+                        open $slurm_file, '<', $file_path or die "Could not open file '$slurm_file'";
+                        @status_array[$i] = "N/A";
+                        while (my $line = <$slurm_file>) {
+                            #check if the analysis was cancelled and if so change error value
+                            if ($line =~ /slurmstepd/ && $line =~ /JOB $jobnum/ && $line =~ /CANCELLED/) {
+                                @status_array[$i] = "Canceled";
+                                @finish_times_array[$i] = "Not Completed";
+                            }
+                        }
+                    } else { #If there's no slurm.out file
+                        @status_array[$i] = "Job did not run";
+                        @finish_times_array[$i] = "Not Completed";
                     }
                 }
             }
-            else {
-                @finish_times_array[$i] = "N/A";
-            }
-        }
-        elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
-            @files = glob("$path/snpcall/*x.vcf.gz");
-            #check for vcf file in calling folder
-            if (@files) {
-                $fh="$path/Analysis_Complete*";
-                my @analysis_complete = glob($fh);
-                if (@analysis_complete) {
-                    $fh="$path/Analysis_Complete";
-                    $epoch_timestamp=(stat($fh))[9];
-                    $timestamp=scalar localtime($epoch_timestamp);
-                    push @finish_times_array, $timestamp;
-                    $gbs_error[$i] = 0;
-                }
-                else {
-                    $fh=glob("$path/snpcall/*x.vcf.gz");
-                    my $epoch_timestamp=(stat($fh))[9];
-                    my $timestamp=scalar localtime($epoch_timestamp);
-                    push @finish_times_array, $timestamp;
-                    $gbs_error[$i] = 0;
-                }
-            }
-            else {
-                @finish_times_array[$i] = "N/A";
-            }
-        }
-        #If none of the above are true
-        else {
-            @finish_times_array[$i] = "N/A";
+        } else { #If there's no job number
+            @status_array[$i] = "Job did not run";
+            @finish_times_array[$i] = "Not Completed";
         }
     }
+
     #format finish times
     my %finish_times_hash;
     $finish_times_hash{ $username } = \@finish_times_array;
     my $finish_times_json= encode_json \%finish_times_hash;
 
-    #calculate analysis status
-    my @status_array;
-    for (my $i = 0; $i < $analysis_folders; $i++) {
-        my $folder = @analysis_folders[$i];
-        my $path = "/results/$username/$folder";
-        my $ui_log="$path/gbsappui_slurm_log/";
-        my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
-        if (@finish_times_array[$i]=~/[0-9]:[0-9]/) {
-            @status_array[$i] = "Completed";
-        }
-        elsif ($gbs_error[$i] eq 1) {
-            @status_array[$i] = "Calling/Filtering Error";
-        }
-        elsif ($beagle_error[$i] eq 1) {
-            @status_array[$i] = "Imputation Error"
-        }
-        elsif (`squeue -j $jobnum -h --noheader`=~/$jobnum/) {
-            @status_array[$i] = "Running";
-        }
-        else {
-            #remove any starting or trailing white spaces
-            $jobnum =~ s/^\s+|\s+$//g;
-            my $file_path = $ui_log."slurm-$jobnum".".out";
-            my $slurm_file;
-            open $slurm_file, '<', $file_path or die "Could not open file '$slurm_file'";
-            while (my $line = <$slurm_file>) {
-                if ($line =~ /slurmstepd/ && $line =~ /JOB $jobnum/ && $line =~ /CANCELLED/) {
-                    @status_array[$i] = "Canceled";
-                }
-                else {
-                    @status_array[$i] = "N/A";
-                }
-            }
-        }
-    }
     #format analysis status
     my %status_hash;
     $status_hash{ $username } = \@status_array;
@@ -433,7 +540,45 @@ sub impute:Path('/impute'): Args(0){
     $c->response->headers->header( "Access-Control-Allow-Origin" => '*' );
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
+    my $username=$c->req->param('username');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
+    #get list of analysis folders
+    my $raw_analysis_folders = `ls /results/$username`;
+    my @analysis_folders = split("\n", $raw_analysis_folders);
+    #remove any starting or trailing white spaces
+    foreach my $folder (@analysis_folders) {
+        $folder =~ s/^\s+|\s+$//g;
+    }
+
+    #for each analysis
+    #grab analysis name from text file
+    my @analysis_name_array;
+    foreach my $folder (@analysis_folders) {
+        my $analysis_name_string;
+        my @text_file_exists = glob("/results/$username/$folder/analysis_info*.txt");
+        if (@text_file_exists) {
+            my $file_path = "/results/$username/$folder/analysis_info.txt";
+            my $info_file;
+            open $info_file, '<', $file_path or die "Could not open file '$info_file'";
+            while (my $line = <$info_file>) {
+                chomp $line;
+                if ($line =~ /^Analysis Name:/) {
+                    $analysis_name_string = $line;
+                    $analysis_name_string =~ s/Analysis Name: //;
+                    chomp $analysis_name_string;
+                    push(@analysis_name_array, $analysis_name_string);
+                }
+            }
+        }
+        else {
+            push(@analysis_name_array, "Analysis Name Missing");
+        }
+    }
+
+    #Make a hash and encode it into json format for analysis names
+    my %analyses_names_of;
+    $analyses_names_of{ $username } = \@analysis_name_array;
+    my $analysis_list_json = encode_json \%analyses_names_of;
 
     #make email and analysis variables
     my $email_address = "noemail";
@@ -443,7 +588,6 @@ sub impute:Path('/impute'): Args(0){
     my $run_beagle = 1;
 
     #setup data directory and project directory
-    my $username = $c->req->param('username');
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -486,6 +630,7 @@ sub impute:Path('/impute'): Args(0){
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{username} = $username;
+    $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{template} = "impute.mas";
 }
 
@@ -603,18 +748,23 @@ sub cancel:Path('/cancel') : Args(0) {
 
     #cancellation
     #cancel gbs job if slurm file(s) exists in projdir
-    if (glob("$projdir*slurm*")) {
-        my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
+    my @slurm_glob = glob("$projdir*slurm*");
+    my $jobnum;
+    my $ui_log=$projdir."gbsappui_slurm_log";
+    if (@slurm_glob) {
+        #pull out the job number from the slurm.out filename
+        my $slurm_filename=`cd $ui_log; ls slurm*`;
+        my @filename_array = split /[.-]/, $slurm_filename;
+        $jobnum = @filename_array[1];
+        #remove any starting or trailing white spaces
+        $jobnum =~ s/^\s+|\s+$//g;
         #cancel job number
         print STDERR "Canceling Job Number(s) $jobnum \n";
         `scancel $jobnum`;
     }
 
     #cancel full ui job
-    my $ui_log=$projdir."gbsappui_slurm_log";
-    my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
-    #cancel job number
-    print STDERR "Canceling Job Number(s) $jobnum \n";
+    print STDERR "Canceling Job Number $jobnum \n";
     `scancel $jobnum`;
 
     #eventually prompt: discard analysis or would you like to return to it later?
@@ -639,21 +789,36 @@ sub delete:Path('/delete') : Args(0) {
     if ($analysis_folder) {
         #Check if analysis is still running and cancel gbs job if slurm file(s) exists in projdir
         my $projdir = "/results/$username/$analysis_folder/";
-        if (glob("$projdir*slurm*")) {
-            my $jobnum=`cd $projdir; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
-            #cancel job number
-            if (index(`squeue`, $jobnum) != -1) {
-                print STDERR "Canceling Job Number(s) $jobnum \n";
-                `scancel $jobnum`;
+        my $jobnum_gbs;
+        my $jobnum_full_ui;
+        my @slurm_glob = glob("$projdir*slurm*");
+        #cancel gbs job
+        if (@slurm_glob) {
+            my $slurm_filename=`cd $projdir; ls *slurm*.out`;
+            my @filename_array = split /[.-]/, $slurm_filename;
+            $jobnum_gbs = @filename_array[1];
+            #remove any starting or trailing white spaces
+            $jobnum_gbs =~ s/^\s+|\s+$//g;
+            #cancel job number as long as it's running
+            if (index(`squeue`, $jobnum_gbs) != -1) {
+                print STDERR "Canceling Job Number $jobnum_gbs \n";
+                `scancel $jobnum_gbs`;
             }
         }
         #cancel full ui job
         my $ui_log=$projdir."gbsappui_slurm_log";
-        my $jobnum=`cd $ui_log; ls slurm* | awk '{n=split(\$0,a,"-");print a[2]}' | awk 'BEGIN { ORS=" "};{n=split(\$0,a,".");print a[1]}'`;
-        #cancel job number
-        if (index(`squeue`, $jobnum) != -1) {
-            print STDERR "Canceling Job Number(s) $jobnum \n";
-            `scancel $jobnum`;
+        my @slurm_glob_ui = glob("$ui_log*slurm*.out");
+        if (@slurm_glob_ui) {
+            my $slurm_filename=`cd $ui_log; ls *slurm*.out`;
+            my @filename_array = split /[.-]/, $slurm_filename;
+            $jobnum_full_ui = @filename_array[1];
+            #remove any starting or trailing white spaces
+            $jobnum_full_ui =~ s/^\s+|\s+$//g;
+            #cancel job number as long as it's running
+            if (index(`squeue`, $jobnum_full_ui) != -1) {
+                print STDERR "Canceling Job Number $jobnum_full_ui \n";
+                `scancel $jobnum_full_ui`;
+            }
         }
         # delete results folder
         `rm -rf /results/$username/$analysis_folder`;
