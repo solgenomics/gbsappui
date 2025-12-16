@@ -27,6 +27,7 @@ var run_gbsapp = 0;
 var analysis_name;
 var analyses_names = JSON.parse('<% $analysis_list_json %>');
 var analyses_names_array;
+var email_address;
 
 //functions
 function get_username(cookie){
@@ -110,10 +111,9 @@ function get_email_address(cookie){
 
 function analysisChanged() {
 //update analysis variable when user writes in analysis name form
-    analysis_input = JSON.stringify(document.getElementsByName("analysis_input")[0].value);
+    analysis_input = document.getElementsByName("analysis_input")[0].value;
     analysis_name = analysis_input;
     document.getElementById('analysis_name').value = analysis_name;
-    console.log(analysis_name);
     return analysis_name;
 }
 
@@ -127,36 +127,30 @@ function emailChanged() {
 
 function validateEmail(email) {
 //make sure email is in an email-like format
+    email = JSON.stringify(email);
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
 
 function validateAnalysis(name) {
 //make sure an analysis name is included
+    name = JSON.stringify(name);
     var re = /\S/;
     return re.test(name);
 }
 
 function analysisCheck() {
-//give error if email format is not valid
-    if(validateAnalysis(analysis_name)){
-        for (var i=0; i < analyses_names_array.length; i++) {
-            var temp_name = analyses_names_array[i];
-            if (temp_name === analysis_name) {
-                duplicate = 1;
-            }
-        }
-        if (duplicate === 1) {
+    if(validateAnalysis(analysis_name)) {
+        if (analyses_names_array.includes(analysis_name)) { //if analysis name is a duplicate
             alert("This analysis name is already in use. Please use a different analysis name.");
         } else {
             if(validateEmail(email_address)){
                 document.getElementById('analysis_form').submit();
-            }
-            else {
+            } else { //if email format is not valid
                 alert("Invalid email. Please check it and re-enter your email address.");
             }
         }
-    } else {
+    } else { //if there's no analysis name
         alert("Please include an analysis name.");
     }
 }
@@ -192,6 +186,8 @@ $( document ).ready(function(){
         jQuery("#page_function").hide();
         jQuery("#logout_button").hide();
     }
+    //get email from sgn token
+    // get_email_address(sgn_token);
 });
 
 </script>

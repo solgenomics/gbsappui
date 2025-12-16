@@ -8,6 +8,7 @@ $run_gbsapp => undef
 $email_address =>undef
 $analysis_name =>undef
 $sgn_token
+$analysis_list_json
 </%args>
 
 <head><script type='text/javascript' src="/static/js/node_modules/jquery/dist/jquery.js"></script></head>
@@ -18,12 +19,17 @@ $sgn_token
 <script>
 //variables
 var domain;
+var duplicate = 0;
 var gbsappui_domain_name;
 var sgn_token = '<% $sgn_token %>';
 var user_id;
 var username;
+var run_beagle;
 var run_gbsapp = 1;
 var analysis_name;
+var analyses_names = JSON.parse('<% $analysis_list_json %>');
+var analyses_names_array;
+var email_address;
 
 //functions
 function get_username(cookie){
@@ -48,6 +54,7 @@ function get_username(cookie){
                 jQuery("#please_login").hide();
                 jQuery("#page_function").show();
                 jQuery("#logout_button").show();
+                analyses_names_array = analyses_names[username];
             }
             else {
                 jQuery("#please_login").show();
@@ -106,7 +113,7 @@ function get_email_address(cookie){
 
 function analysisChanged() {
 //update email variable when user writes in email form
-    analysis_input = JSON.stringify(document.getElementsByName("analysis_input")[0].value);
+    analysis_input = document.getElementsByName("analysis_input")[0].value;
     analysis_name = analysis_input;
     document.getElementById('analysis_name').value = analysis_name;
     return analysis_name;
@@ -137,29 +144,30 @@ function beagleCheck() {
 
 function validateEmail(email) {
 //make sure email is in an email-like format
+    email = JSON.stringify(email);
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
 
 function validateAnalysis(name) {
 //make sure an analysis name is included
+    name = JSON.stringify(name);
     var re = /\S/;
-    //if not duplicated
     return re.test(name);
 }
 
 function analysisCheck() {
-//give error if email format is not valid
-    if(validateAnalysis(analysis_name)){
-        if(validateEmail(email_address)){
-            document.getElementById('analysis_form').submit();
+    if(validateAnalysis(analysis_name)) {
+        if (analyses_names_array.includes(analysis_name)) { //if analysis name is a duplicate
+            alert("This analysis name is already in use. Please use a different analysis name.");
+        } else {
+            if(validateEmail(email_address)){
+                document.getElementById('analysis_form').submit();
+            } else { //if email format is not valid
+                alert("Invalid email. Please check it and re-enter your email address.");
+            }
         }
-        else {
-
-            alert("Invalid email. Please check it and re-enter your email address.");
-        }
-    }
-    else {
+    } else { //if there's no analysis name
         alert("Please include an analysis name.");
     }
 }

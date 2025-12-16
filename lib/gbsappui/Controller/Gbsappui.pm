@@ -176,7 +176,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #calculate analysis status and finish times
     for (my $i = 0; $i < $analysis_folders; $i++) {
         @status_array[$i] = "";
-        my $folder = @analysis_folders[$i];
+        my $folder = $analysis_folders[$i];
         my $path = "/results/$username/$folder";
         my $ui_log="$path/gbsappui_slurm_log";
         my @glob_slurm=glob("$ui_log/slurm*");
@@ -188,10 +188,10 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
         if (@glob_slurm) {
             my $slurm_filename=`cd $ui_log; ls slurm*`;
             my @filename_array = split /[.-]/, $slurm_filename;
-            $jobnum = @filename_array[1];
+            $jobnum = $filename_array[1];
             #remove any starting or trailing white spaces
             $jobnum =~ s/^\s+|\s+$//g;
-            my $analysis_name_temp = @analysis_name_array[$i];
+            my $analysis_name_temp = $analysis_name_array[$i];
         }
         if ($jobnum) { #Check if job is running
             my @jobnums_running;
@@ -204,9 +204,9 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                 @finish_times_array[$i] = "Not Completed";
             }
             #if job isn't still running
-            if (@status_array[$i] ne "Running") { #if the analysis is not currently running
+            if ($status_array[$i] ne "Running") { #if the analysis is not currently running
                 #If analysis type is Calling/Filtering/Imputation
-                if (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "yes") {
+                if ($snp_calling_array[$i] eq "yes" && $imputation_array[$i] eq "yes") {
                     my @gbs_files;
                     #check for vcf file in calling folder
                     @gbs_files = glob("$path/snpcall/*x.vcf.gz");
@@ -271,21 +271,21 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         if (@glob_slurm) {
                             $gbs_error[$i] = 1;
                             $beagle_error[$i] = 0;
-                            @finish_times_array[$i] = "Not Completed";
+                            $finish_times_array[$i] = "Not Completed";
                             my $ui_log;
-                            my $ui_log_path = @glob_slurm[0];
+                            my $ui_log_path = $glob_slurm[0];
                             open $ui_log, '<', $ui_log_path or die "Could not open file '$ui_log_path'";
                             while (my $line = <$ui_log>) {
                                 #check if the analysis was cancelled
                                 if ($line =~ /CANCELLED/ ) {
-                                    @finish_times_array[$i] = "Not Completed";
-                                    @status_array[$i] = "Cancelled";
+                                    $finish_times_array[$i] = "Not Completed";
+                                    $status_array[$i] = "Cancelled";
                                     $gbs_error[$i] = 0;
                                 }
                             }
                         }
                     }
-                } elsif (@snp_calling_array[$i] eq "no" && @imputation_array[$i] eq "yes") {
+                } elsif ($snp_calling_array[$i] eq "no" && $imputation_array[$i] eq "yes") {
                     $gbs_error[$i] = 0;
                     #set gbs error value to 0 (no error)
                     #check if imputation completed
@@ -299,7 +299,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                             open $beagle_log, '<', $beagle_log_path or die "Could not open file '$beagle_log_path'";
                             while (my $line = <$beagle_log>) {
                                 if ($line =~ /ERROR/ | $line =~ /Exception/ | $line =~ /Illegal/ | $line =~ /Terminating/ ) {
-                                    @finish_times_array[$i] = "N/A";
+                                    $finish_times_array[$i] = "N/A";
                                     $beagle_error[$i] = 1;
                                 } else {
                                     $beagle_error[$i] = 0;
@@ -310,12 +310,12 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                                         $fh="$path/beagle/beagle_complete";
                                         $epoch_timestamp=(stat($fh))[9];
                                         $timestamp=scalar localtime($epoch_timestamp);
-                                        @finish_times_array[$i] = $timestamp;
+                                        $finish_times_array[$i] = $timestamp;
                                     } else {
                                         $fh="$path/beagle/beagle.out.vcf.gz";
                                         $epoch_timestamp=(stat($fh))[9];
                                         $timestamp=scalar localtime($epoch_timestamp);
-                                        @finish_times_array[$i] = $timestamp;
+                                        $finish_times_array[$i] = $timestamp;
                                     }
                                 }
                             }
@@ -327,22 +327,22 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                                 $fh="$path/beagle/beagle_complete";
                                 $epoch_timestamp=(stat($fh))[9];
                                 $timestamp=scalar localtime($epoch_timestamp);
-                                @finish_times_array[$i] = $timestamp;
+                                $finish_times_array[$i] = $timestamp;
                                 $beagle_error[$i] = "N/A";
                             } else {
                                 $fh="$path/beagle/beagle.out.vcf.gz";
                                 $epoch_timestamp=(stat($fh))[9];
                                 $timestamp=scalar localtime($epoch_timestamp);
-                                @finish_times_array[$i] = $timestamp;
+                                $finish_times_array[$i] = $timestamp;
                                 $beagle_error[$i] = "N/A";
                             }
                         }
                     } else { #if there are no beagle result files
                         $beagle_error[$i] = "N/A";
-                        @finish_times_array[$i] = "N/A";
+                        $finish_times_array[$i] = "N/A";
                     }
                 }
-                elsif (@snp_calling_array[$i] eq "yes" && @imputation_array[$i] eq "no") {
+                elsif ($snp_calling_array[$i] eq "yes" && $imputation_array[$i] eq "no") {
                     $beagle_error[$i] = 0;
                     my @files = glob("$path/snpcall/*x.vcf.gz");
                     #check for vcf file in calling folder
@@ -358,7 +358,7 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         }
                         else {
                             my @glob=glob("$path/snpcall/*x.vcf.gz");
-                            $fh=@glob[0];
+                            $fh=$glob[0];
                             my $epoch_timestamp=(stat($fh))[9];
                             my $timestamp=scalar localtime($epoch_timestamp);
                             push @finish_times_array, $timestamp;
@@ -369,15 +369,15 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         if (@glob_slurm) {#If there's a slurm log
                             $gbs_error[$i] = 1;
                             $beagle_error[$i] = 0;
-                            @finish_times_array[$i] = "Not Completed";
+                            $finish_times_array[$i] = "Not Completed";
                             my $ui_log;
-                            my $ui_log_path = @glob_slurm[0];
+                            my $ui_log_path = $glob_slurm[0];
                             open $ui_log, '<', $ui_log_path or die "Could not open file '$ui_log_path'";
                             while (my $line = <$ui_log>) {
                                 #check if the analysis was cancelled and if so change error value
                                 if ($line =~ /CANCELLED/ ) {
-                                    @finish_times_array[$i] = "Not Completed";
-                                    @status_array[$i] = "Cancelled";
+                                    $finish_times_array[$i] = "Not Completed";
+                                    $status_array[$i] = "Cancelled";
                                     $beagle_error[$i] = 0;
                                     $gbs_error[$i] = 0;
                                 }
@@ -385,48 +385,48 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
                         } else { #else if there's no slurm log
                             $gbs_error[$i] = 1;
                             $beagle_error[$i] = 0;
-                            @status_array[$i] = "Not Run";
-                            @finish_times_array[$i] = "Not Completed";
+                            $status_array[$i] = "Not Run";
+                            $finish_times_array[$i] = "Not Completed";
                         }
                     }
                 } else { #If none of the above combinations are true
-                    @finish_times_array[$i] = "N/A";
+                    $finish_times_array[$i] = "N/A";
                     $gbs_error[$i] = "N/A";
                     $beagle_error[$i] = "N/A";
                 }
-                if (@finish_times_array[$i]=~/[0-9]:[0-9]/) {
-                    @status_array[$i] = "Completed";
+                if ($finish_times_array[$i]=~/[0-9]:[0-9]/) {
+                    $status_array[$i] = "Completed";
                 }
                 elsif ($gbs_error[$i] eq 1) {
-                    @status_array[$i] = "Calling/Filtering Error";
-                    @finish_times_array[$i] = "Not Completed";
+                    $status_array[$i] = "Calling/Filtering Error";
+                    $finish_times_array[$i] = "Not Completed";
                 }
                 elsif ($beagle_error[$i] eq 1) {
-                    @status_array[$i] = "Imputation Error";
-                    @finish_times_array[$i] = "Not Completed";
+                    $status_array[$i] = "Imputation Error";
+                    $finish_times_array[$i] = "Not Completed";
                 } else { #If the analysis did not complete but there are no errors
                     my @slurm_out_glob = glob("$ui_log/slurm*.out");
                     if (@slurm_out_glob) {
                         my $file_path = $ui_log."/slurm-$jobnum".".out";
                         my $slurm_file;
                         open $slurm_file, '<', $file_path or die "Could not open file '$slurm_file'";
-                        @status_array[$i] = "N/A";
+                        $status_array[$i] = "N/A";
                         while (my $line = <$slurm_file>) {
                             #check if the analysis was cancelled and if so change error value
                             if ($line =~ /slurmstepd/ && $line =~ /JOB $jobnum/ && $line =~ /CANCELLED/) {
-                                @status_array[$i] = "Canceled";
-                                @finish_times_array[$i] = "Not Completed";
+                                $status_array[$i] = "Canceled";
+                                $finish_times_array[$i] = "Not Completed";
                             }
                         }
                     } else { #If there's no slurm.out file
-                        @status_array[$i] = "Job did not run";
-                        @finish_times_array[$i] = "Not Completed";
+                        $status_array[$i] = "Job did not run";
+                        $finish_times_array[$i] = "Not Completed";
                     }
                 }
             }
         } else { #If there's no job number
-            @status_array[$i] = "Job did not run";
-            @finish_times_array[$i] = "Not Completed";
+            $status_array[$i] = "Job did not run";
+            $finish_times_array[$i] = "Not Completed";
         }
     }
 
@@ -444,14 +444,14 @@ sub choose_pipeline:Path('/choose_pipeline') : Args(0){
     #same link as in email
     my @download_array;
     for (my $i = 0; $i < $analysis_folders; $i++) {
-        my $folder = @analysis_folders[$i];
+        my $folder = $analysis_folders[$i];
         my $download_link = "https://gbsappui.breedbase.org/results/".$username."/"."$folder"."/analysis_results.tar.gz";
         my $download_zipfile = "/gbsappui/root/results/$username/$folder/analysis_results.tar.gz";
         if (-e $download_zipfile) {
-            @download_array[$i] = $download_link;
+            $download_array[$i] = $download_link;
         }
         else {
-            @download_array[$i] = "N/A";
+            $download_array[$i] = "N/A";
         }
     }
     #https://gbsappui.breedbase.org/results/lockrow/MG4v/analysis_results.tar.gz
@@ -549,7 +549,6 @@ sub impute:Path('/impute'): Args(0){
     foreach my $folder (@analysis_folders) {
         $folder =~ s/^\s+|\s+$//g;
     }
-
     #for each analysis
     #grab analysis name from text file
     my @analysis_name_array;
@@ -569,8 +568,7 @@ sub impute:Path('/impute'): Args(0){
                     push(@analysis_name_array, $analysis_name_string);
                 }
             }
-        }
-        else {
+        } else {
             push(@analysis_name_array, "Analysis Name Missing");
         }
     }
@@ -598,7 +596,7 @@ sub impute:Path('/impute'): Args(0){
     my $projdir = $projdir_object->{DIRNAME};
     my $projdir_orig = $projdir;
     $projdir=~s/\;//g; #don't allow ';' in project directory name
-    $projdir=~s/_//g; #don't allow '_' in project directory name
+    $projdir=~s/_//g; #don't allow '_' in project directory name (gbsapp requirement)
     $projdir_object->{DIRNAME} = $projdir;
     if ($projdir_orig ne $projdir) {
         print STDERR "Original name was not acceptable ($projdir_orig). Changing it to $projdir. Removing $projdir_orig .\n";
@@ -621,7 +619,6 @@ sub impute:Path('/impute'): Args(0){
         fcopy("/scp_uploads/".$username."/".$chosen_file,$projdir."/".$chosen_file);
         `chmod 777 $projdir/$chosen_file`;
     }
-
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
     $c->stash->{analysis_name} = $analysis_name;
@@ -641,17 +638,12 @@ sub submit:Path('/submit') : Args(0){
 	$c->response->headers->header( "Access-Control-Allow-Methods" => "POST, GET, PUT, DELETE" );
 	$c->response->headers->header( 'Access-Control-Allow-Headers' => 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Authorization');
     my $gbsappui_domain_name = $c->config->{gbsappui_domain_name};
-
-    #make email variable
     my $email_address = "noemail";
     my $analysis_name = "noname";
-
-    #make gbsapp and beagle running variable
-    my $run_beagle = "nobeagle";
+    my $username=$c->req->param('username');
 
     #setup data directory and project directory
     my $ref_path=$c->req->param('ref_path');
-    my $username = $c->req->param('username');
     my $data_dir = "/results/".$username."/";
     #Make username directory if it doesn't exist already
     if (! -d $data_dir) {
@@ -669,25 +661,65 @@ sub submit:Path('/submit') : Args(0){
     if ($projdir_orig ne $projdir) {
         print STDERR "Original name was not acceptable ($projdir_orig). Changing it to $projdir. Removing $projdir_orig .\n";
         `rm -rf $projdir_orig`;
+    }    #for each analysis
+
+    #get list of analysis folders
+    my @analysis_name_array;
+    my @projdir_path = split("/", $projdir);
+    my $current_folder = $projdir_path[2];
+    print STDERR "current folder is $current_folder \n";
+    my $raw_analysis_folders = `ls /results/$username`;
+    #remove current folder in progress from list
+    my @analysis_folders = split("\n", $raw_analysis_folders);
+    @analysis_folders = grep { $_ ne $current_folder } @analysis_folders;
+    print STDERR "new folder list is @analysis_folders \n";
+    if (@analysis_folders) {
+        #remove any starting or trailing white spaces
+        foreach my $folder (@analysis_folders) {
+            $folder =~ s/^\s+|\s+$//g;
+        }
+
+        #grab analysis name from text file
+        foreach my $folder (@analysis_folders) {
+            my $analysis_name_string;
+            my @text_file_exists = glob("/results/$username/$folder/analysis_info*.txt");
+            if (@text_file_exists) {
+                my $file_path = "/results/$username/$folder/analysis_info.txt";
+                my $info_file;
+                open $info_file, '<', $file_path or die "Could not open file '$info_file'";
+                while (my $line = <$info_file>) {
+                    chomp $line;
+                    if ($line =~ /^Analysis Name:/) {
+                        $analysis_name_string = $line;
+                        $analysis_name_string =~ s/Analysis Name: //;
+                        chomp $analysis_name_string;
+                        push(@analysis_name_array, $analysis_name_string);
+                    }
+                }
+            } else {
+                push(@analysis_name_array, "Analysis Name Missing");
+            }
+        }
+    } else {
+        @analysis_name_array = " ";
     }
+
+    #Make a hash and encode it into json format for analysis names
+    my %analyses_names_of;
+    $analyses_names_of{ $username } = \@analysis_name_array;
+    my $analysis_list_json = encode_json \%analyses_names_of;
+
     my $template="/project/";
     rcopy($template,$projdir) or die $!;
-    print STDERR "Copying $ref_path to $projdir/refgenomes/ \n";
     rcopy($ref_path,$projdir."/refgenomes/") or die $!;
 
     #parse and copy chosen input files into project directory and name them appropriately
     my $chosen_files = $c->req->param("chosen_files_final");
     my @chosen_files_array = split(",", $chosen_files);
-    print STDERR "My chosen files are \n";
-    print STDERR Dumper @chosen_files_array;
-    print STDERR "Moving files to data folder \n";
     foreach my $chosen_file (@chosen_files_array) {
-        print STDERR "working on \n";
-        print STDERR Dumper $chosen_file;
         fcopy("/scp_uploads/".$username."/".$chosen_file,$projdir."/samples/".$chosen_file);
         `chmod 777 $projdir/samples/$chosen_file`;
     }
-
     #if biparental: edit config file to include p1 (maternal parent) and p2 (paternal parent)
     # my $biparental;
     # if (my $biparental==1) {
@@ -698,12 +730,12 @@ sub submit:Path('/submit') : Args(0){
     my $sgn_token=$c->req->param('sgn_token');
     $c->stash->{email_address} = $email_address;
     $c->stash->{analysis_name} = $analysis_name;
-    $c->stash->{run_beagle} = $run_beagle;
     $c->stash->{projdir} = $projdir;
     $c->stash->{ref_path} = $ref_path;
     $c->stash->{gbsappui_domain_name}=$gbsappui_domain_name;
     $c->stash->{sgn_token}=$sgn_token;
     $c->stash->{username} = $username;
+    $c->stash->{analysis_list_json}=$analysis_list_json;
     $c->stash->{template} = "submit.mas";
 }
 
@@ -755,7 +787,7 @@ sub cancel:Path('/cancel') : Args(0) {
         #pull out the job number from the slurm.out filename
         my $slurm_filename=`cd $ui_log; ls slurm*`;
         my @filename_array = split /[.-]/, $slurm_filename;
-        $jobnum = @filename_array[1];
+        $jobnum = $filename_array[1];
         #remove any starting or trailing white spaces
         $jobnum =~ s/^\s+|\s+$//g;
         #cancel job number
@@ -796,7 +828,7 @@ sub delete:Path('/delete') : Args(0) {
         if (@slurm_glob) {
             my $slurm_filename=`cd $projdir; ls *slurm*.out`;
             my @filename_array = split /[.-]/, $slurm_filename;
-            $jobnum_gbs = @filename_array[1];
+            $jobnum_gbs = $filename_array[1];
             #remove any starting or trailing white spaces
             $jobnum_gbs =~ s/^\s+|\s+$//g;
             #cancel job number as long as it's running
@@ -811,7 +843,7 @@ sub delete:Path('/delete') : Args(0) {
         if (@slurm_glob_ui) {
             my $slurm_filename=`cd $ui_log; ls *slurm*.out`;
             my @filename_array = split /[.-]/, $slurm_filename;
-            $jobnum_full_ui = @filename_array[1];
+            $jobnum_full_ui = $filename_array[1];
             #remove any starting or trailing white spaces
             $jobnum_full_ui =~ s/^\s+|\s+$//g;
             #cancel job number as long as it's running
