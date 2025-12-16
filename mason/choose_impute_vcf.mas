@@ -171,6 +171,9 @@ $( document ).ready(function(){
 
 <center>
     <div id="page_function">
+    <div id="sample_info" style="position:relative">
+        <label style="margin:10px; background-color:black; padding-top:10; padding-left:10; padding-right:10;padding-bottom:10; color:white; position:relative; top:25; text-align:center; font-size:13; border:10px double white">Please note that more than one sample is required for successful imputation. </label>
+    </div>
     <%# ----choose vcf---- %>
         <div id="select_box" style="background-color:black; padding-top:10; border:10px double white; color:white; width:600; height:400; position:relative; top:50; font-size:20">
             <b>Select vcf file(s):</b>
