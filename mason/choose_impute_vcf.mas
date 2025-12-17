@@ -182,21 +182,33 @@ $( document ).ready(function(){
                     <select multiple class="form-control" id="choose_files" style="height:300; width:500">
                     </select>
                     <br></br>
-                    <input type="submit" name="vcf" multiple="multiple" value="Select" id="select_button" required/>
+                    <input type="submit" name="vcf_select" multiple="multiple" value="Select" id="select_button"/>
                     <input type="hidden" id="chosen_files_final" name="chosen_files_final" />
                     <input type="hidden" id="username" name="username" />
                     <input type="hidden" value="<% $sgn_token %>" id="sgn_token" name="sgn_token" />
                     </div>
                 </form>
             </span>
-        <br></br>
-        <br></br>
-        OR
-        <br></br>
-        <br></br>
-        <%# ----upload vcf---- %>
-    </div>
+        </div>
     <br></br>
+    <br></br>
+    <br></br>
+    <b>OR</b>
+    <%# ----upload vcf---- %>
+    <div id="upload_box" style="background-color:white; border:10px double black; color:black; width:600; height:100; position:relative; top:50; font-size:20">
+        <br></br>
+        <b>Upload vcf file(s):</b>
+            <form action="/impute" target="_self" id="upload_form" name="upload_form" method="post" >
+                <input type="file" name="vcf_upload" multiple="multiple" value="Select" id="upload_button"/>
+                <br></br>
+                <br></br>
+                <input type="submit" value="Upload">
+                <input type="hidden" id="uploaded_files_final" name="uploaded_files_final" />
+                <input type="hidden" id="username_upload" name="username_upload" />
+                <input type="hidden" value="<% $sgn_token %>" id="sgn_token_upload" name="sgn_token_upload" />
+                </div>
+            </form>
+    </div>
 </center>
 
 
