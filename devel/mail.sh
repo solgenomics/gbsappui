@@ -7,7 +7,7 @@ body=$3
 
 #Other parameters
 
-from="breedbasecall@localhost.sgn.cornell.edu"
+from="snpsnapp@localhost.sgn.cornell.edu"
 boundary="ZZ_/afg6432dfgkl.94531q"
 declare -a attachments
 attachments=( $4 $5 )
