@@ -103,7 +103,7 @@ results_email () {
             $beagle_error_lines
             $beagle_exception_lines
             $beagle_illegal_lines
-            $beagle_terminating_lines The imputation log file (if available) is attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            $beagle_terminating_lines The imputation log file (if available) is attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this error."
             if [ -f ${projdir}beagle/beagle_log.out ]; then
                 /gbsappui/devel/mail.sh "$email_address" "BreedBase Call Results/Error" "$body" "$beagle_log"
             else
@@ -159,7 +159,7 @@ beagle () {
 
                 $last_log
 
-                Full log files attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+                Full log files attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this issue."
                 error_email_beagle "$body"
                 beagle_error=1
                 exit 0
@@ -208,7 +208,7 @@ gbsapp () {
 
             $last_log
 
-            Full log files attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            Full log files attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this issue."
             error_email_gbsapp "$body"
             exit 0
         fi
@@ -232,7 +232,7 @@ gbsapp () {
 
             $last_log
 
-            Full log files also attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            Full log files also attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this error."
             error_email_gbsapp "$body"
             exit 0
         fi
@@ -250,7 +250,7 @@ gbsapp () {
 
             $last_log
 
-            Full log files also attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            Full log files also attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this issue."
             error_email_gbsapp "$body"
             exit 0
         fi
@@ -275,7 +275,7 @@ if [ $run_beagle -eq 1 ]; then
         if [ -f ${projdir}*vcf* ]; then
             gbs_output=$(ls ${projdir}*vcf* )
         else
-            body="Imputation for analysis ${analysis_name} did not complete successfully. The input vcf file to impute could not be found. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            body="Imputation for analysis ${analysis_name} did not complete successfully. The input vcf file to impute could not be found. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this issue."
             error_email_beagle "$body"
             exit 0
         fi
@@ -291,7 +291,7 @@ if [ $run_beagle -eq 1 ]; then
             gbs_output=$(ls ${projdir}snpcall/*x.vcf.gz)
             beagle_input="SNP calling"
         else
-            body="Calling and filtering for analysis ${analysis_name} did not complete successfully. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            body="Calling and filtering for analysis ${analysis_name} did not complete successfully. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this issue."
             error_email_beagle "$body"
             exit 0
         fi
@@ -310,7 +310,7 @@ if [ $run_beagle -eq 1 ]; then
             $beagle_error_lines
             $beagle_exception_lines
             $beagle_illegal_lines
-            $beagle_terminating_lines Full log file also attached. Please email Lukas Mueller to resolve this error at lam87@cornell.edu"
+            $beagle_terminating_lines Full log file also attached. Please email our developer team at sgn-feedback@sgn.cornell.edu to resolve this error."
             error_email_beagle "$body"
             exit 0
         fi
