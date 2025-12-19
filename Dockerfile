@@ -95,6 +95,9 @@ RUN cd / \
 #copy over template for analysis_info.txt
 RUN cp /gbsappui/analysis_info.txt /project/
 
+#copy over postfix config file
+RUN cp /gbsappui/main.cf /etc/postfix/main.cf
+
 #clone vcftools from github
 RUN cd / \
   && git clone https://github.com/vcftools/vcftools.git
@@ -124,6 +127,10 @@ RUN chmod +x /entrypoint.sh
 
 #make results file in root directory
 RUN mkdir /gbsappui/root/results/
+
+#copy over local configuration file
+COPY gbsappui_local.conf /gbsappui/gbsappui_local.conf
+COPY sasl_passwd /etc/postfix/sasl_passwd
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
