@@ -229,13 +229,12 @@ $( document ).ready(function(){
                     <img src="/static/images/Breedbase_HighRes.png" width="180" style="position:absolute;top:-16px;left:20px" />
                 </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <span id="login_button_html_div" style="position:relative;top:-20;right:-45px;white-space:nowrap;width:200;float:right">
+                    <span id="login_button_html_div" style="position:relative;top:-5;right:-45px;white-space:nowrap;width:200;float:right">
                         <button id="login_button" type="button" class="btn btn-default" style="margin: 7px 7px 7px 7px;color:white;background-color:#3177b4;border:none;width:60;height:35;font-family:Helvetica;font-size:11pt">Login
                         </button>
                     </span>
-                    <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:0px;margin: 7px 7px 7px 7px;width:60; height:35">
-                        Logout
-                        <span class="glyphicon glyphicon-log-out"></span>
+                    <button id="logout_button" type="button" class="btn btn-default" style="position:absolute;top:-4;right:10px;margin: 7px 7px 7px 7px;width:30; height:35">
+                        <span class="glyphicon glyphicon-log-out" style="position:relative;right:5"></span>
                     </button>
                 </ul>
             </span>
