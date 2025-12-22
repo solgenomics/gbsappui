@@ -12,6 +12,7 @@ username=$(echo $username | sed -e 's/\ *$//g')
 password=$(sed -n 's/^smtp_pass \(.*\)/\1/p' < /gbsappui/gbsappui_local.conf)
 #remove trailing blank space
 password=$(echo $password | sed -e 's/\ *$//g')
+cp /gbsappui/sasl_passwd /etc/postfix/sasl_passwd
 sed -i "s/username/$username/g" /etc/postfix/sasl_passwd
 sed -i "s/password/$password/g" /etc/postfix/sasl_passwd
 postmap /etc/postfix/sasl_passwd

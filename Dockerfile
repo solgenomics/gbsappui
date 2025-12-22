@@ -130,7 +130,6 @@ RUN mkdir /gbsappui/root/results/
 
 #copy over local configuration file
 COPY gbsappui_local.conf /gbsappui/gbsappui_local.conf
-COPY sasl_passwd /etc/postfix/sasl_passwd
 
 # start services when running container...
 ENTRYPOINT ["/entrypoint.sh"]
